@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/todoListFragment">
+
+    <fragment
+        android:id="@+id/todoListFragment"
+        android:name="com.example.todonotion.ui.TodoListFragment"
+        android:label="Home Page"
+        tools:layout="@layout/fragment_todo_list">
+        <action
+            android:id="@+id/action_todoListFragment_to_todoDetailFragment"
+            app:destination="@id/todoDetailFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+        <action
+            android:id="@+id/action_todoListFragment_to_addTodoFragment"
+            app:destination="@id/addTodoFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+        <action
+            android:id="@+id/action_todoListFragment_to_postListFragment"
+            app:destination="@id/postListFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/todoDetailFragment"
+        android:name="com.example.todonotion.ui.TodoDetailFragment"
+        android:label="Detail page"
+        tools:layout="@layout/fragment_todo_detail">
+
+        <action
+            android:id="@+id/action_todoDetailFragment_to_addTodoFragment"
+            app:destination="@id/addTodoFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/addTodoFragment"
+        android:name="com.example.todonotion.ui.AddTodoFragment"
+        android:label="{tags}"
+        tools:layout="@layout/fragment_add_todo">
+        <action
+            android:id="@+id/action_addTodoFragment_to_todoListFragment"
+            app:destination="@id/todoListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/todoSearchFragment"
+        android:name="com.example.todonotion.ui.TodoSearchFragment"
+        android:label="Search Page"
+        tools:layout="@layout/fragment_search_todo">
+        <action
+            android:id="@+id/action_todoSearchFragment_to_todoSearchResultFragment"
+            app:destination="@id/todoSearchResultFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+
+    </fragment>
+    <fragment
+        android:id="@+id/todoSearchResultFragment"
+        android:name="com.example.todonotion.ui.TodoSearchResultFragment"
+        android:label="Search result page"
+        tools:layout="@layout/fragment_search_result">
+        <action
+            android:id="@+id/action_todoSearchResultFragment_to_todoDetailFragment"
+            app:destination="@id/todoDetailFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.todonotion.ui.LoginFragment"
+        android:label="Login Page"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_loginFragment_to_signupFragment"
+            app:destination="@id/signupFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+        <action
+            android:id="@+id/action_loginFragment_to_todoListFragment"
+            app:destination="@id/todoListFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.example.todonotion.ui.SignupFragment"
+        android:label="Signup Page"
+        tools:layout="@layout/fragment_signup">
+        <action
+            android:id="@+id/action_signupFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:enterAnim="@anim/slide_left_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_left_out"/>
+        <action
+            android:id="@+id/action_signupFragment_to_todoListFragment"
+            app:destination="@id/todoListFragment" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/postListFragment"
+        android:name="com.example.todonotion.ui.PostListFragment"
+        android:label="PostListFragment"
+        tools:layout="@layout/fragment_post_list">
+        <action
+            android:id="@+id/action_postListFragment_to_postDetailFragment"
+            app:destination="@id/postDetailFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+        <action
+            android:id="@+id/action_postListFragment_to_addPostFragment"
+            app:destination="@id/addPostFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/postDetailFragment"
+        android:name="com.example.todonotion.ui.PostDetailFragment"
+        android:label="PostDetailFragment"
+        tools:layout="@layout/fragment_post_detail">
+        <action
+            android:id="@+id/action_postDetailFragment_to_addPostFragment"
+            app:destination="@id/addPostFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out"/>
+    </fragment>
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.todonotion.ui.AddPostFragment"
+        android:label="addPostFragment"
+        tools:layout="@layout/fragment_add_post" >
+
+        <action
+            android:id="@+id/action_addPostFragment_to_postListFragment"
+            app:destination="@id/postListFragment"
+            app:popUpTo="@id/postListFragment"
+            app:popUpToInclusive="true" />
+
+    </fragment>
+
+</navigation>

@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">Todo notion</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="list_fragment_label">List Fragment</string>
+    <string name="add_fragment_label">Add Fragment</string>
+
+    <string name="icon_name">Name</string>
+    <string name="icon_location">Location</string>
+    <string name="in_season">Currently in season</string>
+    <string name="out_of_season">Currently out of season</string>
+    <string name="notes">Notes</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="search_btn">Search</string>
+    <string name="add_btn">Add</string>
+    <string name="edit_btn">Edit</string>
+    <string name="detail_img">Detail image</string>
+    <string name="status">Status</string>
+    <string name="recent">Recent</string>
+    <string name="clear_title">Clear all recent searches?</string>
+    <string name="clear_cont">This can\'t undone and you will remove all your recent searches.</string>
+    <string name="cancel">Cancel</string>
+    <string name="clear">Clear</string>
+    <string name="home">Home</string>
+    <string name="icon_email">Email</string>
+    <string name="icon_password">Password</string>
+    <string name="password_confirm">confirm password</string>
+
+    <string name="signup">Signup</string>
+    <string name="login">Login</string>
+    <string name="logout">Logout</string>
+    <string name="login_title">Please sign in to continue.</string>
+    <string name="signup_title">Create Account</string>
+    <string name="signup_login_text">Already have a account?</string>
+    <string name="login_signup_text">Don\'t have an account?</string>
+    <string name="signIn_text">Sign in</string>
+    <string name="signUp_text">Sign up</string>
+    <string name="username">User name</string>
+    <string name="usernameOrEmail">usernameOrEmail</string>
+    <string name="logout_title">Logout</string>
+    <string name="logout_cont">Are you sure you want to log out?</string>
+    <string name="ok">OK</string>
+    <string name="login_error_text">email or username or password error, please try again.</string>
+    <string name="tab_recent">Recent</string>
+    <string name="tab_favorites">Favorites</string>
+    <string name="tab_posts">All post</string>
+    <string name="tab_user_posts">Your post</string>
+
+    <string name="list_posts_title">title</string>
+
+    <string name="list_posts_content">content</string>
+    <string name="list_posts_createDate">create date</string>
+
+    <string name="refresh">refresh</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="posts">posts</string>
+
+
+    <string name="nav_title">Todo notion</string>
+    <string name="nav_title1">Hello, %1$s! Welcome to use.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="item_detail_fragment_title">Item Details</string>
+    <string name="add_fragment_title">Add Item</string>
+    <string name="edit_fragment_title">Edit Item</string>
+
+    <string name="edit_title_error">title cannot be empty</string>
+    <string name="edit_content_error">content cannot be empty</string>
+
+</resources>

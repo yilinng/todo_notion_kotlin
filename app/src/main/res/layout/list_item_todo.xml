@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="todo"
+            type="com.example.todonotion.network.Todo" />
+
+        <variable
+            name="clickListener"
+            type="com.example.todonotion.ui.adapter.TodoListener" />
+
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="8dp"
+        android:onClick="@{() -> clickListener.onClick(todo)}">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/todo_image"
+                android:layout_width="190dp"
+                android:layout_height="190dp"
+                android:layout_marginTop="4dp"
+                android:adjustViewBounds="true"
+                android:padding="2dp"
+                android:scaleType="fitXY"
+                app:imageUrl="@{todo.imgSrcUrl}"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@tools:sample/backgrounds/scenic" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:id="@+id/todo_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="all"
+                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    app:text="@{todo.tags.replace(',', ' ')}"
+                    tools:text="todo.tags" />
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>
