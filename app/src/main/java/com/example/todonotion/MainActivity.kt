@@ -34,10 +34,10 @@ import kotlinx.coroutines.launch
 //https://stackoverflow.com/questions/44777869/hide-show-bottomnavigationview-on-scroll
 class MainActivity : AppCompatActivity() {
 
-        /*
-        * The lateinit keyword is something new.
-        * It's a promise that your code will initialize the variable before using it. If you don't, your app will crash
-        */
+    /*
+    * The lateinit keyword is something new.
+    * It's a promise that your code will initialize the variable before using it. If you don't, your app will crash
+    */
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private val authNetworkViewModel: AuthNetworkViewModel by viewModels ()
+    private val authNetworkViewModel: AuthNetworkViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -85,11 +85,7 @@ class MainActivity : AppCompatActivity() {
         listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val targetId = destination.id
             //bottom navigation is different from destination id
-            if (targetId != R.id.todoListFragment && targetId != R.id.todoSearchFragment && targetId != R.id.loginFragment) {
-                bottomNavigationView.visibility = GONE
-            } else {
-                bottomNavigationView.visibility = VISIBLE
-            }
+           // bottomNavigationView.isVisible = targetId == R.id.todoListFragment && targetId == R.id.todoSearchFragment
             observeToken()
             observeUser()
 
@@ -113,34 +109,41 @@ class MainActivity : AppCompatActivity() {
         observeToken()
         observeUser()
 
-        //click logout button
+        //click logout button in bottom Navigation
         bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout)
             .setOnClickListener {
                 showLogoutDialog()
             }
 
 
+        /*
+        //click logout button in draw Navigation
+        navigationView.findViewById<NavigationView>(R.id.logout)
+            .setOnClickListener {
+                showLogoutDialog()
+            }
+        */
     }
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
     private fun observeToken() {
         tokenViewModel.tokens.observe(this, Observer {
+
             lifecycleScope.launch {
-                showLoadingProgress()
-                delay(3000)
                 hideLoadingProgress()
+                delay(3000)
+                showLoadingProgress()
             }
 
             if (it.isNotEmpty()) {
 
                 Toast.makeText(this, "have token!!!", Toast.LENGTH_SHORT).show()
 
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.logout).isVisible =
-                    true
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.loginFragment).isVisible =
-                    false
+                bottomNavigationView.findViewById<BottomNavigationView>(R.id.logout).isVisible = true
+                bottomNavigationView.findViewById<BottomNavigationView>(R.id.loginFragment).isVisible = false
                 //drawer navigation have to hide sign in
                 navigationView.findViewById<NavigationView>(R.id.loginFragment).isVisible = false
+                //navigationView.findViewById<NavigationView>(R.id.logout).isVisible = true
 
                 /*
                 Toast.makeText(
@@ -152,27 +155,27 @@ class MainActivity : AppCompatActivity() {
                 //getUser use token
                 authNetworkViewModel.getUserAction(it[0].accessToken)
             } else {
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.logout).isVisible =
-                    false
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.loginFragment).isVisible =
-                    true
+                bottomNavigationView.findViewById<BottomNavigationView>(R.id.logout).isVisible = false
+                bottomNavigationView.findViewById<BottomNavigationView>(R.id.loginFragment).isVisible = true
                 //drawer navigation have to show sign in
-                navigationView.findViewById<NavigationView>(R.id.loginFragment).isVisible = true
-
+                navigationView.findViewById<NavigationView>(R.id.loginFragment).isVisible= true
+                //navigationView.findViewById<NavigationView>(R.id.logout).isVisible = false
             }
         })
     }
 
     //https://developer.android.com/guide/topics/resources/string-resource
-    private fun observeUser(){
-        authNetworkViewModel.user.observe(this, Observer{
+    private fun observeUser() {
+        authNetworkViewModel.user.observe(this, Observer {
 
-            if(it.username.isNotEmpty()) {
-              val text = String.format(getString(R.string.nav_title1), it.username)
-                navigationView.findViewById<TextView>(R.id.drawer_title1).text  = text//"Hello, " + it.username
-            }else {
+            if (it.username.isNotEmpty()) {
+                val text = String.format(getString(R.string.nav_title1), it.username)
+                navigationView.findViewById<TextView>(R.id.drawer_title1).text =
+                    text//"Hello, " + it.username
+            } else {
                 val text = String.format(getString(R.string.nav_title1), "")
-                navigationView.findViewById<TextView>(R.id.drawer_title1).text  = text//"Hello, " + it.username
+                navigationView.findViewById<TextView>(R.id.drawer_title1).text =
+                    text//"Hello, " + it.username
             }
         })
     }
@@ -201,11 +204,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showLoadingProgress(){
+    private fun hideLoadingProgress() {
         bottomNavigationView.isVisible = false
     }
 
-    private fun hideLoadingProgress(){
+    private fun showLoadingProgress() {
         bottomNavigationView.isVisible = true
 
     }

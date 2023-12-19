@@ -94,4 +94,6 @@ dependencies {
 
     //https://developer.android.com/develop/ui/views/touch-and-input/swipe/add-swipe-interface
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+    //https://github.com/google/gson
+    implementation ("com.google.code.gson:gson:2.10.1")
 }

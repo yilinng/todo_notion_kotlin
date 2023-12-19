@@ -41,7 +41,6 @@
     <string name="logout_title">Logout</string>
     <string name="logout_cont">Are you sure you want to log out?</string>
     <string name="ok">OK</string>
-    <string name="login_error_text">email or username or password error, please try again.</string>
     <string name="tab_recent">Recent</string>
     <string name="tab_favorites">Favorites</string>
     <string name="tab_posts">All post</string>
@@ -68,5 +67,28 @@
 
     <string name="edit_title_error">title cannot be empty</string>
     <string name="edit_content_error">content cannot be empty</string>
+    <string name="name">name</string>
+
+    <string name="signup_success_msg1">Congratulations, your account has been successfully created.</string>
+    <string name="signup_success_msg2">Please login to continue.</string>
+    <string name="add_post_title">Create new post</string>
+    <string name="signup_success_dialogs_btn">Continue</string>
+
+    <string name="login_usernameOrEmail">UserName or email cannot be empty</string>
+    <string name="login_password">Password cannot be empty</string>
+
+    <string name="signup_name">Name cannot be empty</string>
+
+    <string name="signup_username">Username cannot be empty</string>
+
+    <string name="signup_email">Email cannot be empty</string>
+
+    <string name="signup_username_error">Username is already exists!.</string>
+
+    <string name="signup_email_error">Email is already exists!.</string>
+
+    <string name="signup_server_error">Server error. Please reload and try again.</string>
+
+    <string name="login_error">Incorrect username or email or password</string>
 
 </resources>

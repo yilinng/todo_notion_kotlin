@@ -15,6 +15,7 @@ import com.example.todonotion.network.dto.PostDto
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
+import retrofit2.HttpException
 
 enum class UserApiStatus { LOADING, ERROR, DONE }
 
@@ -51,6 +52,7 @@ class AuthNetworkViewModel: ViewModel() {
     }
 
 
+    //https://stackoverflow.com/questions/33815515/how-do-i-get-response-body-when-there-is-an-error-when-using-retrofit-2-0-observ
     fun loginAction(login: Login) {
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
@@ -59,10 +61,10 @@ class AuthNetworkViewModel: ViewModel() {
                 _token.value = UserApi.retrofitService.loginUser(login)
                 _status.value = UserApiStatus.DONE
                 Log.i("loginUser200",  UserApi.retrofitService.loginUser(login).toString())
-            }catch(e: Exception) {
+            }catch(e: HttpException) {
                 _status.value = UserApiStatus.ERROR
-                _error.value = e.toString()
-                Log.i("loginUser400",  e.toString())
+                _error.value = e.response()?.errorBody()?.string()
+                Log.i("loginUser400", error.value.toString())
             }
         }
     }
@@ -71,12 +73,14 @@ class AuthNetworkViewModel: ViewModel() {
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-               // _user.value = UserApi.retrofitService.signupUser(signup)
+                _response.value = UserApi.retrofitService.signupUser(signup)
                 _status.value = UserApiStatus.DONE
-                Log.i("signupUser200",  token.toString())
-            }catch(e: Exception) {
+                Log.i("signupUser200",  response.toString())
+            }catch(e: HttpException) {
                 _status.value = UserApiStatus.ERROR
-                Log.i("signupUser400",  e.toString())
+                e.message?.let { Log.i("signupUser400", it) }
+                _error.value = e.response()?.errorBody()?.string()
+
 
             }
         }
@@ -212,6 +216,16 @@ class AuthNetworkViewModel: ViewModel() {
         }
     }
 
+    /*
+    fun errorResponse(e: HttpException):ErrorResponse {
+
+        Gson().fromJson(
+            e.response()?.errorBody()!!.charStream(),
+            object : TypeToken<ErrorResponse>() {}.type
+        )
+    }
+    */
+
     fun setToken(token: Token) {
         _token.value = token
     }
@@ -274,8 +288,8 @@ class AuthNetworkViewModel: ViewModel() {
     /**
      * Returns true if the EditTexts are not empty
      */
-    fun isSignupEntryValid(username: String, email: String, password: String): Boolean {
-        return !(username.isBlank() || email.isBlank() || password.isBlank())
+    fun isSignupEntryValid(name: String, username: String, email: String, password: String): Boolean {
+        return !(name.isBlank() || username.isBlank() || email.isBlank() || password.isBlank())
     }
 
     fun isLoginEntryValid(email: String, password: String): Boolean {

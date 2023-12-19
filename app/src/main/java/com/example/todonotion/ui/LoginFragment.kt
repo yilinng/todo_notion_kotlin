@@ -2,12 +2,15 @@ package com.example.todonotion.ui
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -66,7 +69,7 @@ class LoginFragment : Fragment() {
      */
     private fun isEntryValid(): Boolean {
         return networkViewModel.isLoginEntryValid(
-            binding.usernameOremailInput.text.toString(),
+            binding.usernameOrEmailInput.text.toString(),
             binding.passwordInput.text.toString(),
         )
     }
@@ -76,6 +79,27 @@ class LoginFragment : Fragment() {
             networkViewModel.loginAction(convertToDataClass())
             //login
             observeUserToken()
+            observeError()
+        } else {
+            actionIsEmpty()
+        }
+    }
+
+    private fun actionIsEmpty() {
+        if (binding.usernameOrEmailInput.text.toString().isEmpty()) {
+            binding.usernameOrEmailLabel.error = getString(R.string.login_usernameOrEmail)
+        }
+        if (binding.passwordInput.text.toString().isEmpty()) {
+            binding.passwordLabel.error = getString(R.string.login_password)
+        }
+    }
+
+    private fun cleanIsEmpty() {
+        if (binding.usernameOrEmailInput.text.toString().isNotEmpty()) {
+            binding.usernameOrEmailInput.error = null
+        }
+        if (binding.passwordInput.text.toString().isNotEmpty()) {
+            binding.passwordInput.error = null
         }
     }
 
@@ -103,21 +127,26 @@ class LoginFragment : Fragment() {
         }
     }
 
+    private fun observeError() {
+        networkViewModel.error.observe(this.viewLifecycleOwner) { items ->
+            items.let {
+                if (it != null) {
+                    binding.errorText.visibility = VISIBLE
+                    binding.errorText.setTextColor(Color.RED)
+                    Log.i("loginUser400", it)
+                    binding.errorText.text =  getString(R.string.login_error)
+                }
+            }
+        }
+    }
 
 
     private fun convertToDataClass(): Login {
         return Login(
-            binding.usernameOremailInput.text.toString(),
+            binding.usernameOrEmailInput.text.toString(),
             binding.passwordInput.text.toString()
         )
     }
-
-    //test get todos
-    /*
-    private fun getPosts() {
-        networkViewModel.getTodoAction()
-    }
-    */
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -134,13 +163,23 @@ class LoginFragment : Fragment() {
             addNewUser()
         }
 
-        //error message
-        networkViewModel.error.observe(this.viewLifecycleOwner) {
-            binding.errorText.visibility = VISIBLE
-            binding.errorText.text = R.string.login_error_text.toString()
+        observeToken()
+
+        binding.usernameOrEmailInput.addTextChangedListener {
+            Toast.makeText(
+                this.context, "username or email input change", Toast.LENGTH_SHORT
+            ).show()
+            cleanIsEmpty()
         }
 
-        observeToken()
+
+
+        binding.passwordInput.addTextChangedListener {
+            Toast.makeText(
+                this.context, "password input change", Toast.LENGTH_SHORT
+            ).show()
+            cleanIsEmpty()
+        }
 
     }
 
