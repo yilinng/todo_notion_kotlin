@@ -3,6 +3,8 @@ package com.example.todonotion
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
+
 import android.view.View.*
 import android.widget.TextView
 import android.widget.Toast
@@ -25,6 +27,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView
 
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -77,7 +80,10 @@ class MainActivity : AppCompatActivity() {
         //drawer navigation
         navigationView.setupWithNavController(navController)
 
-        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+        //https://developer.android.com/guide/navigation/integrations/ui
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.todoListFragment, R.id.todoSearchFragment, R.id.postListFragment, R.id.loginFragment), drawerLayout)
+
+       // appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         // Make sure actions in the ActionBar get propagated to the NavController
         setupActionBarWithNavController(navController, appBarConfiguration)
 
@@ -85,7 +91,10 @@ class MainActivity : AppCompatActivity() {
         listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val targetId = destination.id
             //bottom navigation is different from destination id
-           // bottomNavigationView.isVisible = targetId == R.id.todoListFragment && targetId == R.id.todoSearchFragment
+
+            if (targetId == R.id.todoListFragment) {
+                hideLoadingProgress()
+            }
             observeToken()
             observeUser()
 
@@ -115,14 +124,18 @@ class MainActivity : AppCompatActivity() {
                 showLogoutDialog()
             }
 
-
-        /*
         //click logout button in draw Navigation
-        navigationView.findViewById<NavigationView>(R.id.logout)
-            .setOnClickListener {
+        //https://stackoverflow.com/questions/31954993/hide-a-navigation-drawer-menu-item-android
+        //default is true
+        navigationView.menu.findItem(R.id.logout).setOnMenuItemClickListener {
+            if (it.isVisible) {
                 showLogoutDialog()
+                false
+            } else {
+                false
             }
-        */
+        }
+
     }
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
@@ -136,46 +149,54 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (it.isNotEmpty()) {
-
-                Toast.makeText(this, "have token!!!", Toast.LENGTH_SHORT).show()
-
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.logout).isVisible = true
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.loginFragment).isVisible = false
+                // Toast.makeText(this, "$it have token!!!", Toast.LENGTH_SHORT).show()
+                bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout).isVisible =
+                    true
+                bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.loginFragment).isVisible =
+                    false
                 //drawer navigation have to hide sign in
-                navigationView.findViewById<NavigationView>(R.id.loginFragment).isVisible = false
-                //navigationView.findViewById<NavigationView>(R.id.logout).isVisible = true
+                //https://stackoverflow.com/questions/31954993/hide-a-navigation-drawer-menu-item-android
+                navigationView.menu.findItem(R.id.loginFragment).isVisible = false
+                navigationView.menu.findItem(R.id.logout).isVisible = true
 
-                /*
-                Toast.makeText(
-                    this,
-                    it[0].accessToken + " accessToken",
-                    Toast.LENGTH_SHORT
-                ).show()
-                */
                 //getUser use token
                 authNetworkViewModel.getUserAction(it[0].accessToken)
+
+
             } else {
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.logout).isVisible = false
-                bottomNavigationView.findViewById<BottomNavigationView>(R.id.loginFragment).isVisible = true
+                // Toast.makeText(this, "no exist token!!!", Toast.LENGTH_SHORT).show()
+
+                bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout).isVisible =
+                    false
+                bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.loginFragment).isVisible =
+                    true
                 //drawer navigation have to show sign in
-                navigationView.findViewById<NavigationView>(R.id.loginFragment).isVisible= true
-                //navigationView.findViewById<NavigationView>(R.id.logout).isVisible = false
+                navigationView.menu.findItem(R.id.loginFragment).isVisible = true
+                navigationView.menu.findItem(R.id.logout).isVisible = false
             }
         })
     }
 
     //https://developer.android.com/guide/topics/resources/string-resource
     private fun observeUser() {
-        authNetworkViewModel.user.observe(this, Observer {
 
-            if (it.username.isNotEmpty()) {
+        val drawerTitle1 = navigationView.findViewById<TextView>(R.id.drawer_title1)
+        val drawerTitleDefault = navigationView.findViewById<TextView>(R.id.drawer_title_default)
+
+        authNetworkViewModel.user.observe(this, Observer {
+            if (it != null) {
+                //Toast.makeText(this, "$it have user!!!", Toast.LENGTH_SHORT).show()
                 val text = String.format(getString(R.string.nav_title1), it.username)
-                navigationView.findViewById<TextView>(R.id.drawer_title1).text =
-                    text//"Hello, " + it.username
-            } else {
-                val text = String.format(getString(R.string.nav_title1), "")
-                navigationView.findViewById<TextView>(R.id.drawer_title1).text =
-                    text//"Hello, " + it.username
+                drawerTitle1.visibility = VISIBLE
+                drawerTitle1.text = text
+                //hide default title
+                drawerTitleDefault.visibility = GONE
+            }else{
+                //show default title
+                drawerTitleDefault.visibility = VISIBLE
+                //hide title1
+                drawerTitle1.visibility = GONE
+
             }
         })
     }
@@ -192,6 +213,7 @@ class MainActivity : AppCompatActivity() {
                 //logout action, clear token
                 // setLoadingProgress()
                 deleteToken()
+                authNetworkViewModel.initUser()
             }
             .show()
     }
@@ -261,6 +283,7 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 }
+
 
 
 

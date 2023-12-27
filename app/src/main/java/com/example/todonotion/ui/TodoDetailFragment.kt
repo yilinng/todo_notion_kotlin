@@ -12,6 +12,7 @@ import com.example.todonotion.databinding.FragmentTodoDetailBinding
 import com.example.todonotion.network.Todo
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.example.todonotion.MainActivity
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentTodoListBinding
 import com.example.todonotion.overview.OverViewModel
@@ -22,6 +23,7 @@ class TodoDetailFragment : Fragment() {
     private val viewModel: OverViewModel by activityViewModels()
     private var _binding: FragmentTodoDetailBinding? = null
     private val binding get() = _binding!!
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +40,12 @@ class TodoDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+    }
+
+    //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as MainActivity).supportActionBar?.title = viewModel.todo.value?.tags
     }
 
 }

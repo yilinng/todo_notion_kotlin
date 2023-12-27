@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todonotion.R
 import com.example.todonotion.data.Token.Token
 import com.example.todonotion.network.Login
 import com.example.todonotion.network.Post
@@ -29,14 +30,14 @@ class AuthNetworkViewModel: ViewModel() {
     private val _token = MutableLiveData<Token>()
     val token: LiveData<Token> = _token
 
-    private val _user = MutableLiveData<User>()
-    val user: LiveData<User> = _user
+    private val _user = MutableLiveData<User?>()
+    val user: LiveData<User?> = _user
 
     private val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> = _posts
 
     private val _filteredPosts = MutableLiveData<List<Post>>()
-    val filteredPosts: LiveData<List<Post>> = _filteredPosts
+    private val filteredPosts: LiveData<List<Post>> = _filteredPosts
 
     private val _post = MutableLiveData<Post?>()
     val post: LiveData<Post?> = _post
@@ -78,9 +79,8 @@ class AuthNetworkViewModel: ViewModel() {
                 Log.i("signupUser200",  response.toString())
             }catch(e: HttpException) {
                 _status.value = UserApiStatus.ERROR
-                e.message?.let { Log.i("signupUser400", it) }
                 _error.value = e.response()?.errorBody()?.string()
-
+                Log.i("signupUser400",  error.value.toString())
 
             }
         }
@@ -216,15 +216,9 @@ class AuthNetworkViewModel: ViewModel() {
         }
     }
 
-    /*
-    fun errorResponse(e: HttpException):ErrorResponse {
-
-        Gson().fromJson(
-            e.response()?.errorBody()!!.charStream(),
-            object : TypeToken<ErrorResponse>() {}.type
-        )
+    fun initUser(){
+        _user.value = null
     }
-    */
 
     fun setToken(token: Token) {
         _token.value = token
@@ -267,7 +261,7 @@ class AuthNetworkViewModel: ViewModel() {
     fun selectedTab(tab: TabLayout.Tab?){
         if (tab != null) {
             Log.d("selectedTab", tab.text.toString())
-            if(tab.text == "All Post") {
+            if(tab.text == "All post") {
                 //use first get todos
                 getPostsAction()
             }else {

@@ -12,12 +12,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:theme="@style/Theme.MaterialComponents.Light">
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
-            style="@style/Widget.App.TabLayout"
+            android:theme="@style/Widget.App.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -26,11 +26,13 @@
             app:tabMode="fixed">
 
             <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_recent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_recent" />
 
             <com.google.android.material.tabs.TabItem
+                android:id="@+id/tab_favorites"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_favorites" />
@@ -47,7 +49,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0" />
+            app:layout_constraintVertical_bias="0"
+            app:indicatorColor="@color/green_500"
+            app:trackColor="@color/green_200"/>
 
 
         <!-- TODO: set the apiStatus binding to the status from the view model -->
@@ -78,7 +82,6 @@
                 android:contentDescription="@string/status"
                 app:apiStatus="@{viewModel.status}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tabLayout" />

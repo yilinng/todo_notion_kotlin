@@ -17,6 +17,9 @@
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/header_navigation_drawer"
         app:menu="@menu/navigation_drawer"
+        app:itemIconTint="@color/draw_nav_item_color"
+        app:itemTextColor="@color/draw_nav_item_color"
+        app:itemShapeFillColor="@color/draw_nav_item_background_color"
         />
 
 

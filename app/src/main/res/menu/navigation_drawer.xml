@@ -19,6 +19,9 @@
             android:id="@+id/loginFragment"
             android:icon="@drawable/ic_add_24"
             android:title="@string/login" />
+
+        <!-- auth invisible item -->
+
         <item
             android:id="@+id/logout"
             android:visible="false"

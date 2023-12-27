@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/todoListFragment"
         android:enabled="true"
         android:icon="@drawable/ic_home_24"
-        android:title="@string/home"/>
+        android:title="@string/home"
+        />
     <item
         android:id="@+id/todoSearchFragment"
         android:enabled="true"
         android:icon="@drawable/ic_search_24"
-        android:title="@string/search_btn"/>
+        android:title="@string/search_btn"
+        
+      />
 
     <item
         android:id="@+id/postListFragment"
         android:enabled="true"
-        android:visible="true"
         android:icon="@drawable/ic_notes_24"
         android:title="@string/posts"/>
 

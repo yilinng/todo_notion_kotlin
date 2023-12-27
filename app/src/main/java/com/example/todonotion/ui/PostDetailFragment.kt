@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.example.todonotion.MainActivity
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentPostDetailBinding
 
@@ -47,7 +48,16 @@ class PostDetailFragment : Fragment() {
                 //val action = PostDetailFragmentDirections.actionPostDetailFragmentToAddPostFragment()
                 findNavController().navigate(R.id.action_postDetailFragment_to_addPostFragment)
             }
+
+
         }
+    }
+
+    //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as MainActivity).supportActionBar?.title = viewModel.post.value?.title
+
     }
 
 

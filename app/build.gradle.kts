@@ -50,9 +50,17 @@ dependencies {
     implementation("com.google.android.material:material:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.test.espresso:espresso-contrib:3.4.0")
     testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
+    androidTestImplementation("androidx.navigation:navigation-testing:2.5.2")
+    androidTestImplementation("androidx.test:runner:1.4.0")
+    androidTestImplementation("androidx.test:rules:1.4.0")
+
+    debugImplementation("androidx.fragment:fragment-testing:1.5.3")
 
     // Moshi
     implementation("com.squareup.moshi:moshi-kotlin:1.9.3")
@@ -94,6 +102,5 @@ dependencies {
 
     //https://developer.android.com/develop/ui/views/touch-and-input/swipe/add-swipe-interface
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
-    //https://github.com/google/gson
-    implementation ("com.google.code.gson:gson:2.10.1")
+
 }

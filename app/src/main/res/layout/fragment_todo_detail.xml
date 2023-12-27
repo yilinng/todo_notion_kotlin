@@ -54,19 +54,6 @@
             app:text="@{viewModel.todo.pageURL}"
             tools:text="todo genres" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/edit_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/todo_margin"
-            android:contentDescription="@string/edit_btn"
-            android:src="@drawable/ic_edit_24"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-
-
+        
     </LinearLayout>
 </layout>
