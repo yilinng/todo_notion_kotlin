@@ -53,6 +53,10 @@ dependencies {
     implementation("androidx.test.espresso:espresso-contrib:3.4.0")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:3.12.4")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+
+    val coroutines_version = "1.8.0-RC2"
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
@@ -102,5 +106,8 @@ dependencies {
 
     //https://developer.android.com/develop/ui/views/touch-and-input/swipe/add-swipe-interface
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
+
+    //https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-training-adaptive-layouts#5
+    implementation("androidx.slidingpanelayout:slidingpanelayout:1.2.0-beta01")
 
 }

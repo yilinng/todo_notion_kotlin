@@ -56,6 +56,9 @@
     <string name="close">close</string>
     <string name="posts">posts</string>
 
+    <string name="home_label">Home page</string>
+
+
 
     <string name="nav_title">Todo notion</string>
     <string name="nav_title_default">Hello, <big><font color="#FF6200EE">guest</font></big>! Welcome to use.</string>

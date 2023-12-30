@@ -42,12 +42,13 @@ class TodoDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
+    /*
     //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     override fun onResume() {
         super.onResume()
         (requireActivity() as MainActivity).supportActionBar?.title = viewModel.todo.value?.tags
     }
-
+    */
 }
 
 

@@ -5,12 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentTodoListBinding
@@ -19,8 +21,10 @@ import com.example.todonotion.ui.adapter.TodoListAdapter
 
 import com.example.todonotion.ui.adapter.TodoListener
 import com.example.todonotion.BaseApplication
+import com.example.todonotion.MainActivity
 import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.overview.auth.TokenViewModelFactory
+import com.example.todonotion.ui.callback.ListOnBackPressedCallback
 
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.delay
@@ -44,6 +48,8 @@ class TodoListFragment : Fragment() {
 
     private var _binding: FragmentTodoListBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var callback: ListOnBackPressedCallback
 
 
     override fun onCreateView(
@@ -101,12 +107,25 @@ class TodoListFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        val slidingPaneLayout = binding.slidingPaneLayout
+        //https://medium.com/@Wingnut/tabbed-slidingpanelayout-primary-detail-using-the-navigation-component-library-%EF%B8%8F-6517a2c1e554
+        slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
+        callback = ListOnBackPressedCallback(binding.slidingPaneLayout)
+        // Connect the SlidingPaneLayout to the system back button.
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+
         observeToken()
 
         binding.recyclerView.adapter = TodoListAdapter(TodoListener { todo ->
             viewModel.onTodoClicked(todo)
+            // Slide the detail pane into view. If both panes are visible,
+            // this has no visible effect.
+            binding.slidingPaneLayout.openPane()
+            //https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5#8
+            /*
             findNavController()
                 .navigate(R.id.action_todoListFragment_to_todoDetailFragment)
+             */
         })
 
 
@@ -141,6 +160,27 @@ class TodoListFragment : Fragment() {
         }
 
     }
+    /*
+    //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as MainActivity).supportActionBar?.title = getString(R.string.home_label)
+    }
+    */
 
+    override fun onResume() {
+        super.onResume()
+        callback.onTabResumed()
+    }
 
+    override fun onPause() {
+        super.onPause()
+        callback.onTabPaused()
+    }
 }
+
+/**
+ * Callback providing custom back navigation.
+ * https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-training-adaptive-layouts#8
+ */
+

@@ -12,6 +12,7 @@ import org.mockito.Mockito.mock
 class TodoListAdapterTests {
 
     private val context = mock(Context::class.java)
+
     /*
       @Test
 
@@ -25,10 +26,10 @@ class TodoListAdapterTests {
                   ,user="ChiemSeherin", userImageURL="https://cdn.pixabay.com/user/2023/11/03/18-31-17-586_250x250.jpeg", imgSrcUrl="https://cdn.pixabay.com/user/2023/11/03/18-31-17-586_250x250.jpeg")
           )
 
-          //val adapter = TodoListAdapter(TodoListener{todo: Todo ->  } )
+          val adapter = TodoListAdapter(TodoListener{} )
 
           assertEquals("TodoListAdapter is not the correct size", todoList.size, adapter.itemCount)
       }
+        */
 
-       */
 }

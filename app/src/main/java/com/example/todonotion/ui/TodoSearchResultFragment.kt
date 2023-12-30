@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.todonotion.BaseApplication
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentSearchResultBinding
@@ -19,6 +20,7 @@ import com.example.todonotion.overview.KeyViewModelFactory
 import com.example.todonotion.overview.OverViewModel
 import com.example.todonotion.ui.adapter.TodoListAdapter
 import com.example.todonotion.ui.adapter.TodoListener
+import com.example.todonotion.ui.callback.ListOnBackPressedCallback
 
 
 //https://www.geeksforgeeks.org/searchview-in-android-with-recyclerview/
@@ -39,6 +41,9 @@ class TodoSearchResultFragment : Fragment() {
     private var _binding: FragmentSearchResultBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var callback: ListOnBackPressedCallback
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,27 +51,42 @@ class TodoSearchResultFragment : Fragment() {
     ): View? {
         _binding = FragmentSearchResultBinding.inflate(inflater)
         // TODO: call the view model method that calls the todo api
+        // Inflate the layout for this fragment
+        return binding.root
+    }
+
+
+    private fun redirectPage(){
+        val navController = findNavController()
+        navController.run {
+            popBackStack()
+            navigate(R.id.todoSearchFragment)
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
         binding.viewModel = overViewModel
 
-        // Inflate the layout for this fragment
-        return binding.root
+        val slidingPaneLayout = binding.slidingPaneLayout
+        //https://medium.com/@Wingnut/tabbed-slidingpanelayout-primary-detail-using-the-navigation-component-library-%EF%B8%8F-6517a2c1e554
+        slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
+        callback = ListOnBackPressedCallback(binding.slidingPaneLayout)
+        // Connect the SlidingPaneLayout to the system back button.
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-    }
-
-    /*
-    private fun redirectPage(){
-        this.findNavController()
-            .navigate(R.id.action_todoSearchResultFragment_to_todoSearchFragment)
-    }
-    */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         val todoAdapter = TodoListAdapter(TodoListener { todo ->
             overViewModel.onTodoClicked(todo)
+            // Slide the detail pane into view. If both panes are visible,
+            // this has no visible effect.
+            binding.slidingPaneLayout.openPane()
+            //https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5#8
+            /*
             findNavController()
                 .navigate(R.id.action_todoSearchResultFragment_to_todoDetailFragment)
+             */
         })
 
         //relate todolist
@@ -103,11 +123,35 @@ class TodoSearchResultFragment : Fragment() {
             override fun onQueryTextChange(newText: String): Boolean {
                 //Log.d("searchKey1", binding.actionSearch.query.toString())
                 //redirect to last page
-             //   redirectPage()
+                redirectPage()
                 return false
             }
         })
 
+        //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
+        //refresh page
+        binding.refreshLayout.setOnRefreshListener{
+            Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
+
+            //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
+            val navController = findNavController()
+            navController.run {
+                popBackStack()
+                navigate(R.id.todoSearchResultFragment)
+            }
+            binding.refreshLayout.isRefreshing = false
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        callback.onTabResumed()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        callback.onTabPaused()
     }
 
 

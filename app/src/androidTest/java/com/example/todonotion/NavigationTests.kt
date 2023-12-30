@@ -52,6 +52,11 @@ class NavigationTests {
             Navigation.setViewNavController(fragment.requireView(), navController)
         }
 
+        onView(withId(R.id.tabLayout)).check(matches(isDisplayed()))
+
+        //onView(withId(R.id.bottom_navigation)).check(matches(isDisplayed()))
+
+
         //https://github.com/android/testing-samples/blob/main/ui/espresso/RecyclerViewSample/app/src/androidTest/java/com/example/android/testing/espresso/RecyclerViewSample/RecyclerViewSampleTest.java
 
         //onView(withId(R.id.bottom_navigation)).perform(click())

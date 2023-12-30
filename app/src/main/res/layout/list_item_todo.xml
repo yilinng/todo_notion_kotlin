@@ -18,12 +18,15 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="1dp"
+        app:cardCornerRadius="10dp"
         android:onClick="@{() -> clickListener.onClick(todo)}">
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -32,34 +35,61 @@
                 android:id="@+id/todo_image"
                 android:layout_width="190dp"
                 android:layout_height="190dp"
-                android:layout_marginTop="4dp"
                 android:adjustViewBounds="true"
-                android:padding="2dp"
                 android:scaleType="fitXY"
                 app:imageUrl="@{todo.imgSrcUrl}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/todo_name"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/todo_tags"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:autoLink="all"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp"
                     android:textAppearance="?attr/textAppearanceHeadline6"
                     app:text="@{todo.tags.replace(',', ' ')}"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/todo_image"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="todo.tags" />
 
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/todo_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp"
+                    android:text="@{todo.user}"
+                    android:textColor="?android:textColorSecondary"
+                    app:layout_constraintStart_toEndOf="@+id/todo_image"
+                    app:layout_constraintTop_toBottomOf="@+id/todo_tags"
+                    tools:text="todo.user"/>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/todo_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:padding="8dp"
+                android:text="@{todo.type}"
+                android:textColor="?android:textColorSecondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/todo_image"
+                app:layout_constraintTop_toBottomOf="@+id/todo_user"
+                tools:text="todo.type" />
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
 </layout>

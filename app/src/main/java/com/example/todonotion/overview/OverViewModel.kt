@@ -103,7 +103,7 @@ class OverViewModel : ViewModel() {
     //when tab selected
     fun selectedTab(tab: TabLayout.Tab?){
         if (tab != null) {
-            Log.d("selectedTab", tab.text.toString())
+            //Log.d("selectedTab", tab.text.toString())
             if(tab.text == "Recent") {
                 //use first get todos
                 getTodoPhotos()
@@ -148,7 +148,7 @@ class OverViewModel : ViewModel() {
     */
 
     fun dataNotFound(): String {
-        return if (foundData.value == false|| todos.value?.isEmpty() == true) {
+        return if (foundData.value == false || todos.value?.isEmpty() == true) {
             "data not found."
         } else {
             ""

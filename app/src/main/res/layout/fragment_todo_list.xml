@@ -10,95 +10,108 @@
             type="com.example.todonotion.overview.OverViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.slidingpanelayout.widget.SlidingPaneLayout
+        android:id="@+id/sliding_pane_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:theme="@style/Theme.MaterialComponents.Light">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
-            android:theme="@style/Widget.App.TabLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:tabMode="fixed">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="550dp"
+            android:layout_height="match_parent"
+            android:theme="@style/Theme.MaterialComponents.Light">
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_recent"
-                android:layout_width="wrap_content"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/tab_recent" />
+                android:theme="@style/Widget.App.TabLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabMode="fixed">
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_favorites"
-                android:layout_width="wrap_content"
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/tab_recent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_recent" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/tab_favorites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_favorites" />
+
+
+            </com.google.android.material.tabs.TabLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/linear_progress_indicator"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/tab_favorites" />
-
-
-        </com.google.android.material.tabs.TabLayout>
-
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/linear_progress_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0"
-            app:indicatorColor="@color/green_500"
-            app:trackColor="@color/green_200"/>
-
-
-        <!-- TODO: set the apiStatus binding to the status from the view model -->
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/refreshLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/tabLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:padding="8dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:indeterminate="true"
+                app:indicatorColor="@color/green_500"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:listData="@{viewModel.todos}"
-                tools:listitem="@layout/list_item_todo" />
-
-            <ImageView
-                android:id="@+id/status_image"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:contentDescription="@string/status"
-                app:apiStatus="@{viewModel.status}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0"
+                app:trackColor="@color/green_200" />
 
 
-            <TextView
-                android:id="@+id/todos_error_text"
+            <!-- TODO: set the apiStatus binding to the status from the view model -->
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/refreshLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{viewModel.dataNotFound()}"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/tabLayout">
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:padding="8dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:listData="@{viewModel.todos}"
+                    tools:listitem="@layout/list_item_todo" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageView
+                    android:id="@+id/status_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:contentDescription="@string/status"
+                    app:apiStatus="@{viewModel.status}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+
+
+                <TextView
+                    android:id="@+id/todos_error_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.dataNotFound()}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="parent" />
+
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/detail_container"
+            android:layout_height="match_parent"
+            android:layout_width="300dp"
+            android:layout_weight="1"
+            android:name="com.example.todonotion.ui.TodoDetailFragment"/>
+    </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 </layout>
