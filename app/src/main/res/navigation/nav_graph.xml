@@ -18,13 +18,6 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
         <action
-            android:id="@+id/action_todoListFragment_to_addTodoFragment"
-            app:destination="@id/addTodoFragment"
-            app:enterAnim="@anim/slide_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
-        <action
             android:id="@+id/action_todoListFragment_to_postListFragment"
             app:destination="@id/postListFragment" />
 
@@ -35,20 +28,8 @@
         android:label=""
         tools:layout="@layout/fragment_todo_detail">
 
-        <action
-            android:id="@+id/action_todoDetailFragment_to_addTodoFragment"
-            app:destination="@id/addTodoFragment" />
+    </fragment>
 
-    </fragment>
-    <fragment
-        android:id="@+id/addTodoFragment"
-        android:name="com.example.todonotion.ui.AddTodoFragment"
-        android:label="{tags}"
-        tools:layout="@layout/fragment_add_todo">
-        <action
-            android:id="@+id/action_addTodoFragment_to_todoListFragment"
-            app:destination="@id/todoListFragment" />
-    </fragment>
     <fragment
         android:id="@+id/todoSearchFragment"
         android:name="com.example.todonotion.ui.TodoSearchFragment"
@@ -61,7 +42,10 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
-
+        <argument
+            android:name="userMessage"
+            app:argType="integer"
+            android:defaultValue="0" />
     </fragment>
     <fragment
         android:id="@+id/todoSearchResultFragment"
@@ -130,6 +114,7 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
+
     </fragment>
     <fragment
         android:id="@+id/postDetailFragment"
@@ -157,5 +142,8 @@
             app:popUpToInclusive="true" />
 
     </fragment>
+    <argument
+        android:name="userMessage"
+        android:defaultValue="0" />
 
 </navigation>

@@ -1,79 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="com.example.todonotion.overview.KeyViewModel" />
+
+    </data>
 
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/actionSearch"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@android:drawable/editbox_background"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/recent_list"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:alignContent="center"
-        app:alignItems="center"
-        app:justifyContent="space_between"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/actionSearch"
-        app:layout_constraintVertical_bias="0.0">
-
-        <TextView
-            android:id="@+id/recent_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/recent"
-            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-        <ImageButton
-            android:id="@+id/close_btn"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:backgroundTint="@android:color/white"
-            android:contentDescription="@string/delete"
-            android:src="@drawable/ic_close_24" />
-
-    </com.google.android.flexbox.FlexboxLayout>
-
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        android:id="@+id/loading_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:layout_constraintBottom_toBottomOf="@+id/recycler_keyView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:indicatorSize="60dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_keyView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recent_list"
-        app:layout_constraintVertical_bias="0.0"
-        tools:listitem="@layout/list_key_item" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/coordinator_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
 
+            <RelativeLayout
+                android:id="@+id/keywords_container_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <LinearLayout
+                    android:id="@+id/tasks_linear_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/actionSearch"
+                        android:layout_width="399dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:background="@android:drawable/editbox_background" />
+
+                    <com.google.android.flexbox.FlexboxLayout
+                        android:id="@+id/recent_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        app:alignContent="center"
+                        app:alignItems="center"
+                        app:justifyContent="space_between"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/actionSearch"
+                        app:layout_constraintVertical_bias="0.0">
+
+                        <TextView
+                            android:id="@+id/recent_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/recent"
+                            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+                        <ImageButton
+                            android:id="@+id/close_btn"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="center"
+                            android:backgroundTint="@android:color/white"
+                            android:contentDescription="@string/delete"
+                            android:src="@drawable/ic_close_24" />
+
+                    </com.google.android.flexbox.FlexboxLayout>
+
+                    <TextView
+                        android:id="@+id/filtering_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/todo_item_padding"
+                        android:layout_marginTop="@dimen/todo_item_padding"
+                        android:layout_marginRight="@dimen/todo_item_padding"
+                        android:layout_marginBottom="@dimen/todo_item_padding"
+                        android:gravity="center_vertical"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_keyView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="@dimen/todo_item_padding"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/list_key_item" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/no_keywords_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/no_keywords_icon"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/no_keywords_image_content_description"
+                        android:src="@drawable/ic_cruelty_free_24" />
+
+                    <TextView
+                        android:id="@+id/no__keywords_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginBottom="@dimen/todo_item_padding" />
+                </LinearLayout>
+            </RelativeLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</layout>

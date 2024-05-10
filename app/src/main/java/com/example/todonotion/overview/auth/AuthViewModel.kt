@@ -25,8 +25,8 @@ class AuthViewModel(private val userDao: UserDao): ViewModel() {
     /**
      * Inserts the new User into database.
      */
-    fun addNewUser(name: String, userName: String, email:String) {
-        val newUser = getNewUserEntry(name,userName, email)
+    fun addNewUser(name: String, email:String) {
+        val newUser = getNewUserEntry(name, email)
         insertUser(newUser)
     }
 
@@ -55,10 +55,9 @@ class AuthViewModel(private val userDao: UserDao): ViewModel() {
      * Returns an instance of the [User] entity class with the item info entered by the user.
      * This will be used to add a new entry to the Inventory database.
      */
-    private fun getNewUserEntry(name: String, userName: String, email:String): User {
+    private fun getNewUserEntry(name: String, email:String): User {
         return User(
             name = name,
-            userName = userName,
             email = email,
         )
     }

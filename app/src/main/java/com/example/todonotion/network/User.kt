@@ -1,13 +1,10 @@
 package com.example.todonotion.network
 
-//import android.provider.ContactsContract.CommonDataKinds.Email
+import com.squareup.moshi.Json
 
 data class User (
-    val id: String,
+    val todos: List<String>? = null,
     val name: String,
-    val username: String,
     val email: String,
-    val password: String,
-    val todos: List<Post>,
-
+    val id: String,
 )

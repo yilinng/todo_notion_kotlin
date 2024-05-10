@@ -3,14 +3,22 @@ package com.example.todonotion.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+
+import android.widget.Toast
+
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.lifecycle.Lifecycle
+
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todonotion.BaseApplication
@@ -24,7 +32,11 @@ import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.overview.auth.TokenViewModelFactory
 import com.example.todonotion.ui.adapter.KeyTodoAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
+import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.coroutineScope
+import androidx.navigation.fragment.navArgs
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 //https://www.geeksforgeeks.org/searchview-in-android-with-recyclerview/
 //https://www.reddit.com/r/androiddev/comments/rrspel/rule_of_thumb_for_when_to_use_oncreateview/?rdt=39101
@@ -50,6 +62,8 @@ class TodoSearchFragment : Fragment() {
     private var _binding: FragmentSearchTodoBinding? = null
     private val binding get() = _binding!!
 
+    private val args: TodoSearchFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,20 +71,18 @@ class TodoSearchFragment : Fragment() {
     ): View? {
         _binding = FragmentSearchTodoBinding.inflate(inflater, container, false)
         // TODO: call the view model method that calls the todo api
-
         // Inflate the layout for this fragment
         return binding.root
     }
 
 
+
+
     private fun filteredList(text: String) {
-         var textUpdate = text.replace(" ", "+")
+         val textUpdate = text.replace(" ", "+")
         Log.i("filteredList", textUpdate)
         //  val text = keyViewModel.word.value
-        if (text != null) {
-           // overViewModel.filterByTags
-            overViewModel.getTodoPhotosByKeyWord(textUpdate)
-        }
+        overViewModel.getTodoPhotosByKeyWord(textUpdate)
     }
 
     /**
@@ -154,7 +166,7 @@ class TodoSearchFragment : Fragment() {
             //  binding.tokenText.visibility = VISIBLE
             //  binding.tokenText.text = it.toString()
             //observe token change
-            defaultLoadingProgress()
+        //    defaultLoadingProgress()
 
             /*
             if (it.isNotEmpty()) {
@@ -168,6 +180,7 @@ class TodoSearchFragment : Fragment() {
         }
     }
 
+    /*
     private fun setLoadingProgress(){
         binding.loadingImg.isIndeterminate = false
         binding.loadingImg.isVisible = true
@@ -177,20 +190,8 @@ class TodoSearchFragment : Fragment() {
         binding.loadingImg.isIndeterminate = true
         binding.loadingImg.isVisible = false
     }
+    */
 
-
-    //reload fragment
-    //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
-    /*
-    private fun reload() {
-        val navController = requireActivity().findNavController(R.id.nav_host_fragment)
-        navController.run {
-            popBackStack()
-            navigate(R.id.todoSearchFragment)
-        }
-    }
-
-     */
 
     /*
  * Creates and shows an AlertDialog with logout fun.
@@ -204,7 +205,7 @@ class TodoSearchFragment : Fragment() {
             }
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 //logout action, clear token
-                setLoadingProgress()
+              //  setLoadingProgress()
                 deleteToken()
             }
             .show()
@@ -225,24 +226,37 @@ class TodoSearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //when click on an item in keyword list, have to run filter function
-        val adapter = KeyTodoAdapter {
-            filteredList(it.keyName)
-           // keyViewModel.onKeyWordClicked(it)
-              keyViewModel.storeWordAction(it.keyName)
+        val adapter = KeyTodoAdapter{ keyword ->
+            filteredList(keyword.keyName)
+            keyViewModel.onKeyWordClicked(keyword)
+            keyViewModel.storeWordAction(keyword.keyName)
+
             val action =
                 TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment()
-            this.findNavController().navigate(action)
+           // this.findNavController().navigate(action)
         }
 
         binding.recyclerKeyView.layoutManager = LinearLayoutManager(this.context)
         binding.recyclerKeyView.adapter = adapter
 
-        // Attach an observer on the allKeys list to update the UI automatically when the data
-        // changes.
+        setupSnackbar()
+
+
+
+        // Attach an observer on the allKeys list to update the UI automatically when the data changes.
         keyViewModel.allKeys.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 adapter.submitList(it)
                 changeVisibility(it)
+            }
+        }
+
+        //Attach an observer on the allKeys list to update the UI automatically when the data change
+        //https://developer.android.com/codelabs/basic-android-kotlin-training-intro-room-flow?hl=zh-tw&continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-5-pathway-1%3Fhl%3Dzh-tw%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-training-intro-room-flow#8
+        lifecycle.coroutineScope.launch {
+            keyViewModel.fullKeyword().collect() {
+                adapter.submitList(it)
+                Log.d("keywordClick", it.toString())
             }
         }
 
@@ -258,6 +272,10 @@ class TodoSearchFragment : Fragment() {
                 adapter.submitList(it)
                 changeVisibility(it)
             }
+        }
+
+        keyViewModel.snackbarText.observe(this.viewLifecycleOwner) {
+            setupSnackbar()
         }
 
         /*
@@ -307,9 +325,87 @@ class TodoSearchFragment : Fragment() {
         //click delete btn
         clickDeleteKeyWord()
 
+
+
+        //https://stackoverflow.com/questions/71917856/sethasoptionsmenuboolean-unit-is-deprecated-deprecated-in-java
+        // The usage of an interface lets you inject your own implementation
+        val menuHost: MenuHost = requireActivity()
+
+        // Add menu items without using the Fragment Menu APIs
+        // Note how we can tie the MenuProvider to the viewLifecycleOwner
+        // and an optional Lifecycle.State (here, RESUMED) to indicate when
+        // the menu should be visible
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                menuInflater.inflate(R.menu.actionbar_menu, menu)
+            }
+
+            //https://stackoverflow.com/questions/10770055/use-toast-inside-fragment
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return when (menuItem.itemId) {
+                    R.id.menu_filter -> {
+                        Toast.makeText(activity, "menu filter Clicked", Toast.LENGTH_SHORT).show()
+                        keyViewModel.noKeywordIconRes.value?.let {
+                            binding.noKeywordsIcon.setImageResource(
+                                it
+                            )
+                        }
+                        showFilteringPopUpMenu()
+                        true
+                    }
+                    R.id.refresh -> {
+                        Toast.makeText(activity, "menu refresh Clicked", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    R.id.menu_clear -> {
+                        Toast.makeText(activity, "menu clear Clicked", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+    }
+
+
+    private fun setupSnackbar() {
+        val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
+
+        val mySnackbar = Snackbar.make(view, keyViewModel.snackbarText.toString(), Snackbar.LENGTH_SHORT)
+
+        arguments.let {
+            keyViewModel.showEditResultMessage(args.userMessage)
+        }
+       // keyViewModel.showEditResultMessage(arguments.getInt())
+
+        mySnackbar.show()
+    }
+
+    private fun showFilteringPopUpMenu() {
+        val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
+        PopupMenu(requireContext(), view).run {
+            menuInflater.inflate(R.menu.filter_keywords, menu)
+
+            setOnMenuItemClickListener {
+                keyViewModel.setFiltering(
+                    when (it.itemId) {
+                        R.id.active -> KeywordsFilterType.ACTIVE_KEYWORDS
+                        R.id.completed -> KeywordsFilterType.COMPLETED_KEYWORDS
+                        else -> KeywordsFilterType.ALL_KEYWORDS
+                    }
+                )
+                true
+            }
+            show()
+        }
     }
 
 
 }
+
+
 
 

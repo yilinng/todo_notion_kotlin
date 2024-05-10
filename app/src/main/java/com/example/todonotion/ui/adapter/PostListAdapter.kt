@@ -49,9 +49,7 @@ class PostListAdapter(private val clickListener: PostListener) :
         }
 
         override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
-             return oldItem.title == newItem.title && oldItem.content == newItem.content //&& oldItem.userId == newItem.userId
-           // return oldItem.tags == newItem.tags && oldItem.imgSrcUrl == newItem.imgSrcUrl
-            //return oldItem.name == newItem.name// && oldItem.image.mediumUrl == newItem.image.mediumUrl && oldItem.genres == newItem.genres
+             return oldItem.title == newItem.title && oldItem.user == newItem.user
         }
 
     }

@@ -63,23 +63,29 @@ class PostListFragment : Fragment() {
 
     private fun observeToken() {
         tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
-            if(it.isEmpty()){
+            lifecycleScope.launch {
+                showLoadingProgress()
+                delay(3000)
+                hideLoadingProgress()
+            }
+
+            if (it.isEmpty()) {
                 binding.addFab.visibility = View.GONE
                 binding.tabLayout.visibility = View.GONE
-            }else {
+            } else {
                 binding.addFab.visibility = View.VISIBLE
                 binding.tabLayout.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun showLoadingProgress(){
+    private fun showLoadingProgress() {
         //binding.loadingImg.isIndeterminate = false
         binding.linearProgressIndicator.isVisible = true
         binding.recyclerView.isVisible = false
     }
 
-    private fun hideLoadingProgress(){
+    private fun hideLoadingProgress() {
         // binding.loadingImg.isIndeterminate = true
         binding.linearProgressIndicator.isVisible = false
         binding.recyclerView.isVisible = true
@@ -96,8 +102,17 @@ class PostListFragment : Fragment() {
             navigate(R.id.todoListFragment)
         }
     }
-
      */
+
+    private fun observePosts() {
+        networkViewModel.posts.observe(this.viewLifecycleOwner) {
+            //binding
+           if(it.isNotEmpty()) {
+               Log.d("getPosts", it.toString())
+               networkViewModel.filteredPost()
+           }
+        }
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,28 +122,21 @@ class PostListFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = networkViewModel
 
-        lifecycleScope.launch {
-            showLoadingProgress()
-            delay(3000)
-            hideLoadingProgress()
-        }
+        observeToken()
+        observePosts()
 
-
-
+        //binding
         binding.recyclerView.adapter = PostListAdapter(PostListener { post ->
             networkViewModel.onPostClicked(post)
             findNavController().navigate(R.id.action_postListFragment_to_postDetailFragment)
         })
 
-        observeToken()
-
         //click add btn
-
-        binding.addFab.setOnClickListener{
+        binding.addFab.setOnClickListener {
             //clean select post
             networkViewModel.cleanPost()
             //redirect to add post page
-           val action = PostListFragmentDirections.actionPostListFragmentToAddPostFragment()
+            val action = PostListFragmentDirections.actionPostListFragmentToAddPostFragment()
             findNavController()
                 .navigate(action)
 
@@ -153,7 +161,7 @@ class PostListFragment : Fragment() {
 
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
         //refresh page
-        binding.refreshLayout.setOnRefreshListener{
+        binding.refreshLayout.setOnRefreshListener {
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
 
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload

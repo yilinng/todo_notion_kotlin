@@ -19,7 +19,20 @@
         </State>
       </entry>
       <entry key="app">
-        <State />
+        <State>
+          <targetSelectedWithDropDown>
+            <Target>
+              <type value="QUICK_BOOT_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="D:\userPract\Android\avd\Pixel_2_API_28_1.avd" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </targetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-21T02:51:09.645620900Z" />
+        </State>
       </entry>
       <entry key="navigate_to_todoDetail_nav_component()">
         <State />

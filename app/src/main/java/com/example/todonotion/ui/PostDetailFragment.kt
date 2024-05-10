@@ -13,15 +13,15 @@ import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentPostDetailBinding
 
 import com.example.todonotion.overview.auth.AuthNetworkViewModel
+import com.example.todonotion.ui.adapter.ContextAdapter
 
 
 class PostDetailFragment : Fragment() {
 
-   // private val navigationArgs: PostDetailFragmentArgs by navArgs()
+    // private val navigationArgs: PostDetailFragmentArgs by navArgs()
     private val viewModel: AuthNetworkViewModel by activityViewModels()
     private var _binding: FragmentPostDetailBinding? = null
     private val binding get() = _binding!!
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,19 +38,30 @@ class PostDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       // val id = navigationArgs.postId
+        // val id = navigationArgs.postId
         // Retrieve the post details using the postId.
         // Attach an observer on the data (instead of polling for changes) and only update the
         // the UI when the data actually changes.
-        viewModel.post.observe(this.viewLifecycleOwner){
+        binding.recyclerView.adapter = ContextAdapter(viewModel.post.value?.context!!)
+        observeUser()
 
-            binding.editFab.setOnClickListener{
+        viewModel.post.observe(this.viewLifecycleOwner) {
+            binding.editFab.setOnClickListener {
                 //val action = PostDetailFragmentDirections.actionPostDetailFragmentToAddPostFragment()
                 findNavController().navigate(R.id.action_postDetailFragment_to_addPostFragment)
             }
-
-
         }
+    }
+
+    private fun observeUser() {
+        viewModel.user.observe(this.viewLifecycleOwner) {
+            if (it!!.todos!!.isNotEmpty() && it.todos!!.contains(viewModel.post.value!!.id)) {
+                binding.editFab.visibility = View.VISIBLE
+            } else {
+                binding.editFab.visibility = View.GONE
+            }
+        }
+
     }
 
     //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment

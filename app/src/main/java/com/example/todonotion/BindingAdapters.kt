@@ -6,10 +6,12 @@ import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.todonotion.data.Keyword.Keyword
 import com.example.todonotion.network.Post
 import com.example.todonotion.network.Todo
 import com.example.todonotion.overview.TodoApiStatus
 import com.example.todonotion.overview.auth.UserApiStatus
+import com.example.todonotion.ui.adapter.KeyTodoAdapter
 
 import com.example.todonotion.ui.adapter.PostListAdapter
 
@@ -29,6 +31,12 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<Todo>?) {
 fun bindRecyclerPostView(recyclerView: RecyclerView, data: List<Post>?) {
     val adapter = recyclerView.adapter as PostListAdapter
 
+    adapter.submitList(data)
+}
+
+@BindingAdapter("listKeyword")
+fun bindRecyclerKeywordView(recyclerView: RecyclerView, data: List<Keyword>?) {
+    val adapter = recyclerView.adapter as KeyTodoAdapter
     adapter.submitList(data)
 }
 

@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 
@@ -21,7 +20,6 @@ import com.example.todonotion.ui.adapter.TodoListAdapter
 
 import com.example.todonotion.ui.adapter.TodoListener
 import com.example.todonotion.BaseApplication
-import com.example.todonotion.MainActivity
 import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.overview.auth.TokenViewModelFactory
 import com.example.todonotion.ui.callback.ListOnBackPressedCallback

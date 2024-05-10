@@ -12,11 +12,8 @@ data class User (
     val id: Long = 0,
     @NonNull @ColumnInfo(name = "name")
     val name: String,
-    //search keyWord
-    @NonNull @ColumnInfo(name = "userName")
-    val userName: String,
     @NonNull @ColumnInfo(name = "email")
     val email: String,
-   // @NonNull @ColumnInfo(name = "todos")
-   // val todos: List<Post>,
+    //@ColumnInfo(name = "todos")
+    //val todos: List<String>? = null,
 )

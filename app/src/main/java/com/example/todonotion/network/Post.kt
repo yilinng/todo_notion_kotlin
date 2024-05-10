@@ -5,8 +5,8 @@ import java.time.LocalDateTime
 data class Post (
     val id: String,
     val title: String,
-    val content: String,
-    val createDate: String,
+    val context: List<String>? = null,
     val updateDate: String? = null,
-    val userId: String
+    val user: User,
+    val username: String
 )

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="todo"
             type="com.example.todonotion.network.Todo" />
@@ -51,7 +50,6 @@
                     android:layout_marginEnd="8dp"
                     android:padding="8dp"
                     android:textAppearance="?attr/textAppearanceHeadline6"
-                    app:text="@{todo.tags.replace(',', ' ')}"
                     android:ellipsize="end"
                     android:singleLine="true"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -67,11 +65,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:padding="8dp"
-                    android:text="@{todo.user}"
                     android:textColor="?android:textColorSecondary"
                     app:layout_constraintStart_toEndOf="@+id/todo_image"
                     app:layout_constraintTop_toBottomOf="@+id/todo_tags"
-                    tools:text="todo.user"/>
+                    tools:text="todo user"/>
 
             <TextView
                 android:id="@+id/todo_type"
@@ -79,13 +76,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:padding="8dp"
-                android:text="@{todo.type}"
                 android:textColor="?android:textColorSecondary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/todo_image"
                 app:layout_constraintTop_toBottomOf="@+id/todo_user"
-                tools:text="todo.type" />
+                tools:text="todo type" />
 
 
 

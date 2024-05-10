@@ -3,6 +3,7 @@ package com.example.todonotion.data.Keyword
 import androidx.annotation.NonNull
 import androidx.room.*
 
+//https://kotlinlang.org/docs/data-classes.html#properties-declared-in-the-class-body
 //Room queries are not case sensitive, you can omit explicitly defining a lowercase table name here.
 @Entity
 data class Keyword(
@@ -12,5 +13,12 @@ data class Keyword(
     //search keyWord
     @NonNull @ColumnInfo(name = "key_name")
     val keyName: String,
+    @NonNull @ColumnInfo(name = "completed")
+    val isCompleted: Boolean = false,
 
-)
+){
+    val isActive
+        get() = !isCompleted
+    val isEmpty
+        get() = keyName.isEmpty()
+}

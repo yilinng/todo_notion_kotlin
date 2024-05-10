@@ -61,6 +61,7 @@ class AddPostFragment : Fragment() {
         networkViewModel.post.observe(this.viewLifecycleOwner) {
             if (it != null) {
                 post = it
+                binding.addPostTitle.text = getString(R.string.update_post_title)
             }
         }
 
@@ -73,12 +74,13 @@ class AddPostFragment : Fragment() {
             it.let {
                 if (it.isNotEmpty()) {
 
-                    networkViewModel.setToken(it[0])
+                    // networkViewModel.setToken(it[0])
 
                     if (networkViewModel.post.value != null && networkViewModel.checkUserHavePost(
                             post
                         )
                     ) {
+
                         binding.deleteBtn.visibility = View.VISIBLE
 
                         binding.deleteBtn.setOnClickListener {
@@ -111,9 +113,9 @@ class AddPostFragment : Fragment() {
 
 
 
-                    binding.contentInput.addTextChangedListener {
+                    binding.contextInput.addTextChangedListener {
                         Toast.makeText(
-                            this.context, "content input change", Toast.LENGTH_SHORT
+                            this.context, "context input change", Toast.LENGTH_SHORT
                         ).show()
                         cleanIsEmpty()
                         actionIsEmpty()
@@ -155,14 +157,14 @@ class AddPostFragment : Fragment() {
 
     //https://stackoverflow.com/questions/2986387/multi-line-edittext-with-done-action-button
     private fun editWithDoneBtn() {
-        binding.contentInput.setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or InputType.TYPE_TEXT_FLAG_MULTI_LINE)
+        binding.contextInput.setRawInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or InputType.TYPE_TEXT_FLAG_MULTI_LINE)
     }
 
     private fun addNewPost() {
         if (isEntryValid()) {
             networkViewModel.addPostAction(convertToDataClass())
             //add post
-            observePost()
+            observeError()
         } else {
             actionIsEmpty()
         }
@@ -172,7 +174,7 @@ class AddPostFragment : Fragment() {
         if (isEntryValid()) {
             networkViewModel.editPostAction(post.id, convertToDataClass())
             //add post
-            observePost()
+            observeError()
         } else {
             actionIsEmpty()
         }
@@ -182,8 +184,8 @@ class AddPostFragment : Fragment() {
         if (binding.titleInput.text.toString().isEmpty()) {
             binding.titleLabel.error = getString(R.string.edit_title_error)
         }
-        if (binding.contentInput.text.toString().isEmpty()) {
-            binding.contentLabel.error = getString(R.string.edit_content_error)
+        if (binding.contextInput.text.toString().isEmpty()) {
+            binding.contextLabel.error = getString(R.string.edit_content_error)
         }
     }
 
@@ -191,18 +193,23 @@ class AddPostFragment : Fragment() {
         if (binding.titleInput.text.toString().isNotEmpty()) {
             binding.titleLabel.error = null
         }
-        if (binding.contentInput.text.toString().isNotEmpty()) {
-            binding.contentLabel.error = null
+        if (binding.contextInput.text.toString().isNotEmpty()) {
+            binding.contextLabel.error = null
         }
     }
 
-    private fun observePost() {
-        networkViewModel.post.observe(this.viewLifecycleOwner) {
-            it.let {
-                val action = AddPostFragmentDirections.actionAddPostFragmentToPostListFragment()
-                findNavController().navigate(action)
+
+    private fun observeError() {
+        networkViewModel.error.observe(this.viewLifecycleOwner) {
+            if (it == null) {
+                navToLastPage()
             }
         }
+    }
+
+    private fun navToLastPage() {
+        val action = AddPostFragmentDirections.actionAddPostFragmentToPostListFragment()
+        findNavController().navigate(action)
     }
 
     /**
@@ -211,37 +218,57 @@ class AddPostFragment : Fragment() {
     private fun isEntryValid(): Boolean {
         return networkViewModel.isPostEntryValid(
             binding.titleInput.text.toString(),
-            binding.contentInput.text.toString(),
+            binding.contextInput.text.toString(),
+            binding.usernameInput.text.toString()
         )
+    }
+
+    private fun convertStringToList(context: String): List<String> {
+        val mutableList: MutableList<String> = ArrayList()
+        var last = 0
+        var index = 0
+        for (letter in context) {
+            if (letter == '\n') {
+                mutableList.add(context.substring(last, index))
+                last = index
+            }
+            index++
+        }
+        // last text before newline
+        mutableList.add(context.substring(last))
+        Log.d("convertStringToList last text...", context.substring(last))
+        Log.d("convertStringToList", mutableList.toString())
+        return mutableList
+    }
+
+    private fun convertListToString(list: List<String>): String {
+       var str = ""
+        for (letter in list) {
+          str = str + letter + '\n'
+        }
+        return  str
     }
 
     private fun convertToDataClass(): PostDto {
         return PostDto(
             binding.titleInput.text.toString(),
-            binding.contentInput.text.toString()
+            convertStringToList(binding.contextInput.text.toString()),
+            binding.usernameInput.text.toString()
         )
     }
 
 
     private fun deletePost(post: Post) {
         networkViewModel.deletePostAction(post.id)
-
-        networkViewModel.response.observe(this.viewLifecycleOwner) {
-
-            findNavController().navigate(
-                R.id.action_addPostFragment_to_postListFragment
-            )
-
-        }
-
+        observeError()
     }
 
 
     private fun bindPost(post: Post) {
         binding.apply {
-
+            usernameInput.setText(post.username, TextView.BufferType.SPANNABLE)
             titleInput.setText(post.title, TextView.BufferType.SPANNABLE)
-            contentInput.setText(post.content, TextView.BufferType.SPANNABLE)
+            contextInput.setText(post.context?.let { convertListToString(it) }, TextView.BufferType.SPANNABLE)
 
             saveBtn.setOnClickListener {
                 updatePost(post)

@@ -58,7 +58,6 @@ class SignupFragment : Fragment() {
     private fun isEntryValid(): Boolean {
         return networkViewModel.isSignupEntryValid(
             binding.nameInput.text.toString(),
-            binding.usernameInput.text.toString(),
             binding.emailInput.text.toString(),
             binding.passwordInput.text.toString(),
         )
@@ -80,9 +79,6 @@ class SignupFragment : Fragment() {
         if (binding.nameInput.text.toString().isEmpty()) {
             binding.nameLabel.error = getString(R.string.signup_name)
         }
-        if (binding.usernameInput.text.toString().isEmpty()) {
-            binding.usernameLabel.error = getString(R.string.signup_username)
-        }
         if (binding.emailInput.text.toString().isEmpty()) {
             binding.emailLabel.error = getString(R.string.signup_email)
         }
@@ -95,9 +91,6 @@ class SignupFragment : Fragment() {
         if (binding.nameInput.text.toString().isNotEmpty()) {
             binding.nameLabel.error = null
         }
-        if (binding.usernameInput.text.toString().isNotEmpty()) {
-            binding.usernameLabel.error = null
-        }
         if (binding.emailInput.text.toString().isNotEmpty()) {
             binding.emailLabel.error = null
         }
@@ -105,6 +98,7 @@ class SignupFragment : Fragment() {
             binding.passwordInput.error = null
         }
     }
+
 
 
     private fun observeResponse() {
@@ -128,13 +122,13 @@ class SignupFragment : Fragment() {
 
                     if (it.contains("Username")) {
                         Log.i("signupUser400", it)
-                        binding.errorText.text =  getString(R.string.signup_username_error)
+                        binding.errorText.text = getString(R.string.signup_username_error)
                     } else if (it.contains("Email")) {
                         Log.i("signupUser400", it)
-                        binding.errorText.text =  getString(R.string.signup_email_error)
+                        binding.errorText.text = getString(R.string.signup_email_error)
                     } else {
                         Log.i("signupUser400", it)
-                        binding.errorText.text =  getString(R.string.signup_server_error)
+                        binding.errorText.text = getString(R.string.signup_server_error)
                     }
 
                 }
@@ -146,7 +140,6 @@ class SignupFragment : Fragment() {
     private fun convertToDataClass(): Signup {
         return Signup(
             name = binding.nameInput.text.toString(),
-            username = binding.usernameInput.text.toString(),
             email = binding.emailInput.text.toString(),
             password = binding.passwordInput.text.toString()
         )
@@ -189,21 +182,12 @@ class SignupFragment : Fragment() {
             cleanIsEmpty()
         }
 
-        binding.usernameInput.addTextChangedListener {
-            Toast.makeText(
-                this.context, "username input change", Toast.LENGTH_SHORT
-            ).show()
-            cleanIsEmpty()
-        }
-
         binding.emailInput.addTextChangedListener {
             Toast.makeText(
                 this.context, "email input change", Toast.LENGTH_SHORT
             ).show()
             cleanIsEmpty()
         }
-
-
 
         binding.passwordInput.addTextChangedListener {
             Toast.makeText(

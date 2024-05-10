@@ -29,8 +29,12 @@ class TodoListAdapter(private val clickListener: TodoListener) :
     class TodoViewHolder(
         private var binding: ListItemTodoBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
         fun bind(clickListener: TodoListener,todo: Todo) {
             binding.todo = todo
+            binding.todoType.text = todo.type
+            binding.todoTags.text = todo.tags.replace(',', ' ')
+            binding.todoUser.text = todo.user
             binding.clickListener = clickListener
             // This is important, because it forces the data binding to execute immediately,
             // which allows the RecyclerView to make the correct view size measurements
@@ -49,9 +53,7 @@ class TodoListAdapter(private val clickListener: TodoListener) :
         }
 
         override fun areContentsTheSame(oldItem: Todo, newItem: Todo): Boolean {
-           // return oldItem.title == newItem.title && oldItem.content == newItem.content //&& oldItem.userId == newItem.userId
              return oldItem.tags == newItem.tags && oldItem.imgSrcUrl == newItem.imgSrcUrl
-            //return oldItem.name == newItem.name// && oldItem.image.mediumUrl == newItem.image.mediumUrl && oldItem.genres == newItem.genres
         }
 
     }

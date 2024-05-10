@@ -1,163 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/ScrollView"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:id="@+id/refreshLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+        android:id="@+id/ScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/login_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/usernameOrEmail_label"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/login_title"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+            <LinearLayout
+                android:id="@+id/login_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="@string/login"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
-                android:textColor="@color/black"
+                android:layout_margin="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toTopOf="@id/email_label"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.034" />
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/login_title1"
-                android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/login_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/login"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.034" />
+
+                <TextView
+                    android:id="@+id/login_title1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:text="@string/login_title"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textColor="@color/gray"
+                    app:layout_constraintBottom_toBottomOf="@id/login_title" />
+
+            </LinearLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/email_label"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:text="@string/login_title"
-                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                android:textColor="@color/gray"
-                app:layout_constraintBottom_toBottomOf="@id/login_title" />
+                android:hint="@string/email"
+                android:padding="8dp"
+                app:errorEnabled="true"
+                app:layout_constraintTop_toBottomOf="@id/login_label">
 
-        </LinearLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/email_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/usernameOrEmail_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:hint="@string/usernameOrEmail"
-            android:padding="8dp"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toBottomOf="@id/login_label">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/usernameOrEmail_input"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/password_label"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:singleLine="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/password_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:hint="@string/icon_password"
-            android:padding="8dp"
-            app:errorEnabled="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/usernameOrEmail_label">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/password_input"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:imeOptions="actionDone"
-                android:inputType="textPassword" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/flexbox_btn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:padding="8dp"
-            app:alignItems="center"
-            app:justifyContent="space_between"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/password_label">
-
-
-            <TextView
-                android:id="@+id/error_text"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="error text"
-                android:textColor="@color/red_700"
-                android:textFontWeight="900"
-                android:textSize="20sp"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toTopOf="@+id/flexbox_btn"
+                android:layout_margin="8dp"
+                android:hint="@string/icon_password"
+                android:padding="8dp"
+                app:errorEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/email_label">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/password_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/flexbox_btn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:padding="8dp"
+                app:alignItems="center"
+                app:justifyContent="space_between"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/login_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="@string/login"
-                app:backgroundTint="@color/green_500" />
-
-
-        </com.google.android.flexbox.FlexboxLayout>
-
-        <com.google.android.flexbox.FlexboxLayout
-            android:id="@+id/signup_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            app:alignContent="center"
-            app:alignItems="center"
-            app:justifyContent="center"
-            app:layout_constraintEnd_toEndOf="@+id/flexbox_btn"
-            app:layout_constraintHorizontal_bias="0.536"
-            app:layout_constraintStart_toStartOf="@+id/flexbox_btn"
-            app:layout_constraintTop_toBottomOf="@+id/flexbox_btn">
-
-            <TextView
-                android:id="@+id/signup_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/login_signup_text"
-                android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.034" />
+                app:layout_constraintTop_toBottomOf="@+id/password_label">
 
-            <Button
-                android:id="@+id/signup_btn"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
+
+                <TextView
+                    android:id="@+id/error_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="error text"
+                    android:textColor="@color/red_700"
+                    android:textFontWeight="900"
+                    android:textSize="20sp"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toTopOf="@+id/flexbox_btn"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/login_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/login"
+                    app:backgroundTint="@color/green_500" />
+
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/signup_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/signUp_text"
-                android:textColor="@color/purple_200" />
+                android:textAlignment="center"
+                app:alignContent="center"
+                app:alignItems="center"
+                app:justifyContent="center"
+                app:layout_constraintEnd_toEndOf="@+id/flexbox_btn"
+                app:layout_constraintHorizontal_bias="0.536"
+                app:layout_constraintStart_toStartOf="@+id/flexbox_btn"
+                app:layout_constraintTop_toBottomOf="@+id/flexbox_btn">
 
-        </com.google.android.flexbox.FlexboxLayout>
+                <TextView
+                    android:id="@+id/signup_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_signup_text"
+                    android:textColor="@color/black"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.034" />
 
+                <Button
+                    android:id="@+id/signup_btn"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/signUp_text"
+                    android:textColor="@color/purple_200" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

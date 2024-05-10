@@ -1,17 +1,23 @@
 package com.example.todonotion
 
+import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 
 import android.view.View.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
@@ -20,7 +26,11 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.todonotion.data.Token.Token
+import com.example.todonotion.data.User.User
 import com.example.todonotion.overview.auth.AuthNetworkViewModel
+import com.example.todonotion.overview.auth.AuthViewModel
+import com.example.todonotion.overview.auth.AuthViewModelFactory
 import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.overview.auth.TokenViewModelFactory
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
@@ -29,6 +39,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -49,9 +61,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navigationView: NavigationView
 
+    private lateinit var lastAccessToken: String
+
     private val tokenViewModel: TokenViewModel by viewModels {
         TokenViewModelFactory(
             (application as BaseApplication).database.tokenDao()
+        )
+    }
+
+    private val userViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory(
+            (application as BaseApplication).database.userDao()
         )
     }
 
@@ -61,13 +81,31 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //https://stackoverflow.com/questions/71917856/sethasoptionsmenuboolean-unit-is-deprecated-deprecated-in-java
+        // Add menu items without overriding methods in the Activity
+        /*
+        addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                // Add menu items here
+                //menuInflater.inflate(R.menu.actionbar_menu, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                // Handle the menu selection
+                return false
+            }
+        })
+
+
+        */
         //navigation drawer with navigation Component
         //https://stackoverflow.com/questions/43805524/how-to-properly-combine-navigationview-and-bottomnavigationview
         //BottomNavigationView with Navigation Component
         //https://www.youtube.com/watch?v=Chso6xrJ6aU&ab_channel=Stevdza-San
         bottomNavigationView = findViewById(R.id.bottom_navigation)
         navigationView = findViewById(R.id.nav_view)
-        //appBarConfiguration = AppBarConfiguration(setOf(R.id.todoListFragment, R.id.todoSearchFragment, R.id.loginFragment))
+
+        lastAccessToken = ""
         // Get the navigation host fragment from this Activity
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
@@ -81,9 +119,16 @@ class MainActivity : AppCompatActivity() {
         navigationView.setupWithNavController(navController)
 
         //https://developer.android.com/guide/navigation/integrations/ui
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.todoListFragment, R.id.todoSearchFragment, R.id.postListFragment, R.id.loginFragment), drawerLayout)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.todoListFragment,
+                R.id.todoSearchFragment,
+                R.id.postListFragment,
+                R.id.loginFragment
+            ), drawerLayout
+        )
 
-       // appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+        // appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         // Make sure actions in the ActionBar get propagated to the NavController
         setupActionBarWithNavController(navController, appBarConfiguration)
 
@@ -95,10 +140,8 @@ class MainActivity : AppCompatActivity() {
             if (targetId == R.id.todoListFragment) {
                 hideLoadingProgress()
             }
-            observeToken()
-            observeUser()
-
-
+            //  observeToken()
+            //  observeUser()
             /*
             Toast.makeText(
                 this,
@@ -115,6 +158,7 @@ class MainActivity : AppCompatActivity() {
         //https://stackoverflow.com/questions/49644542/how-to-remove-bottom-border-in-android-action-bar
         supportActionBar?.elevation = 0F
 
+        observeInvalidToken()
         observeToken()
         observeUser()
 
@@ -141,13 +185,6 @@ class MainActivity : AppCompatActivity() {
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
     private fun observeToken() {
         tokenViewModel.tokens.observe(this, Observer {
-
-            lifecycleScope.launch {
-                hideLoadingProgress()
-                delay(3000)
-                showLoadingProgress()
-            }
-
             if (it.isNotEmpty()) {
                 // Toast.makeText(this, "$it have token!!!", Toast.LENGTH_SHORT).show()
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout).isVisible =
@@ -159,13 +196,30 @@ class MainActivity : AppCompatActivity() {
                 navigationView.menu.findItem(R.id.loginFragment).isVisible = false
                 navigationView.menu.findItem(R.id.logout).isVisible = true
 
-                //getUser use token
-                authNetworkViewModel.getUserAction(it[0].accessToken)
+                //store token in authNetworkViewModel when valid token
+                if (authNetworkViewModel.user.value == null && authNetworkViewModel.token.value == null) {
+                    Log.d("authNetworkViewModel", "user and token is null")
+                    Log.d("authNetworkViewModel", it.toString())
 
+                    //getUser use token
+                    authNetworkViewModel.getUserAction(it[it.size -1].accessToken)
+
+                    lastAccessToken = it[it.size - 1].accessToken
+
+                    authNetworkViewModel.setToken(
+                        Token(
+                            id = it[it.size - 1].id,
+                            accessToken = it[it.size - 1].accessToken,
+                            refreshToken = it[it.size - 1].refreshToken,
+                            userId = it[it.size - 1].userId
+                        )
+                    )
+
+                }
 
             } else {
                 // Toast.makeText(this, "no exist token!!!", Toast.LENGTH_SHORT).show()
-
+                //when app is reset have to logout if user is login
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout).isVisible =
                     false
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.loginFragment).isVisible =
@@ -177,25 +231,51 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+
+    private fun observeInvalidToken() {
+        authNetworkViewModel.error.observe(this, Observer {
+            if ("Invalid Token" in it.toString()) {
+                authNetworkViewModel.updateToken()
+            }
+        })
+
+        authNetworkViewModel.token.observe(this, Observer {
+            Log.d("observeInvalidToken", "work $lastAccessToken")
+
+            if (lastAccessToken != "" && it != null && it!!.accessToken == lastAccessToken ) {
+                Log.d("observeInvalidToken", "lastAccessToken != \"\" && it!!.accessToken == lastAccessToken")
+            }
+
+            if (lastAccessToken != "" && it != null && it!!.accessToken != lastAccessToken ) {
+                Log.d("observeInvalidToken", "lastAccessToken != \"\" && it!!.accessToken != lastAccessToken")
+                authNetworkViewModel.getUserAction(it.accessToken)
+                tokenViewModel.updateToken(it)
+            }
+
+        })
+
+    }
+
+
     //https://developer.android.com/guide/topics/resources/string-resource
     private fun observeUser() {
 
-        val drawerTitle1 = navigationView.findViewById<TextView>(R.id.drawer_title1)
-        val drawerTitleDefault = navigationView.findViewById<TextView>(R.id.drawer_title_default)
-
         authNetworkViewModel.user.observe(this, Observer {
             if (it != null) {
-                //Toast.makeText(this, "$it have user!!!", Toast.LENGTH_SHORT).show()
-                val text = String.format(getString(R.string.nav_title1), it.username)
-                drawerTitle1.visibility = VISIBLE
-                drawerTitle1.text = text
+                //add new user to room
+                //userViewModel.addNewUser(email = it.email, name = it.name)
+                Toast.makeText(this, "$it have user!!!", Toast.LENGTH_SHORT).show()
+                val text = String.format(getString(R.string.nav_title1), it.name)
+                navigationView.findViewById<TextView>(R.id.drawer_title1).visibility = VISIBLE
+                navigationView.findViewById<TextView>(R.id.drawer_title1).text = text
                 //hide default title
-                drawerTitleDefault.visibility = GONE
-            }else{
+                navigationView.findViewById<TextView>(R.id.drawer_title_default).visibility = GONE
+            } else {
                 //show default title
-                drawerTitleDefault.visibility = VISIBLE
+                navigationView.findViewById<TextView>(R.id.drawer_title_default).visibility =
+                    VISIBLE
                 //hide title1
-                drawerTitle1.visibility = GONE
+                navigationView.findViewById<TextView>(R.id.drawer_title1).visibility = GONE
 
             }
         })
@@ -212,8 +292,9 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 //logout action, clear token
                 // setLoadingProgress()
+                authNetworkViewModel.logoutAction()
                 deleteToken()
-                authNetworkViewModel.initUser()
+                authNetworkViewModel.setToken(null)
             }
             .show()
     }
@@ -235,6 +316,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     override fun onResume() {
         super.onResume()
         navController.addOnDestinationChangedListener(listener)
@@ -246,45 +328,40 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    // method to inflate the options menu when
-    // the user opens the menu for the first time
-
-    /*
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.top_app_bar, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-    */
-    // methods to control the operations that will
-    // happen when user clicks on the action buttons
-    /*
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true
-        }
-        /*
-        when (item.itemId) {
-            R.id.search -> Toast.makeText(this, "Search Clicked", Toast.LENGTH_SHORT).show()
-            R.id.refresh -> Toast.makeText(this, "Refresh Clicked", Toast.LENGTH_SHORT).show()
-            R.id.more -> Toast.makeText(this, "More Clicked", Toast.LENGTH_SHORT).show()
-            R.id.home -> Toast.makeText(this, "home Clicked", Toast.LENGTH_SHORT).show()
-
-        }
-
-         */
-        return super.onOptionsItemSelected(item)
-    }
-    */
-
     /**
      * Enables back button support. Simply navigates one element up on the stack.
      */
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
+
+    /*
+    //https://www.geeksforgeeks.org/actionbar-in-android-with-example/
+    // method to inflate the options menu when
+    // the user opens the menu for the first time
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.actionbar_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    // methods to control the operations that will
+    // happen when user clicks on the action buttons
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.search -> Toast.makeText(this, "Search Clicked", Toast.LENGTH_SHORT).show()
+            R.id.refresh -> Toast.makeText(this, "Refresh Clicked", Toast.LENGTH_SHORT).show()
+            R.id.add -> Toast.makeText(this, "add Todo", Toast.LENGTH_SHORT).show()
+        }
+        return super.onOptionsItemSelected(item)
+    }
+     */
 }
 
-
+// Keys for navigation
+const val ADD_EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 1
+const val DELETE_RESULT_OK = Activity.RESULT_FIRST_USER + 2
+const val EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 3
 
 
 

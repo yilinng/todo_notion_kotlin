@@ -38,6 +38,7 @@
     <string name="signUp_text">Sign up</string>
     <string name="username">User name</string>
     <string name="usernameOrEmail">usernameOrEmail</string>
+    <string name="email">Email</string>
     <string name="logout_title">Logout</string>
     <string name="logout_cont">Are you sure you want to log out?</string>
     <string name="ok">OK</string>
@@ -48,7 +49,8 @@
 
     <string name="list_posts_title">title</string>
 
-    <string name="list_posts_content">content</string>
+    <string name="list_posts_context">context</string>
+    <string name="list_posts_username">username</string>
     <string name="list_posts_createDate">create date</string>
 
     <string name="refresh">refresh</string>
@@ -77,6 +79,7 @@
     <string name="signup_success_msg1">Congratulations, your account has been successfully created.</string>
     <string name="signup_success_msg2">Please login to continue.</string>
     <string name="add_post_title">Create new post</string>
+    <string name="update_post_title">Post Details</string>
     <string name="signup_success_dialogs_btn">Continue</string>
 
     <string name="login_usernameOrEmail">UserName or email cannot be empty</string>
@@ -96,5 +99,33 @@
 
     <string name="login_error">Incorrect username or email or password</string>
 
+    <string name="login_user_error">user is logged in</string>
+
+    <string name="menu_filter">menu filter</string>
+    <string name="menu_clear">menu clear</string>
+
+    <string name="nav_all">all</string>
+    <string name="nav_active">active</string>
+    <string name="nav_completed">completed</string>
+
+    <string name="label_all">label all</string>
+    <string name="label_active">label active</string>
+    <string name="label_completed">label completed</string>
+
+    <string name="no_keywords_all">You have no keywords!</string>
+    <string name="no_keywords_active">You have no active keywords!</string>
+    <string name="no_keywords_completed">You have no completed keyword!</string>
+
+    <string name="loading_keywords_error">Error while loading keywords</string>
+
+    <string name="successfully_deleted_keyword_message">Keyword was deleted</string>
+    <string name="successfully_added_keyword_message">Keyword added</string>
+
+    <string name="completed_keywords_cleared">Completed keywords cleared</string>
+
+    <string name="no_keywords_image_content_description">No keywords image</string>
+
+    <string name="keyword_marked_complete">Keyword marked complete</string>
+    <string name="keyword_marked_active">Keyword marked active</string>
 
 </resources>

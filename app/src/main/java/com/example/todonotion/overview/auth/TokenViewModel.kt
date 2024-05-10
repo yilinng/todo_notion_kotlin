@@ -1,5 +1,6 @@
 package com.example.todonotion.overview.auth
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -26,11 +27,21 @@ class TokenViewModel(private val tokenDao: TokenDao): ViewModel() {
     /**
      * Launching a new coroutine to insert a token in a non-blocking way
      */
+    fun updateToken(token: Token) {
+        viewModelScope.launch {
+            tokenDao.update(token)
+        }
+    }
+
+    /**
+     * Launching a new coroutine to insert a token in a non-blocking way
+     */
     private fun insertToken(token: Token) {
         viewModelScope.launch {
             tokenDao.insert(token)
         }
     }
+
 
     /**
      * Launching a new coroutine to delete an item in a non-blocking way

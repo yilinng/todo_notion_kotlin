@@ -69,7 +69,7 @@ class LoginFragment : Fragment() {
      */
     private fun isEntryValid(): Boolean {
         return networkViewModel.isLoginEntryValid(
-            binding.usernameOrEmailInput.text.toString(),
+            binding.emailInput.text.toString(),
             binding.passwordInput.text.toString(),
         )
     }
@@ -86,8 +86,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun actionIsEmpty() {
-        if (binding.usernameOrEmailInput.text.toString().isEmpty()) {
-            binding.usernameOrEmailLabel.error = getString(R.string.login_usernameOrEmail)
+        if (binding.emailInput.text.toString().isEmpty()) {
+            binding.emailLabel.error = getString(R.string.login_usernameOrEmail)
         }
         if (binding.passwordInput.text.toString().isEmpty()) {
             binding.passwordLabel.error = getString(R.string.login_password)
@@ -95,8 +95,8 @@ class LoginFragment : Fragment() {
     }
 
     private fun cleanIsEmpty() {
-        if (binding.usernameOrEmailInput.text.toString().isNotEmpty()) {
-            binding.usernameOrEmailInput.error = null
+        if (binding.emailInput.text.toString().isNotEmpty()) {
+            binding.emailInput.error = null
         }
         if (binding.passwordInput.text.toString().isNotEmpty()) {
             binding.passwordInput.error = null
@@ -107,7 +107,9 @@ class LoginFragment : Fragment() {
     private fun observeUserToken() {
         networkViewModel.token.observe(this.viewLifecycleOwner) { items ->
             items.let {
-                tokenViewModel.addNewToken(it)
+                if (it != null) {
+                    tokenViewModel.addNewToken(it)
+                }
                 binding.errorText.visibility = VISIBLE
                 binding.errorText.setTextColor(Color.GREEN)
                 binding.errorText.text = it.toString()
@@ -133,8 +135,11 @@ class LoginFragment : Fragment() {
                 if (it != null) {
                     binding.errorText.visibility = VISIBLE
                     binding.errorText.setTextColor(Color.RED)
-                    Log.i("loginUser400", it)
-                    binding.errorText.text =  getString(R.string.login_error)
+                    if ("user is login!" in it.toString()) {
+                        binding.errorText.text = getString(R.string.login_user_error)
+                    } else {
+                        binding.errorText.text = getString(R.string.login_error)
+                    }
                 }
             }
         }
@@ -143,7 +148,7 @@ class LoginFragment : Fragment() {
 
     private fun convertToDataClass(): Login {
         return Login(
-            binding.usernameOrEmailInput.text.toString(),
+            binding.emailInput.text.toString(),
             binding.passwordInput.text.toString()
         )
     }
@@ -165,7 +170,7 @@ class LoginFragment : Fragment() {
 
         observeToken()
 
-        binding.usernameOrEmailInput.addTextChangedListener {
+        binding.emailInput.addTextChangedListener {
             Toast.makeText(
                 this.context, "username or email input change", Toast.LENGTH_SHORT
             ).show()

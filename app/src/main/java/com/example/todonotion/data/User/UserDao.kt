@@ -12,7 +12,7 @@ interface UserDao {
     @Query("SELECT * from user WHERE id = :id")
     fun getUser(id: Int): Flow<User>
     //find value by name
-    @Query("SELECT * from user WHERE userName = :userName LIMIT 1")
+    @Query("SELECT * from user WHERE name = :userName LIMIT 1")
     fun getUserByUserName(userName: String): Flow<User>
     // TODO: implement a method to insert a User into the database
     //  (use OnConflictStrategy.REPLACE)

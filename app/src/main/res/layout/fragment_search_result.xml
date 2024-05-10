@@ -16,6 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+          >
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="550dp"
             android:layout_height="match_parent">
@@ -34,13 +40,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-                android:id="@+id/refreshLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/actionSearch">
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view"
@@ -55,11 +55,11 @@
                     tools:listitem="@layout/list_item_todo" />
 
 
-            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/detail_container"
@@ -67,5 +67,6 @@
             android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
+
     </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 </layout>

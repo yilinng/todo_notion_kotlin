@@ -11,74 +11,69 @@
             type="com.example.todonotion.overview.auth.AuthNetworkViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:theme="@style/Theme.MaterialComponents.Light">
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/refreshLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeCustom.TabLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tabMode="fixed"
-            >
+            android:layout_height="match_parent"
+            android:theme="@style/Theme.MaterialComponents.Light">
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_all_post"
-                android:layout_width="wrap_content"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/tab_posts" />
+                android:layout_marginTop="4dp"
+                android:theme="@style/ThemeCustom.TabLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabMode="fixed">
 
-            <com.google.android.material.tabs.TabItem
-                android:id="@+id/tab_your_post"
-                android:layout_width="wrap_content"
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/tab_all_post"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_posts" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:id="@+id/tab_your_post"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_user_posts" />
+
+
+            </com.google.android.material.tabs.TabLayout>
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/linear_progress_indicator"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/tab_user_posts" />
+                android:indeterminate="true"
+                app:indicatorColor="@color/green_500"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:trackColor="@color/green_200" />
 
 
-        </com.google.android.material.tabs.TabLayout>
+            <!-- TODO: set the apiStatus binding to the status from the view model -->
 
-        <com.google.android.material.progressindicator.LinearProgressIndicator
-            android:id="@+id/linear_progress_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:indeterminate="true"
-            app:indicatorColor="@color/green_500"
-            app:trackColor="@color/green_200"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-             />
-
-
-        <!-- TODO: set the apiStatus binding to the status from the view model -->
-
-
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/refreshLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tabLayout">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:padding="8dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tabLayout"
                 app:listPost="@{viewModel.posts}"
                 tools:listitem="@layout/list_item_post" />
-
 
             <TextView
                 android:id="@+id/todos_error_text"
@@ -92,32 +87,32 @@
                 app:layout_constraintTop_toBottomOf="parent" />
 
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            <ImageView
+                android:id="@+id/status_image"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:contentDescription="@string/status"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+                app:userApiStatus="@{viewModel.status}" />
 
-        <ImageView
-            android:id="@+id/status_image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:contentDescription="@string/status"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
-            app:userApiStatus="@{viewModel.status}" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/add_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="64dp"
-            android:contentDescription="@string/add_btn"
-            android:src="@drawable/ic_add_24"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/add_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="64dp"
+                android:contentDescription="@string/add_btn"
+                android:src="@drawable/ic_add_24"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </layout>

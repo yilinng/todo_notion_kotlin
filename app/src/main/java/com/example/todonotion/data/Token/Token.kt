@@ -10,7 +10,7 @@ data class Token (
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     @NonNull @ColumnInfo(name = "accessToken")
-    val accessToken: String,
+    var accessToken: String,
     @NonNull @ColumnInfo(name = "refreshToken")
     val refreshToken: String,
     @NonNull @ColumnInfo(name = "userId")
