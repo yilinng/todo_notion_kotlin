@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todonotion.databinding.ListItemTodoBinding
-import com.example.todonotion.network.Todo
+import com.example.todonotion.model.Todo
 
 /**
  * This class implements a [RecyclerView] [ListAdapter] which uses Data Binding to present [List]

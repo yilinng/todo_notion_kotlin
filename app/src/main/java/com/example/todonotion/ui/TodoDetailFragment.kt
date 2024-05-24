@@ -1,6 +1,7 @@
 package com.example.todonotion.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,18 +10,20 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.fragment.app.activityViewModels
 import com.example.todonotion.databinding.FragmentTodoDetailBinding
-import com.example.todonotion.network.Todo
+import com.example.todonotion.model.Todo
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.todonotion.MainActivity
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentTodoListBinding
-import com.example.todonotion.overview.OverViewModel
+import com.example.todonotion.overview.TodoViewModel
 
 //https://stackoverflow.com/questions/7220404/what-is-the-trick-with-0dip-layout-height-or-layouth-width
 class TodoDetailFragment : Fragment() {
 
-    private val viewModel: OverViewModel by activityViewModels()
+    private val viewModel: TodoViewModel by activityViewModels{
+        TodoViewModel.Factory
+    }
     private var _binding: FragmentTodoDetailBinding? = null
     private val binding get() = _binding!!
 
@@ -40,6 +43,20 @@ class TodoDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
+        //refresh page
+        binding.refreshLayout.setOnRefreshListener {
+            Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
+
+            //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
+            val navController = findNavController()
+            navController.run {
+                popBackStack()
+                navigate(R.id.todoDetailFragment)
+            }
+            binding.refreshLayout.isRefreshing = false
+        }
     }
 
     /*

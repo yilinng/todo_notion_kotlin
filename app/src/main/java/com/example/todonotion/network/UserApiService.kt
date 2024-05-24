@@ -1,36 +1,21 @@
 package com.example.todonotion.network
 
-import com.example.todonotion.network.dto.PostDto
+import com.example.todonotion.model.AccessToken
+import com.example.todonotion.model.AuthResponse
+import com.example.todonotion.model.Login
+import com.example.todonotion.model.NestedPost
+import com.example.todonotion.model.NestedUser
+import com.example.todonotion.model.Post
+import com.example.todonotion.model.Signup
+import com.example.todonotion.model.SignupResponse
+import com.example.todonotion.model.UpdatePost
+import com.example.todonotion.model.UpdateToken
+import com.example.todonotion.model.dto.PostDto
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
-
-
-//https://jeroenmols.com/blog/2023/01/25/development-server-emulator/
-//https://dev.to/tusharsadhwani/connecting-android-apps-to-localhost-simplified-57lm
-//https://stackoverflow.com/questions/35441481/connection-to-localhost-10-0-2-2-from-android-emulator-timed-out
-//https://api.tvmaze.com/
-private const val BASE_URL = "https://express-api-react-notion.vercel.app/api/"
-
-
-/**
- * Build the Moshi object with Kotlin adapter factory that Retrofit will be using.
- */
-private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-/**
- * The Retrofit object with the Moshi converter.
- */
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(BASE_URL)
-    .build()
 
 //https://stackoverflow.com/questions/14366001/dto-and-dao-concepts-and-mvc
 //https://stackoverflow.com/questions/41078866/retrofit2-authorization-global-interceptor-for-access-token
@@ -41,7 +26,7 @@ interface UserApiService {
     suspend fun loginUser(@Body login: Login): AuthResponse
 
     @POST("users/signup")
-    suspend fun signupUser(@Body signup: Signup): AuthResponse
+    suspend fun signupUser(@Body signup: Signup): SignupResponse
 
     @GET("users")
     suspend fun getUser(@Header("Authorization") authorization: String): NestedUser
@@ -92,6 +77,3 @@ interface UserApiService {
 /**
  * A public Api object that exposes the lazy-initialized Retrofit service
  */
-object UserApi {
-    val retrofitService: UserApiService by lazy { retrofit.create(UserApiService::class.java) }
-}

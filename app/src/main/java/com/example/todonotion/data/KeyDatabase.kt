@@ -23,6 +23,7 @@ abstract class KeyDatabase : RoomDatabase(){
     abstract fun userDao(): UserDao
     abstract fun tokenDao(): TokenDao
 
+
     companion object {
         @Volatile
         private var INSTANCE: KeyDatabase? = null
@@ -46,4 +47,5 @@ abstract class KeyDatabase : RoomDatabase(){
             }
         }
     }
+
 }

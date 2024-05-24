@@ -6,7 +6,7 @@
     <data>
         <variable
             name="todo"
-            type="com.example.todonotion.network.Todo" />
+            type="com.example.todonotion.model.Todo" />
 
         <variable
             name="clickListener"

@@ -68,6 +68,7 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:padding="8dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintStart_toStartOf="parent"
@@ -75,16 +76,29 @@
                 app:listPost="@{viewModel.posts}"
                 tools:listitem="@layout/list_item_post" />
 
-            <TextView
-                android:id="@+id/todos_error_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{viewModel.dataNotFound()}"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="parent"
+            <ImageView
+                android:id="@+id/post_empty_image"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:contentDescription="@string/posts_empty"
+                android:src="@drawable/ic_sentiment_very_dissatisfied_24"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+
+            <TextView
+                android:id="@+id/posts_error_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/posts_empty"
+                android:textSize="24sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toTopOf="@+id/status_image"
+                app:layout_constraintEnd_toEndOf="@+id/recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/post_empty_image"
+                tools:text="no posts yet" />
 
 
             <ImageView

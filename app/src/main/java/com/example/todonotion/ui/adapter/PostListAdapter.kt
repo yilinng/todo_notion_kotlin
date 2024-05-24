@@ -1,12 +1,22 @@
 package com.example.todonotion.ui.adapter
 
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todonotion.databinding.ListItemPostBinding
-import com.example.todonotion.network.Post
+import com.example.todonotion.model.Post
+
+import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+
 
 /**
  * This class implements a [RecyclerView] [ListAdapter] which uses Data Binding to present [List]
@@ -29,8 +39,11 @@ class PostListAdapter(private val clickListener: PostListener) :
     class PostViewHolder(
         private var binding: ListItemPostBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(clickListener: PostListener,post: Post) {
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun bind(clickListener: PostListener, post: Post) {
             binding.post = post
+            binding.title.text = stringSlice(post.title)
+            binding.time.text = post.updateDate?.let { datetimeConvert(it) }
             binding.clickListener = clickListener
             // This is important, because it forces the data binding to execute immediately,
             // which allows the RecyclerView to make the correct view size measurements
@@ -49,7 +62,7 @@ class PostListAdapter(private val clickListener: PostListener) :
         }
 
         override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
-             return oldItem.title == newItem.title && oldItem.user == newItem.user
+            return oldItem.title == newItem.title && oldItem.user == newItem.user
         }
 
     }
@@ -67,13 +80,52 @@ class PostListAdapter(private val clickListener: PostListener) :
     /**
      * Replaces the contents of a view (invoked by the layout manager)
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = getItem(position)
-        holder.bind(clickListener,post)
+        holder.bind(clickListener, post)
     }
 
 
+}
 
+fun stringSlice(str: String): String {
+    return if (str.length > 30) {
+        str.substring(0, 30) + "..."
+    } else {
+        str
+    }
+}
+
+//https://stackoverflow.com/questions/58285591/how-to-convert-hours-to-minutes-in-kotlin-and-pass-correctly-to-viewholder
+@RequiresApi(Build.VERSION_CODES.O)
+fun datetimeConvert(date: String): String {
+    val lastTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        LocalDateTime.parse(date.substring(0, 19))
+    } else {
+        TODO("VERSION.SDK_INT < O")
+    }
+
+    val nowTime = LocalDateTime.now()
+    val elapsedTime = Duration.between(lastTime, nowTime)
+
+    var dateStr = ""
+
+    if (elapsedTime.toDays() > 0) {
+        dateStr = dateStr + elapsedTime.toDays() + " days "
+    } else if (elapsedTime.toHours() > 0) {
+        dateStr = dateStr + elapsedTime.toHours() + " hours "
+    } else if (elapsedTime.toHours() < 1) {
+        dateStr = dateStr + elapsedTime.toMinutes() + " mins "
+    }
+
+    // var dateStr = elapsedTime.toString().split(".")
+
+    // var dateMStr = dateStr[0].substring(2).split("M")
+
+    Log.d("convertTime", elapsedTime.toString())
+
+    return dateStr + "ago"
 }
 
 

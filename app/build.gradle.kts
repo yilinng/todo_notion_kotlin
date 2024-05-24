@@ -41,30 +41,45 @@ android {
         dataBinding = true
         viewBinding = true
     }
+
 }
 
 dependencies {
+    // Define versions in a single place
+    val coroutines_version = "1.8.0-RC2"
+    val room_version = "2.5.0"
+    val archTestingVersion = "2.1.0"
+    val androidXTestExtKotlinRunnerVersion = "1.1.3"
+    val espressoVersion = "3.4.0"
+    val androidXTestCoreVersion = "1.4.0"
 
+    // App dependencies
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.0")
     implementation("com.google.android.material:material:1.5.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.test.espresso:espresso-contrib:3.4.0")
+    implementation("androidx.test.ext:junit-ktx:1.1.5")
+
+    // Dependencies for local unit tests
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.mockito:mockito-core:3.12.4")
     testImplementation("androidx.arch.core:core-testing:2.1.0")
-
-    val coroutines_version = "1.8.0-RC2"
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
+
+    // Dependencies for Android instrumented unit tests
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-contrib:3.4.0")
     androidTestImplementation("androidx.navigation:navigation-testing:2.5.2")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
 
+    // Testing code should not be included in the main code.
     debugImplementation("androidx.fragment:fragment-testing:1.5.3")
+    implementation ("androidx.test:core:$androidXTestCoreVersion")
 
     // Moshi
     implementation("com.squareup.moshi:moshi-kotlin:1.9.3")
@@ -83,8 +98,6 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.2")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.2")
 
-    // Room
-    val room_version = "2.5.0"
     // Room libraries
     implementation("androidx.room:room-runtime:$room_version")
    // annotationProcessor("androidx.room:room-compiler:$room_version")
@@ -109,5 +122,11 @@ dependencies {
 
     //https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-training-adaptive-layouts#5
     implementation("androidx.slidingpanelayout:slidingpanelayout:1.2.0-beta01")
+
+    // AndroidX Test - Instrumented testing
+    androidTestImplementation ("androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion")
+    androidTestImplementation ("androidx.test.espresso:espresso-core:$espressoVersion")
+    androidTestImplementation ("androidx.test.espresso:espresso-contrib:$espressoVersion")
+    androidTestImplementation ("androidx.arch.core:core-testing:$archTestingVersion")
 
 }

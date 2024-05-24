@@ -5,19 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
-import com.example.todonotion.BaseApplication
+import com.example.todonotion.AppViewModelProvider
+
 import com.example.todonotion.R
+
 import com.example.todonotion.databinding.FragmentSearchResultBinding
 import com.example.todonotion.overview.KeyViewModel
-import com.example.todonotion.overview.KeyViewModelFactory
-import com.example.todonotion.overview.OverViewModel
+
+import com.example.todonotion.overview.TodoViewModel
 import com.example.todonotion.ui.adapter.TodoListAdapter
 import com.example.todonotion.ui.adapter.TodoListener
 import com.example.todonotion.ui.callback.ListOnBackPressedCallback
@@ -30,13 +32,13 @@ class TodoSearchResultFragment : Fragment() {
     //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
     //  from BaseApplication
     private val keyViewModel: KeyViewModel by activityViewModels {
-        KeyViewModelFactory(
-            (activity?.application as BaseApplication).database.keyDao()
-        )
+        AppViewModelProvider.Factory
     }
 
     //data from network
-    private val overViewModel: OverViewModel by activityViewModels()
+    private val todoViewModel: TodoViewModel by activityViewModels{
+        TodoViewModel.Factory
+    }
 
     private var _binding: FragmentSearchResultBinding? = null
     private val binding get() = _binding!!
@@ -48,7 +50,7 @@ class TodoSearchResultFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSearchResultBinding.inflate(inflater)
         // TODO: call the view model method that calls the todo api
         // Inflate the layout for this fragment
@@ -67,7 +69,7 @@ class TodoSearchResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
-        binding.viewModel = overViewModel
+        binding.viewModel = todoViewModel
 
         val slidingPaneLayout = binding.slidingPaneLayout
         //https://medium.com/@Wingnut/tabbed-slidingpanelayout-primary-detail-using-the-navigation-component-library-%EF%B8%8F-6517a2c1e554
@@ -78,7 +80,7 @@ class TodoSearchResultFragment : Fragment() {
 
 
         val todoAdapter = TodoListAdapter(TodoListener { todo ->
-            overViewModel.onTodoClicked(todo)
+            todoViewModel.onTodoClicked(todo)
             // Slide the detail pane into view. If both panes are visible,
             // this has no visible effect.
             binding.slidingPaneLayout.openPane()
@@ -96,7 +98,7 @@ class TodoSearchResultFragment : Fragment() {
 
         // Attach an observer on the filteredTodos list to update the UI automatically when the data
         // changes.
-        overViewModel.filteredTodos.observe(this.viewLifecycleOwner) { items ->
+        todoViewModel.filteredTodos.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 todoAdapter.submitList(it)
                 //todoAdapter.filterList()

@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingLeft="@dimen/todo_item_vertical_padding"
     android:paddingTop="@dimen/todo_item_vertical_padding"
-    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/todo_item_vertical_padding"
     android:paddingBottom="@dimen/todo_item_vertical_padding">
 
 
@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:layout_marginStart="@dimen/todo_item_vertical_padding"
         android:fontFamily="sans-serif"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         tools:text="Cogs and Widgets" />

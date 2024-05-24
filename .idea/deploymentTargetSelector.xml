@@ -21,6 +21,17 @@
           </targets>
         </DialogSelection>
       </SelectionState>
+      <SelectionState runConfigName="TokensDaoTest">
+        <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2024-05-24T04:03:10.042012400Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=D:\userPract\Android\avd\Pixel_2_API_28_1.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

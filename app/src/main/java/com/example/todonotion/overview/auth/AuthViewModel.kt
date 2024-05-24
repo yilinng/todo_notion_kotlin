@@ -2,7 +2,6 @@ package com.example.todonotion.overview.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,10 +10,7 @@ import kotlinx.coroutines.launch
 
 import com.example.todonotion.data.User.User
 import com.example.todonotion.data.User.UserDao
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.Token.TokenDao
 
-import com.example.todonotion.network.Post
 import com.example.todonotion.overview.KeyViewModel
 
 //store user in database
@@ -65,8 +61,8 @@ class AuthViewModel(private val userDao: UserDao): ViewModel() {
 
 
 /**
- * Factory class to instantiate the [ViewModel] instance.
- */
+ * Factory class to instantiate the [AuthViewModel] instance.
+
 class AuthViewModelFactory(private val userDao: UserDao) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(KeyViewModel::class.java)) {
@@ -76,3 +72,4 @@ class AuthViewModelFactory(private val userDao: UserDao) : ViewModelProvider.Fac
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+ */

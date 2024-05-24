@@ -6,12 +6,8 @@
     <data>
 
         <variable
-            name="viewModel"
-            type="com.example.todonotion.overview.auth.AuthNetworkViewModel" />
-
-        <variable
             name="post"
-            type="com.example.todonotion.network.Post" />
+            type="com.example.todonotion.model.Post" />
 
         <variable
             name="clickListener"
@@ -28,17 +24,25 @@
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:alignItems="center"
             app:flexDirection="row"
-            app:justifyContent="space_between"
-            app:alignItems="center">
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@{post.title}"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            tools:text="post title" />
+            app:justifyContent="space_between">
 
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:text="post title" />
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                tools:text="post dateTime" />
 
 
         </com.google.android.flexbox.FlexboxLayout>
@@ -46,8 +50,8 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:dividerInsetStart="16dp"
-            app:dividerInsetEnd="16dp"/>
+            app:dividerInsetEnd="16dp"
+            app:dividerInsetStart="16dp" />
 
     </com.google.android.material.card.MaterialCardView>
 </layout>

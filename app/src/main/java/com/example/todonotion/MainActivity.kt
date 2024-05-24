@@ -5,21 +5,16 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
+
 
 import android.view.View.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
-import androidx.core.view.isVisible
+
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
+
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -27,55 +22,55 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.User.User
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
-import com.example.todonotion.overview.auth.AuthViewModel
-import com.example.todonotion.overview.auth.AuthViewModelFactory
-import com.example.todonotion.overview.auth.TokenViewModel
-import com.example.todonotion.overview.auth.TokenViewModelFactory
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.example.todonotion.overview.auth.AuthNetworkViewModel
+
+import com.example.todonotion.overview.auth.TokenViewModel
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+
+import kotlinx.coroutines.launch
 
 //ctrl + o -> override method
 //https://stackoverflow.com/questions/44777869/hide-show-bottomnavigationview-on-scroll
 class MainActivity : AppCompatActivity() {
 
     /*
-    * The lateinit keyword is something new.
+    * The keyword is something new.
     * It's a promise that your code will initialize the variable before using it. If you don't, your app will crash
     */
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var listener: NavController.OnDestinationChangedListener
-
-    private lateinit var bottomNavigationView: BottomNavigationView
+    //private lateinit var listener: NavController.OnDestinationChangedListener
+    // private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var navigationView: NavigationView
 
     private lateinit var lastAccessToken: String
 
+    //https://stackoverflow.com/questions/68058302/difference-between-activityviewmodels-and-lazy-viewmodelprovider
     private val tokenViewModel: TokenViewModel by viewModels {
-        TokenViewModelFactory(
-            (application as BaseApplication).database.tokenDao()
-        )
+        AppViewModelProvider.Factory
     }
 
+    /*
     private val userViewModel: AuthViewModel by viewModels {
         AuthViewModelFactory(
             (application as BaseApplication).database.userDao()
         )
     }
-
-    private val authNetworkViewModel: AuthNetworkViewModel by viewModels()
+    */
+    private val authNetworkViewModel: AuthNetworkViewModel by viewModels {
+       AuthNetworkViewModel.Factory
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +97,7 @@ class MainActivity : AppCompatActivity() {
         //https://stackoverflow.com/questions/43805524/how-to-properly-combine-navigationview-and-bottomnavigationview
         //BottomNavigationView with Navigation Component
         //https://www.youtube.com/watch?v=Chso6xrJ6aU&ab_channel=Stevdza-San
-        bottomNavigationView = findViewById(R.id.bottom_navigation)
+        //bottomNavigationView = findViewById(R.id.bottom_navigation)
         navigationView = findViewById(R.id.nav_view)
 
         lastAccessToken = ""
@@ -114,7 +109,7 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawer_layout)
 
         //bottomNavigation
-        bottomNavigationView.setupWithNavController(navController)
+        //bottomNavigationView.setupWithNavController(navController)
         //drawer navigation
         navigationView.setupWithNavController(navController)
 
@@ -133,12 +128,13 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         //bottom navigation event
+        /*
         listener = NavController.OnDestinationChangedListener { _, destination, _ ->
             val targetId = destination.id
             //bottom navigation is different from destination id
 
             if (targetId == R.id.todoListFragment) {
-                hideLoadingProgress()
+                // hideLoadingProgress()
             }
             //  observeToken()
             //  observeUser()
@@ -150,7 +146,7 @@ class MainActivity : AppCompatActivity() {
             ).show()
              */
         }
-
+        */
         supportActionBar?.setBackgroundDrawable(
             ColorDrawable(Color.parseColor("#FF018786"))
         )
@@ -163,11 +159,28 @@ class MainActivity : AppCompatActivity() {
         observeUser()
 
         //click logout button in bottom Navigation
+        /*
         bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout)
             .setOnClickListener {
                 showLogoutDialog()
             }
+        */
+        //https://stackoverflow.com/questions/9294603/how-do-i-get-the-currently-displayed-fragment
+        if ("TodoListFragment" in supportFragmentManager.fragments.last()
+                ?.getChildFragmentManager()?.fragments?.get(0).toString()
+        ) {
+            Log.d(
+                "currentFragment ",
+                supportFragmentManager.fragments.last()
+                    ?.getChildFragmentManager()?.fragments?.get(0).toString()
+            )
+            navigationView.setCheckedItem(R.id.todoListFragment)
+        }
 
+        Log.d(
+            "currentFragment_after ",
+            supportFragmentManager.fragments.last()?.getChildFragmentManager()?.fragments.toString()
+        )
         //click logout button in draw Navigation
         //https://stackoverflow.com/questions/31954993/hide-a-navigation-drawer-menu-item-android
         //default is true
@@ -183,14 +196,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
+    @OptIn(DelicateCoroutinesApi::class)
     private fun observeToken() {
-        tokenViewModel.tokens.observe(this, Observer {
+        tokenViewModel.tokens.observe(this) {
             if (it.isNotEmpty()) {
                 // Toast.makeText(this, "$it have token!!!", Toast.LENGTH_SHORT).show()
+                /*
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout).isVisible =
                     true
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.loginFragment).isVisible =
                     false
+                 */
                 //drawer navigation have to hide sign in
                 //https://stackoverflow.com/questions/31954993/hide-a-navigation-drawer-menu-item-android
                 navigationView.menu.findItem(R.id.loginFragment).isVisible = false
@@ -201,58 +217,58 @@ class MainActivity : AppCompatActivity() {
                     Log.d("authNetworkViewModel", "user and token is null")
                     Log.d("authNetworkViewModel", it.toString())
 
-                    //getUser use token
-                    authNetworkViewModel.getUserAction(it[it.size -1].accessToken)
-
                     lastAccessToken = it[it.size - 1].accessToken
 
-                    authNetworkViewModel.setToken(
-                        Token(
-                            id = it[it.size - 1].id,
-                            accessToken = it[it.size - 1].accessToken,
-                            refreshToken = it[it.size - 1].refreshToken,
-                            userId = it[it.size - 1].userId
-                        )
-                    )
+                    GlobalScope.launch {
+                        waitLogin(it)
+                    }
 
                 }
 
             } else {
                 // Toast.makeText(this, "no exist token!!!", Toast.LENGTH_SHORT).show()
                 //when app is reset have to logout if user is login
+                /*
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.logout).isVisible =
                     false
                 bottomNavigationView.findViewById<BottomNavigationItemView>(R.id.loginFragment).isVisible =
                     true
+                 */
                 //drawer navigation have to show sign in
                 navigationView.menu.findItem(R.id.loginFragment).isVisible = true
                 navigationView.menu.findItem(R.id.logout).isVisible = false
             }
-        })
+        }
     }
 
 
     private fun observeInvalidToken() {
-        authNetworkViewModel.error.observe(this, Observer {
+        authNetworkViewModel.error.observe(this) {
             if ("Invalid Token" in it.toString()) {
                 authNetworkViewModel.updateToken()
             }
-        })
 
-        authNetworkViewModel.token.observe(this, Observer {
+        }
+
+        authNetworkViewModel.token.observe(this) {
             Log.d("observeInvalidToken", "work $lastAccessToken")
 
-            if (lastAccessToken != "" && it != null && it!!.accessToken == lastAccessToken ) {
-                Log.d("observeInvalidToken", "lastAccessToken != \"\" && it!!.accessToken == lastAccessToken")
+            if (lastAccessToken != "" && it != null && it.accessToken == lastAccessToken) {
+                Log.d(
+                    "observeInvalidToken",
+                    "lastAccessToken != \"\" && it!!.accessToken == lastAccessToken"
+                )
             }
 
-            if (lastAccessToken != "" && it != null && it!!.accessToken != lastAccessToken ) {
-                Log.d("observeInvalidToken", "lastAccessToken != \"\" && it!!.accessToken != lastAccessToken")
+            if (lastAccessToken != "" && it != null && it.accessToken != lastAccessToken) {
+                Log.d(
+                    "observeInvalidToken",
+                    "lastAccessToken != \"\" && it!!.accessToken != lastAccessToken"
+                )
                 authNetworkViewModel.getUserAction(it.accessToken)
                 tokenViewModel.updateToken(it)
             }
-
-        })
+        }
 
     }
 
@@ -260,7 +276,7 @@ class MainActivity : AppCompatActivity() {
     //https://developer.android.com/guide/topics/resources/string-resource
     private fun observeUser() {
 
-        authNetworkViewModel.user.observe(this, Observer {
+        authNetworkViewModel.user.observe(this) {
             if (it != null) {
                 //add new user to room
                 //userViewModel.addNewUser(email = it.email, name = it.name)
@@ -278,10 +294,11 @@ class MainActivity : AppCompatActivity() {
                 navigationView.findViewById<TextView>(R.id.drawer_title1).visibility = GONE
 
             }
-        })
+        }
     }
 
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun showLogoutDialog() {
         MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.logout_title))
@@ -290,13 +307,40 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel)) { _, _ ->
             }
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
-                //logout action, clear token
-                // setLoadingProgress()
-                authNetworkViewModel.logoutAction()
-                deleteToken()
-                authNetworkViewModel.setToken(null)
+                GlobalScope.launch {
+                    waitLogout()
+                }
+
             }
             .show()
+    }
+
+    //https://developer.android.com/kotlin/coroutines/coroutines-adv
+    private suspend fun waitLogout() = coroutineScope {
+        val deferredList = listOf(     // fetch three docs at the same time
+            async { authNetworkViewModel.logoutAction() },  // async returns a result for the first doc
+            async { deleteToken() },
+            async { authNetworkViewModel.setToken(null) }// async returns a result for the second doc
+        )
+        deferredList.awaitAll()
+    }
+
+    private suspend fun waitLogin(it: List<Token>) = coroutineScope {
+        val deferredList = listOf(
+            // fetch three docs at the same time
+            async { authNetworkViewModel.getUserAction(it[it.size - 1].accessToken) },  // async returns a result for the first doc
+            async {
+                authNetworkViewModel.setToken(
+                    Token(
+                        id = it[it.size - 1].id,
+                        accessToken = it[it.size - 1].accessToken,
+                        refreshToken = it[it.size - 1].refreshToken,
+                        userId = it[it.size - 1].userId
+                    )
+                )
+            }
+        )
+        deferredList.awaitAll()
     }
 
 
@@ -307,6 +351,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /*
     private fun hideLoadingProgress() {
         bottomNavigationView.isVisible = false
     }
@@ -319,14 +364,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        navController.addOnDestinationChangedListener(listener)
+        //   navController.addOnDestinationChangedListener(listener)
     }
 
     override fun onPause() {
         super.onPause()
-        navController.removeOnDestinationChangedListener(listener)
+        //  navController.removeOnDestinationChangedListener(listener)
     }
-
+    */
 
     /**
      * Enables back button support. Simply navigates one element up on the stack.
@@ -334,7 +379,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
 
     /*
     //https://www.geeksforgeeks.org/actionbar-in-android-with-example/
@@ -361,7 +405,7 @@ class MainActivity : AppCompatActivity() {
 // Keys for navigation
 const val ADD_EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 1
 const val DELETE_RESULT_OK = Activity.RESULT_FIRST_USER + 2
-const val EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 3
+//const val EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 3
 
 
 

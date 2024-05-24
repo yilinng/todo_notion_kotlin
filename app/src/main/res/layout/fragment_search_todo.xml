@@ -109,6 +109,7 @@
                         android:layout_height="96dp"
                         android:layout_gravity="center"
                         android:contentDescription="@string/no_keywords_image_content_description"
+                        android:visibility="gone"
                         android:src="@drawable/ic_cruelty_free_24" />
 
                     <TextView

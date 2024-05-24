@@ -77,7 +77,7 @@
     <string name="name">name</string>
 
     <string name="signup_success_msg1">Congratulations, your account has been successfully created.</string>
-    <string name="signup_success_msg2">Please login to continue.</string>
+    <string name="signup_success_msg2">Welcome to use.</string>
     <string name="add_post_title">Create new post</string>
     <string name="update_post_title">Post Details</string>
     <string name="signup_success_dialogs_btn">Continue</string>
@@ -128,4 +128,7 @@
     <string name="keyword_marked_complete">Keyword marked complete</string>
     <string name="keyword_marked_active">Keyword marked active</string>
 
+    <string name="posts_empty">No posts yet</string>
+    <string name="password_length_error">Password length must be at least 6 characters long</string>
+    <string name="context_description">input some context</string>
 </resources>

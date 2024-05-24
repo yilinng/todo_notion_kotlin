@@ -4,11 +4,19 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.network.Todo
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.todonotion.BaseApplication
+import com.example.todonotion.data.TodosRepository
+import com.example.todonotion.data.User.UserDao
+import com.example.todonotion.model.Todo
+import com.example.todonotion.overview.auth.AuthViewModel
 
 import java.util.*
-import com.example.todonotion.network.TodoApi
+
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
 
@@ -18,7 +26,7 @@ enum class TodoApiStatus { LOADING, ERROR, DONE }
 /**
  * The [ViewModel] that is attached to the [TodoListFragment].
  */
-class OverViewModel : ViewModel() {
+class TodoViewModel(private val todosRepository: TodosRepository) : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<TodoApiStatus>()
@@ -54,7 +62,7 @@ class OverViewModel : ViewModel() {
         viewModelScope.launch {
             _status.value = TodoApiStatus.LOADING
             try {
-                _todos.value = TodoApi.retrofitService.getPhotos().hits
+                _todos.value = todosRepository.getPhotos().hits
                 _status.value = TodoApiStatus.DONE
                 Log.i("getTodoPhotos200", status.toString())
 
@@ -82,7 +90,7 @@ class OverViewModel : ViewModel() {
         viewModelScope.launch {
             _status.value = TodoApiStatus.LOADING
             try {
-                _filteredTodos.value = TodoApi.retrofitService.getPhotosWithKey(string).hits
+                _filteredTodos.value = todosRepository.getPhotosWithKey(string).hits
                 _status.value = TodoApiStatus.DONE
                 Log.i("getTodoPhotosByKeyWord200", todos.toString())
 
@@ -155,11 +163,23 @@ class OverViewModel : ViewModel() {
         }
     }
 
-
     //https://stackoverflow.com/questions/46662513/convert-array-to-list-in-kotlin
     fun onTodoClicked(todo: Todo) {
         // TODO: Set the todo object
         _todo.value = todo
+    }
+
+    /**
+     * Factory for [TodoViewModel] that takes [TodosRepository] as a dependency
+     */
+    companion object {
+        val Factory: ViewModelProvider.Factory = viewModelFactory {
+            initializer {
+                val application = (this[APPLICATION_KEY] as BaseApplication)
+                val todosRepository = application.container.todosRepository
+                TodoViewModel(todosRepository = todosRepository)
+            }
+        }
     }
 
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/refresh_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -11,31 +12,29 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/signup_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp"
+                android:layout_margin="16dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/name_label"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.107">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/signup_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
                     android:text="@string/signup_title"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                     android:textColor="@color/black"
-                    android:textFontWeight="900"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,11 +42,12 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/name_label"
-                android:layout_width="match_parent"
+                android:layout_width="360dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:hint="@string/name"
                 app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/signup_label">
 
@@ -63,12 +63,13 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/email_label"
-                android:layout_width="match_parent"
+                android:layout_width="360dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:hint="@string/icon_email"
                 app:errorEnabled="true"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/name_label">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -84,11 +85,12 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_label"
-                android:layout_width="match_parent"
+                android:layout_width="360dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:hint="@string/icon_password"
                 app:errorEnabled="true"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/email_label">
 
@@ -102,41 +104,16 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/flexbox_signUpbBtn"
-                android:layout_width="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/signup_btn"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:padding="8dp"
-                app:alignItems="center"
-                app:justifyContent="space_between"
+                android:text="@string/signup"
+                app:backgroundTint="@color/sky_700"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/password_label">
+                app:layout_constraintTop_toBottomOf="@+id/password_label" />
 
-                <TextView
-                    android:id="@+id/error_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="error text"
-                    android:textColor="@color/red_700"
-                    android:textFontWeight="900"
-                    android:textSize="20sp"
-                    android:visibility="invisible"
-                    app:layout_constraintBottom_toBottomOf="@+id/flexbox_btn"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/password_label" />
-
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/signup_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/signup"
-                    app:backgroundTint="@color/sky_500" />
-
-            </com.google.android.flexbox.FlexboxLayout>
 
             <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/login_label"
@@ -150,7 +127,7 @@
                 app:justifyContent="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/flexbox_signUpbBtn">
+                app:layout_constraintTop_toBottomOf="@+id/signup_btn">
 
                 <TextView
                     android:id="@+id/login_title"
@@ -168,9 +145,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/signIn_text"
-                    android:textColor="@color/purple_200" />
+                    android:textColor="@color/purple_500" />
 
             </com.google.android.flexbox.FlexboxLayout>
+
+            <TextView
+                android:id="@+id/error_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:textColor="@color/red_700"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_label"
+                tools:text="@string/password_length_error" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

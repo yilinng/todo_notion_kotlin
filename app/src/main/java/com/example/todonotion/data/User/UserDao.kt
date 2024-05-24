@@ -1,7 +1,6 @@
 package com.example.todonotion.data.User
 import kotlinx.coroutines.flow.Flow
 import androidx.room.*
-import com.example.todonotion.data.Keyword.Keyword
 
 @Dao
 interface UserDao {

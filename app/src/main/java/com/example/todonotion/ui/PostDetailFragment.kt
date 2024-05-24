@@ -1,13 +1,14 @@
 package com.example.todonotion.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+
 import com.example.todonotion.MainActivity
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentPostDetailBinding
@@ -19,18 +20,19 @@ import com.example.todonotion.ui.adapter.ContextAdapter
 class PostDetailFragment : Fragment() {
 
     // private val navigationArgs: PostDetailFragmentArgs by navArgs()
-    private val viewModel: AuthNetworkViewModel by activityViewModels()
+    private val viewModel: AuthNetworkViewModel by activityViewModels {
+        AuthNetworkViewModel.Factory
+    }
     private var _binding: FragmentPostDetailBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentPostDetailBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        binding.viewModel = viewModel
 
         // Inflate the layout for this fragment
         return binding.root
@@ -44,11 +46,36 @@ class PostDetailFragment : Fragment() {
         // the UI when the data actually changes.
         binding.recyclerView.adapter = ContextAdapter(viewModel.post.value?.context!!)
         observeUser()
+        observePost()
+        refreshPage()
+    }
 
+    private fun refreshPage() {
+        //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
+        //refresh page
+        binding.refreshLayout.setOnRefreshListener {
+            Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
+            //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
+            val navController = findNavController()
+            navController.run {
+                popBackStack()
+                navigate(R.id.postDetailFragment)
+            }
+            binding.refreshLayout.isRefreshing = false
+        }
+    }
+
+    private fun observePost() {
         viewModel.post.observe(this.viewLifecycleOwner) {
-            binding.editFab.setOnClickListener {
-                //val action = PostDetailFragmentDirections.actionPostDetailFragmentToAddPostFragment()
-                findNavController().navigate(R.id.action_postDetailFragment_to_addPostFragment)
+            if (it != null) {
+                binding.todoTitle.text = it.title
+                binding.todoUser.text = it.username
+                binding.todoDate.text = it.updateDate!!.substring(0, 10)
+
+                binding.editFab.setOnClickListener {
+                    //val action = PostDetailFragmentDirections.actionPostDetailFragmentToAddPostFragment()
+                    findNavController().navigate(R.id.action_postDetailFragment_to_addPostFragment)
+                }
             }
         }
     }
