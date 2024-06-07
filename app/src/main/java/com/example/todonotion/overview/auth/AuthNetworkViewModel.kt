@@ -29,12 +29,19 @@ import com.example.todonotion.model.dto.PostDto
 import com.google.android.material.tabs.TabLayout
 
 import kotlinx.coroutines.launch
-
+import javax.inject.Inject
 import retrofit2.HttpException
 
+/**
+ * AuthNetworkViewModel is the ViewModel that the Registration flow ([MainActivity]
+ * and fragments) uses to keep user's input data.
+ *
+ * @Inject tells Dagger how to provide instances of this type. Dagger also knows
+ * that UsersRepository is a dependency.
+ */
 enum class UserApiStatus { LOADING, ERROR, DONE }
 
-class AuthNetworkViewModel(private val usersRepository: UsersRepository) : ViewModel() {
+class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersRepository) : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<UserApiStatus>()
@@ -243,22 +250,7 @@ class AuthNetworkViewModel(private val usersRepository: UsersRepository) : ViewM
         }
     }
 
-    fun getPostAction(postId: String) {
-        viewModelScope.launch {
-            _status.value = UserApiStatus.LOADING
-            try {
-                _post.value = usersRepository.getTodo(postId)
-                _status.value = UserApiStatus.DONE
-               // Log.i("getTodo200", post.toString())
-                initError()
-            } catch (e: HttpException) {
-                _status.value = UserApiStatus.ERROR
-                //_posts.value = listOf()
-                _error.value = e.response()?.errorBody()?.string()
-              //  Log.e("getTodos404", error.value.toString())
-            }
-        }
-    }
+
 
     fun getSearchAction(title: String) {
         viewModelScope.launch {
@@ -454,6 +446,9 @@ class AuthNetworkViewModel(private val usersRepository: UsersRepository) : ViewM
         return !(title.isBlank() || content.isBlank() || username.isBlank())
     }
 
+
+
+    /*
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -464,4 +459,6 @@ class AuthNetworkViewModel(private val usersRepository: UsersRepository) : ViewM
         }
         private const val TIMEOUT_MILLIS = 5_000L
     }
+    */
+
 }

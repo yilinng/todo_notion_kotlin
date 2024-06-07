@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.todoSearch
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +16,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 
 import androidx.navigation.fragment.findNavController
@@ -24,16 +24,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todonotion.R
 import com.example.todonotion.data.Keyword.Keyword
 import com.example.todonotion.databinding.FragmentSearchTodoBinding
-import com.example.todonotion.overview.KeyViewModel
-import com.example.todonotion.overview.TodoViewModel
 
 import com.example.todonotion.ui.adapter.KeyTodoAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 
 import androidx.navigation.fragment.navArgs
 import com.example.todonotion.AppViewModelProvider
+import com.example.todonotion.BaseApplication
+import com.example.todonotion.ui.KeywordsFilterType
 import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 
 
 //https://www.geeksforgeeks.org/searchview-in-android-with-recyclerview/
@@ -42,17 +46,37 @@ class TodoSearchFragment : Fragment() {
     // TODO: Refactor the creation of the view model to take an instance of
     //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
     //  from BaseApplication
-    private val keyViewModel: KeyViewModel by activityViewModels {
-        AppViewModelProvider.Factory
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val todoDetailsViewModel: TodoSearchViewModel by viewModels {
+        viewModelFactory
     }
 
-    //data from network
-    private val overViewModel: TodoViewModel by activityViewModels()
+    private val keywordViewModel: KeywordViewModel by viewModels {
+        viewModelFactory
+    }
 
+    /*
+      private val keyViewModel: KeyViewModel by activityViewModels {
+          AppViewModelProvider.Factory
+      }
+
+     //data from network
+     private val overViewModel: TodoViewModel by activityViewModels()
+     */
     private var _binding: FragmentSearchTodoBinding? = null
     private val binding get() = _binding!!
 
     private val args: TodoSearchFragmentArgs by navArgs()
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (requireActivity().application as BaseApplication).appComponent.todoSearchComponent().create()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,8 +95,8 @@ class TodoSearchFragment : Fragment() {
         //when click on an item in keyword list, have to run filter function
         val adapter = KeyTodoAdapter{ keyword ->
             filteredList(keyword.keyName)
-            keyViewModel.onKeyWordClicked(keyword)
-            keyViewModel.storeWordAction(keyword.keyName)
+            keywordViewModel.onKeyWordClicked(keyword)
+            keywordViewModel.storeWordAction(keyword.keyName)
 
             val action =
                 TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment()
@@ -85,7 +109,7 @@ class TodoSearchFragment : Fragment() {
         setupSnack()
 
         // Attach an observer on the allKeys list to update the UI automatically when the data changes.
-        keyViewModel.allKeys.observe(this.viewLifecycleOwner) { items ->
+        keywordViewModel.allKeys.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 adapter.submitList(it)
                 changeVisibility(it)
@@ -96,14 +120,14 @@ class TodoSearchFragment : Fragment() {
         * https://stackoverflow.com/questions/58971518/how-to-use-recyclerview-itemanimator-with-recyclerview
         * https://stackoverflow.com/questions/55106938/change-style-of-recyclerview-item-onclick
         */
-        keyViewModel.filteredKeywords.observe(this.viewLifecycleOwner) { items ->
+        keywordViewModel.filteredKeywords.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 adapter.submitList(it)
                 changeVisibility(it)
             }
         }
 
-        keyViewModel.snackbarText.observe(this.viewLifecycleOwner) {
+        keywordViewModel.snackbarText.observe(this.viewLifecycleOwner) {
             setupSnack()
         }
 
@@ -133,7 +157,7 @@ class TodoSearchFragment : Fragment() {
                 // inside on query text change method we are
                 // calling a method to filter our recycler view.
                 //filter keyword list by nextText
-                keyViewModel.filterByKeyWords(newText)
+                keywordViewModel.filterByKeyWords(newText)
                 return false
             }
         })
@@ -160,7 +184,7 @@ class TodoSearchFragment : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.menu_filter -> {
                         Toast.makeText(activity, "menu filter Clicked", Toast.LENGTH_SHORT).show()
-                        keyViewModel.noKeywordIconRes.value?.let {
+                        keywordViewModel.noKeywordIconRes.value?.let {
                             binding.noKeywordsIcon.setImageResource(
                                 it
                             )
@@ -201,9 +225,9 @@ class TodoSearchFragment : Fragment() {
     private fun setupSnack() {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
 
-        val item = Snackbar.make(view, keyViewModel.snackbarText.toString(), Snackbar.LENGTH_SHORT)
+        val item = Snackbar.make(view, keywordViewModel.snackbarText.toString(), Snackbar.LENGTH_SHORT)
         arguments.let {
-            keyViewModel.showEditResultMessage(args.userMessage)
+            keywordViewModel.showEditResultMessage(args.userMessage)
         }
        // keyViewModel.showEditResultMessage(arguments.getInt())
 
@@ -216,7 +240,7 @@ class TodoSearchFragment : Fragment() {
             menuInflater.inflate(R.menu.filter_keywords, menu)
 
             setOnMenuItemClickListener {
-                keyViewModel.setFiltering(
+                keywordViewModel.setFiltering(
                     when (it.itemId) {
                         R.id.active -> KeywordsFilterType.ACTIVE_KEYWORDS
                         R.id.completed -> KeywordsFilterType.COMPLETED_KEYWORDS
@@ -233,7 +257,7 @@ class TodoSearchFragment : Fragment() {
         val textUpdate = text.replace(" ", "+")
         Log.i("filteredList", textUpdate)
         //  val text = keyViewModel.word.value
-        overViewModel.getTodoPhotosByKeyWord(textUpdate)
+        todoDetailsViewModel.getTodoPhotosByKeyWord(textUpdate)
     }
 
     /**
@@ -244,13 +268,13 @@ class TodoSearchFragment : Fragment() {
      */
     private fun addNewKeyWord(text: String) {
         //check if value exists in database
-        Log.d("keyCount", keyViewModel.filteredKeyCount().toString())
-        if (keyViewModel.filteredKeyCount() == 0) {
-            Log.d("keyCount0", keyViewModel.filteredKeyCount().toString())
-            keyViewModel.addNewKey(text.lowercase())
+        Log.d("keyCount", keywordViewModel.filteredKeyCount().toString())
+        if (keywordViewModel.filteredKeyCount() == 0) {
+            Log.d("keyCount0", keywordViewModel.filteredKeyCount().toString())
+            keywordViewModel.addNewKey(text.lowercase())
         }
         //update search input value
-        keyViewModel.storeWordAction(text)
+        keywordViewModel.storeWordAction(text)
 
         val action =
             TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment()
@@ -278,9 +302,9 @@ class TodoSearchFragment : Fragment() {
     delete all keyword
    */
     private fun deleteAll() {
-        for (item in keyViewModel.allKeys.value!!) {
+        for (item in keywordViewModel.allKeys.value!!) {
             // checking if the entered string matched with any item of our recycler view.
-            keyViewModel.deleteKey(item)
+            keywordViewModel.deleteKey(item)
         }
     }
 

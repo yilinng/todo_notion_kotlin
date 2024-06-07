@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.postList
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,25 +10,29 @@ import android.view.ViewGroup
 
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.example.todonotion.AppViewModelProvider
 
 import com.example.todonotion.BaseApplication
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentPostListBinding
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
 import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.overview.auth.UserApiStatus
 import com.example.todonotion.ui.adapter.PostListAdapter
 
 import com.example.todonotion.ui.adapter.PostListener
+import com.example.todonotion.ui.postDetails.PostDetailFragment
+import com.example.todonotion.ui.postDetails.PostDetailsViewModel
+import com.example.todonotion.ui.todoDetails.TodoDetailFragment
+import com.example.todonotion.ui.todoList.TodoListFragmentDirections
 
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * This fragment shows the the status of the Mars photos web services transaction.
@@ -37,6 +42,8 @@ class PostListFragment : Fragment() {
     // TODO: Refactor the creation of the view model to take an instance of
     //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
     //  from BaseApplication
+
+    /*
     private val networkViewModel: AuthNetworkViewModel by activityViewModels {
         AuthNetworkViewModel.Factory
     }
@@ -44,9 +51,28 @@ class PostListFragment : Fragment() {
     private val tokenViewModel: TokenViewModel by activityViewModels {
         AppViewModelProvider.Factory
     }
+    */
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val postListViewModel: PostListViewModel by viewModels {
+        viewModelFactory
+    }
+
+    private val tokenViewModel: TokenViewModel by viewModels {
+        viewModelFactory
+    }
 
     private var _binding: FragmentPostListBinding? = null
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (requireActivity().application as BaseApplication).appComponent.postListComponent().create()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,27 +88,44 @@ class PostListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // TODO: call the view model method that calls the post api
         binding.lifecycleOwner = this
-        binding.viewModel = networkViewModel
+        binding.viewModel = postListViewModel
 
+        observeStatus()
         observeToken()
         observePosts()
         tabSelect()
         refreshPage()
         addEvent()
+        setupNavigation()
 
         //binding
         binding.recyclerView.adapter = PostListAdapter(PostListener { post ->
-            networkViewModel.onPostClicked(post)
-            findNavController().navigate(R.id.action_postListFragment_to_postDetailFragment)
+            postListViewModel.onPostClicked(post)
         })
 
+    }
+
+    private fun setupNavigation() {
+        postListViewModel.post.observe(this.viewLifecycleOwner) {
+            if(it != null) {
+                val postDetailFragment = PostDetailFragment.newInstance(it.id)
+                openPostDetails(it.id)
+            }
+        }
+
+    }
+
+    private fun openPostDetails(postId: String) {
+        val action = PostListFragmentDirections.actionPostListFragmentToPostDetailFragment(postId)
+        findNavController().navigate(action)
+        postListViewModel.cleanPost()
     }
 
     private fun addEvent() {
         //click add btn
         binding.addFab.setOnClickListener {
             //clean select post
-            networkViewModel.cleanPost()
+            postListViewModel.cleanPost()
             //redirect to add post page
             val action = PostListFragmentDirections.actionPostListFragmentToAddPostFragment()
             findNavController()
@@ -96,7 +139,7 @@ class PostListFragment : Fragment() {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 // Handle tab select
-                networkViewModel.selectedTab(tab)
+                postListViewModel.selectedTab(tab)
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -113,7 +156,6 @@ class PostListFragment : Fragment() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
         //refresh page
         binding.refreshLayout.setOnRefreshListener {
-            Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
 
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()
@@ -137,11 +179,15 @@ class PostListFragment : Fragment() {
         }
     }
 
-    private fun showLoadingProgress() {
-        //binding.loadingImg.isIndeterminate = false
-        binding.linearProgressIndicator.isVisible = true
-        binding.recyclerView.isVisible = false
+    private fun observeStatus() {
+        postListViewModel.status.observe(this.viewLifecycleOwner) {
+            if(it != UserApiStatus.LOADING) {
+                hideLoadingProgress()
+            }
+        }
     }
+
+
 
     private fun hideLoadingProgress() {
         // binding.loadingImg.isIndeterminate = true
@@ -150,19 +196,14 @@ class PostListFragment : Fragment() {
     }
 
     private fun observePosts() {
-        lifecycleScope.launch {
-            showLoadingProgress()
-            delay(3000)
-            hideLoadingProgress()
-        }
 
-        networkViewModel.posts.observe(this.viewLifecycleOwner) {
+        postListViewModel.posts.observe(this.viewLifecycleOwner) {
 
-            if (networkViewModel.status.value == UserApiStatus.DONE) {
+            if (postListViewModel.status.value == UserApiStatus.DONE) {
                 //binding
                 if (it.isNotEmpty()) {
                     Log.d("getPosts", it.toString())
-                    networkViewModel.filteredPost()
+                    postListViewModel.filteredPost()
                     binding.postsErrorText.visibility = GONE
                     binding.postEmptyImage.visibility = GONE
 

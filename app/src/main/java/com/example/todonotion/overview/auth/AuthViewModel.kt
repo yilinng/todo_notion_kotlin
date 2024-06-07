@@ -2,7 +2,6 @@ package com.example.todonotion.overview.auth
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 
@@ -11,10 +10,8 @@ import kotlinx.coroutines.launch
 import com.example.todonotion.data.User.User
 import com.example.todonotion.data.User.UserDao
 
-import com.example.todonotion.overview.KeyViewModel
-
 //store user in database
-class AuthViewModel(private val userDao: UserDao): ViewModel() {
+class AuthViewModel(val userDao: UserDao): ViewModel() {
 
     private val users: LiveData<List<User>> = userDao.getUsers().asLiveData()
 

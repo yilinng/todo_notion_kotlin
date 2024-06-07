@@ -76,8 +76,6 @@ class TodoListAdapter(private val clickListener: TodoListener) :
         holder.bind(clickListener,todo)
     }
 
-
-
 }
 
 

@@ -131,4 +131,14 @@
     <string name="posts_empty">No posts yet</string>
     <string name="password_length_error">Password length must be at least 6 characters long</string>
     <string name="context_description">input some context</string>
+    <string name="channel_name">auth channel</string>
+    <string name="channel_description">your android is lower than 8</string>
+
+    <string name="successfully_add_post">Post was added successfully</string>
+    <string name="successfully_edit_post">Post was edited successfully</string>
+    <string name="successfully_delete_post">Post was deleted successfully</string>
+
+    <string name="delete_post_title">Delete post</string>
+    <string name="delete_post_cont">Are you sure you want to delete it?</string>
+
 </resources>

@@ -11,9 +11,10 @@ import kotlinx.coroutines.launch
 import com.example.todonotion.data.Token.Token
 import com.example.todonotion.data.Token.TokenDao
 import com.example.todonotion.data.Token.TokensRepository
+import javax.inject.Inject
 
 //store user in database
-class TokenViewModel(private val tokensRepository: TokensRepository): ViewModel() {
+class TokenViewModel @Inject constructor(private val tokensRepository: TokensRepository): ViewModel() {
 
     val tokens: LiveData<List<Token>> = tokensRepository.getAllTokensStream().asLiveData()
 

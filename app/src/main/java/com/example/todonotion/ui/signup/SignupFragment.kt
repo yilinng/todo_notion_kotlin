@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.signup
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -11,8 +12,11 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.todonotion.AppViewModelProvider
+import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentSignupBinding
@@ -21,7 +25,10 @@ import com.example.todonotion.overview.auth.AuthNetworkViewModel
 import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.overview.auth.UserApiStatus
+import com.example.todonotion.ui.todoSearch.KeywordViewModel
+import com.example.todonotion.ui.todoSearch.TodoSearchViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import javax.inject.Inject
 
 class SignupFragment : Fragment() {
     // TODO: Refactor the creation of the view model to take an instance of
@@ -33,7 +40,7 @@ class SignupFragment : Fragment() {
             (activity?.application as BaseApplication).database.userDao()
         )
     }
-    */
+
     private val tokenViewModel: TokenViewModel by activityViewModels {
         AppViewModelProvider.Factory
     }
@@ -41,9 +48,27 @@ class SignupFragment : Fragment() {
     private val networkViewModel: AuthNetworkViewModel by activityViewModels{
         AuthNetworkViewModel.Factory
     }
+   */
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val tokenViewModel: TokenViewModel by viewModels {
+        viewModelFactory
+    }
+
+    private val signupViewModel: SignupViewModel by viewModels {
+        viewModelFactory
+    }
 
     private var _binding: FragmentSignupBinding? = null
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as BaseApplication).appComponent.signupComponent().create()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -120,7 +145,7 @@ class SignupFragment : Fragment() {
      * Returns true if the EditTexts are not empty
      */
     private fun isEntryValid(): Boolean {
-        return networkViewModel.isSignupEntryValid(
+        return signupViewModel.isSignupEntryValid(
             binding.nameInput.text.toString(),
             binding.emailInput.text.toString(),
             binding.passwordInput.text.toString(),
@@ -129,7 +154,7 @@ class SignupFragment : Fragment() {
 
     private fun addNewUser() {
         if (isEntryValid()) {
-            networkViewModel.signupAction(convertToDataClass())
+            signupViewModel.signupAction(convertToDataClass())
             //signup
             observeStatus()
             observeError()
@@ -164,7 +189,7 @@ class SignupFragment : Fragment() {
     }
 
     private fun observeStatus() {
-        networkViewModel.status.observe(this.viewLifecycleOwner) {
+        signupViewModel.status.observe(this.viewLifecycleOwner) {
             if(it == UserApiStatus.DONE){
                 binding.errorText.visibility = GONE
                 showSignUpDialog()
@@ -173,7 +198,7 @@ class SignupFragment : Fragment() {
     }
 
     private fun observeError() {
-        networkViewModel.error.observe(this.viewLifecycleOwner) { items ->
+        signupViewModel.error.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 if (it != null) {
                     binding.errorText.visibility = VISIBLE
@@ -193,7 +218,7 @@ class SignupFragment : Fragment() {
         }
     }
     private fun observeUserToken() {
-        networkViewModel.token.observe(this.viewLifecycleOwner) {
+        signupViewModel.token.observe(this.viewLifecycleOwner) {
             if (it != null) {
                 tokenViewModel.addNewToken(it)
             }

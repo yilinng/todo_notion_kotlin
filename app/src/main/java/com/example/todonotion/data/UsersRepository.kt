@@ -5,6 +5,7 @@ import com.example.todonotion.model.dto.PostDto
 import com.example.todonotion.network.UserApiService
 import retrofit2.Response
 import retrofit2.http.*
+import javax.inject.Inject
 
 
 interface UsersRepository {
@@ -23,7 +24,7 @@ interface UsersRepository {
 
     suspend fun getTodos(): List<Post>
 
-    suspend fun getTodo(@Path("id") postId: String): Post
+    suspend fun getTodo(@Path("id") postId: String): UpdatePost
 
     suspend fun searchTodo(@Path("keyword") title: String): List<Post>
 
@@ -47,7 +48,7 @@ interface UsersRepository {
     ): Response<Unit>
 }
 
-class NetworkUsersRepository(
+class NetworkUsersRepository @Inject constructor(
     private val userApiService: UserApiService
 ) : UsersRepository {
     override suspend fun loginUser(login: Login): AuthResponse = userApiService.loginUser(login)
@@ -66,7 +67,7 @@ class NetworkUsersRepository(
 
     override suspend fun getTodos(): List<Post> = userApiService.getTodos()
 
-    override suspend fun getTodo(postId: String): Post = userApiService.getTodo(postId)
+    override suspend fun getTodo(postId: String): UpdatePost = userApiService.getTodo(postId)
 
     override suspend fun searchTodo(title: String): List<Post> = userApiService.searchTodo(title)
 

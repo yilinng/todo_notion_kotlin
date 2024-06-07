@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/todoListFragment"
-        android:name="com.example.todonotion.ui.TodoListFragment"
+        android:name="com.example.todonotion.ui.todoList.TodoListFragment"
         android:label=""
         tools:layout="@layout/fragment_todo_list">
         <action
@@ -20,19 +20,26 @@
         <action
             android:id="@+id/action_todoListFragment_to_postListFragment"
             app:destination="@id/postListFragment" />
+        <argument
+            android:name="userMessage"
+            app:argType="integer"
+            android:defaultValue="0" />
 
     </fragment>
     <fragment
         android:id="@+id/todoDetailFragment"
-        android:name="com.example.todonotion.ui.TodoDetailFragment"
+        android:name="com.example.todonotion.ui.todoDetails.TodoDetailFragment"
         android:label=""
         tools:layout="@layout/fragment_todo_detail">
+        <argument
+            android:name="todoId"
+            app:argType="string" />
 
     </fragment>
 
     <fragment
         android:id="@+id/todoSearchFragment"
-        android:name="com.example.todonotion.ui.TodoSearchFragment"
+        android:name="com.example.todonotion.ui.todoSearch.TodoSearchFragment"
         android:label=""
         tools:layout="@layout/fragment_search_todo">
         <action
@@ -49,7 +56,7 @@
     </fragment>
     <fragment
         android:id="@+id/todoSearchResultFragment"
-        android:name="com.example.todonotion.ui.TodoSearchResultFragment"
+        android:name="com.example.todonotion.ui.todoSearchResult.TodoSearchResultFragment"
         android:label=""
         tools:layout="@layout/fragment_search_result">
         <action
@@ -63,7 +70,7 @@
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
-        android:name="com.example.todonotion.ui.LoginFragment"
+        android:name="com.example.todonotion.ui.login.LoginFragment"
         android:label=""
         tools:layout="@layout/fragment_login">
         <action
@@ -80,7 +87,7 @@
     </fragment>
     <fragment
         android:id="@+id/signupFragment"
-        android:name="com.example.todonotion.ui.SignupFragment"
+        android:name="com.example.todonotion.ui.signup.SignupFragment"
         android:label=""
         tools:layout="@layout/fragment_signup">
         <action
@@ -97,7 +104,7 @@
     </fragment>
     <fragment
         android:id="@+id/postListFragment"
-        android:name="com.example.todonotion.ui.PostListFragment"
+        android:name="com.example.todonotion.ui.postList.PostListFragment"
         android:label=""
         tools:layout="@layout/fragment_post_list">
         <action
@@ -114,11 +121,15 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
+        <argument
+            android:name="userMessage"
+            app:argType="integer"
+            android:defaultValue="0" />
 
     </fragment>
     <fragment
         android:id="@+id/postDetailFragment"
-        android:name="com.example.todonotion.ui.PostDetailFragment"
+        android:name="com.example.todonotion.ui.postDetails.PostDetailFragment"
         android:label=""
         tools:layout="@layout/fragment_post_detail">
         <action
@@ -128,10 +139,13 @@
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out"/>
+        <argument
+            android:name="postId"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addPostFragment"
-        android:name="com.example.todonotion.ui.AddPostFragment"
+        android:name="com.example.todonotion.ui.addPost.AddPostFragment"
         android:label=""
         tools:layout="@layout/fragment_add_post" >
 

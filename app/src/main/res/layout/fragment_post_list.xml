@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.todonotion.overview.auth.AuthNetworkViewModel" />
+            type="com.example.todonotion.ui.postList.PostListViewModel" />
     </data>
 
 
@@ -117,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
-                android:layout_marginRight="16dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginBottom="64dp"
                 android:contentDescription="@string/add_btn"
                 android:src="@drawable/ic_add_24"

@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.todoList
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,12 +10,17 @@ import androidx.core.view.*
 import androidx.fragment.app.Fragment
 
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.SavedStateViewModelFactory
+import androidx.lifecycle.ViewModelProvider
 
 import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.todonotion.AppViewModelProvider
+import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentTodoListBinding
@@ -30,6 +36,10 @@ import com.example.todonotion.ui.callback.ListOnBackPressedCallback
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import androidx.navigation.fragment.navArgs
+import com.example.todonotion.overview.TodoApiStatus
+import com.example.todonotion.ui.todoDetails.TodoDetailFragment
 
 /**
  * This fragment shows the the status of the Mars photos web services transaction.
@@ -40,6 +50,15 @@ class TodoListFragment : Fragment() {
     // TODO: Refactor the creation of the view model to take an instance of
     //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
     //  from BaseApplication
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val todoListViewModel: TodoListViewModel by viewModels {
+        viewModelFactory
+    }
+
+    private val args: TodoListFragmentArgs by navArgs()
+    /*
     private val todoViewModel: TodoViewModel by activityViewModels {
         TodoViewModel.Factory
     }
@@ -47,13 +66,19 @@ class TodoListFragment : Fragment() {
     private val tokenViewModel: TokenViewModel by activityViewModels {
         AppViewModelProvider.Factory
     }
-
+    */
     private var _binding: FragmentTodoListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var callback: ListOnBackPressedCallback
 
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (requireActivity().application as BaseApplication).appComponent.todoListComponent().create()
+            .inject(this)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,7 +94,7 @@ class TodoListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // TODO: call the view model method that calls the todo api
         binding.lifecycleOwner = this
-        binding.viewModel = todoViewModel
+        binding.viewModel = todoListViewModel
 
         val slidingPaneLayout = binding.slidingPaneLayout
         //https://medium.com/@Wingnut/tabbed-slidingpanelayout-primary-detail-using-the-navigation-component-library-%EF%B8%8F-6517a2c1e554
@@ -78,12 +103,14 @@ class TodoListFragment : Fragment() {
         // Connect the SlidingPaneLayout to the system back button.
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        observeToken()
+        //observeToken()
         tabSelect()
         refreshPage()
+        setupNavigation()
+        observeState()
 
         binding.recyclerView.adapter = TodoListAdapter(TodoListener { todo ->
-            todoViewModel.onTodoClicked(todo)
+            todoListViewModel.onTodoClicked(todo)
             // Slide the detail pane into view. If both panes are visible,
             // this has no visible effect.
             binding.slidingPaneLayout.openPane()
@@ -97,6 +124,7 @@ class TodoListFragment : Fragment() {
 
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
+    /*
     private fun observeToken() {
         tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
             lifecycleScope.launch {
@@ -106,11 +134,31 @@ class TodoListFragment : Fragment() {
             }
         }
     }
+    */
 
-    private fun showLoadingProgress(){
-        //binding.loadingImg.isIndeterminate = false
-        binding.linearProgressIndicator.isVisible = true
-        binding.recyclerView.isVisible = false
+    private fun setupNavigation() {
+        todoListViewModel.todo.observe(this.viewLifecycleOwner) {
+           if(it != null) {
+              val todoDetailFragment = TodoDetailFragment.newInstance(it.id)
+               openTodoDetails(it.id)
+           }
+        }
+
+    }
+
+    private fun observeState() {
+        todoListViewModel.status.observe(this.viewLifecycleOwner) {
+            if(it != TodoApiStatus.LOADING) {
+                hideLoadingProgress()
+            }
+        }
+    }
+
+
+    private fun openTodoDetails(todoId: String) {
+        val action = TodoListFragmentDirections.actionTodoListFragmentToTodoDetailFragment(todoId)
+        findNavController().navigate(action)
+        todoListViewModel.initTodo()
     }
 
     private fun hideLoadingProgress(){
@@ -124,7 +172,7 @@ class TodoListFragment : Fragment() {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 // Handle tab select
-                todoViewModel.selectedTab(tab)
+                todoListViewModel.selectedTab(tab)
             }
 
             override fun onTabReselected(tab: TabLayout.Tab?) {
@@ -142,7 +190,6 @@ class TodoListFragment : Fragment() {
         //refresh page
         binding.refreshLayout.setOnRefreshListener{
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
-
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()
             navController.run {

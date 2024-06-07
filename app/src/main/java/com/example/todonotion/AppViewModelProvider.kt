@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.todonotion.overview.KeyViewModel
+//import com.example.todonotion.ui.todoSearch.KeyViewModel
 import com.example.todonotion.overview.auth.TokenViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         // Initializer for SearchViewModel
+        /*
         initializer {
            KeyViewModel(baseApplication().container.keywordsRepository)
         }
@@ -18,6 +19,7 @@ object AppViewModelProvider {
         initializer {
             TokenViewModel(baseApplication().container.tokensRepository)
         }
+         */
     }
 }
 

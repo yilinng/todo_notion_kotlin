@@ -1,6 +1,7 @@
 package com.example.todonotion.network
 
 import com.example.todonotion.model.Flower
+import com.example.todonotion.model.Todo
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
@@ -22,6 +23,9 @@ interface TodoApiService {
 
     @GET("?key=40521554-653259fd6834861c55e904c4e")
     suspend fun getPhotos(): Flower
+
+    @GET("?key=40521554-653259fd6834861c55e904c4e")
+    suspend fun getPhotosById(@Query(value = "id", encoded = true) id: String): Flower
 
     //https://stackoverflow.com/questions/24100372/retrofit-and-get-using-parameters
     @GET("?key=40521554-653259fd6834861c55e904c4e")

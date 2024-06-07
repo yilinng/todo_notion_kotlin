@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.postDetails
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,24 +8,54 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.MainActivity
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentPostDetailBinding
 
 import com.example.todonotion.overview.auth.AuthNetworkViewModel
+import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.ui.adapter.ContextAdapter
+import com.example.todonotion.ui.todoDetails.TodoDetailFragment
+import javax.inject.Inject
 
 
+//https://stackoverflow.com/questions/17436298/how-to-pass-a-variable-from-activity-to-fragment-and-pass-it-back
 class PostDetailFragment : Fragment() {
 
-    // private val navigationArgs: PostDetailFragmentArgs by navArgs()
+    // private val args: PostDetailFragmentArgs by navArgs()
+    /*
     private val viewModel: AuthNetworkViewModel by activityViewModels {
         AuthNetworkViewModel.Factory
     }
+     */
+
+    private lateinit var args: String
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val postDetailsViewModel: PostDetailsViewModel by viewModels {
+        viewModelFactory
+    }
+
     private var _binding: FragmentPostDetailBinding? = null
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (requireActivity().application as BaseApplication).appComponent.postDetailsComponent()
+            .create()
+            .inject(this)
+
+        args = arguments?.getString("postId").toString()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,6 +64,8 @@ class PostDetailFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentPostDetailBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        postDetailsViewModel.getPostAction(args)
 
         // Inflate the layout for this fragment
         return binding.root
@@ -44,7 +77,8 @@ class PostDetailFragment : Fragment() {
         // Retrieve the post details using the postId.
         // Attach an observer on the data (instead of polling for changes) and only update the
         // the UI when the data actually changes.
-        binding.recyclerView.adapter = ContextAdapter(viewModel.post.value?.context!!)
+        val context = postDetailsViewModel.post.value?.context ?: listOf()
+        binding.recyclerView.adapter = ContextAdapter(context)
         observeUser()
         observePost()
         refreshPage()
@@ -66,7 +100,7 @@ class PostDetailFragment : Fragment() {
     }
 
     private fun observePost() {
-        viewModel.post.observe(this.viewLifecycleOwner) {
+        postDetailsViewModel.post.observe(this.viewLifecycleOwner) {
             if (it != null) {
                 binding.todoTitle.text = it.title
                 binding.todoUser.text = it.username
@@ -81,8 +115,8 @@ class PostDetailFragment : Fragment() {
     }
 
     private fun observeUser() {
-        viewModel.user.observe(this.viewLifecycleOwner) {
-            if (it!!.todos!!.isNotEmpty() && it.todos!!.contains(viewModel.post.value!!.id)) {
+        postDetailsViewModel.user.observe(this.viewLifecycleOwner) {
+            if (it!!.todos!!.isNotEmpty() && it.todos!!.contains(postDetailsViewModel.post.value!!.id)) {
                 binding.editFab.visibility = View.VISIBLE
             } else {
                 binding.editFab.visibility = View.GONE
@@ -94,7 +128,8 @@ class PostDetailFragment : Fragment() {
     //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     override fun onResume() {
         super.onResume()
-        (requireActivity() as MainActivity).supportActionBar?.title = viewModel.post.value?.title
+        (requireActivity() as MainActivity).supportActionBar?.title =
+            postDetailsViewModel.post.value?.title
 
     }
 
@@ -105,5 +140,14 @@ class PostDetailFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(id: String) = PostDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString("postId", id)
+            }
+        }
     }
 }

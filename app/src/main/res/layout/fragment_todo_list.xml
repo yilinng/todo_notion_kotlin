@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.todonotion.overview.TodoViewModel" />
+            type="com.example.todonotion.ui.todoList.TodoListViewModel" />
     </data>
 
     <androidx.slidingpanelayout.widget.SlidingPaneLayout
@@ -112,6 +112,6 @@
             android:layout_height="match_parent"
             android:layout_width="300dp"
             android:layout_weight="1"
-            android:name="com.example.todonotion.ui.TodoDetailFragment"/>
+            android:name="com.example.todonotion.ui.todoDetails.TodoDetailFragment"/>
     </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 </layout>

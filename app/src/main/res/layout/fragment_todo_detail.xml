@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.todonotion.overview.TodoViewModel" />
+            type="com.example.todonotion.ui.todoDetails.TodoDetailsViewModel" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

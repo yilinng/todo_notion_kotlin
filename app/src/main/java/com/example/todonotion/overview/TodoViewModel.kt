@@ -26,7 +26,7 @@ enum class TodoApiStatus { LOADING, ERROR, DONE }
 /**
  * The [ViewModel] that is attached to the [TodoListFragment].
  */
-class TodoViewModel(private val todosRepository: TodosRepository) : ViewModel() {
+class TodoViewModel(val todosRepository: TodosRepository) : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<TodoApiStatus>()
@@ -171,7 +171,7 @@ class TodoViewModel(private val todosRepository: TodosRepository) : ViewModel() 
 
     /**
      * Factory for [TodoViewModel] that takes [TodosRepository] as a dependency
-     */
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -181,7 +181,7 @@ class TodoViewModel(private val todosRepository: TodosRepository) : ViewModel() 
             }
         }
     }
-
+     */
 
 }
 

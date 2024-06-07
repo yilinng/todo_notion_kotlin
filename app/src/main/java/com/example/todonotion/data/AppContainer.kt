@@ -11,6 +11,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Inject
 
 interface AppContainer {
     val todosRepository: TodosRepository
@@ -19,7 +20,7 @@ interface AppContainer {
     val keywordsRepository: KeywordsRepository
 }
 
-class DefaultAppContainer(private val context: Context) : AppContainer {
+class DefaultAppContainer (private val context: Context) : AppContainer {
     private val baseUrl = "https://pixabay.com/api/"
 
     private val localBaseUrl = "https://express-api-react-notion.vercel.app/api/"

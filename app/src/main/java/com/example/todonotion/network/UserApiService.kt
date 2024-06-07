@@ -13,8 +13,6 @@ import com.example.todonotion.model.UpdateToken
 import com.example.todonotion.model.dto.PostDto
 
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.*
 
 //https://stackoverflow.com/questions/14366001/dto-and-dao-concepts-and-mvc
@@ -45,7 +43,7 @@ interface UserApiService {
     suspend fun getTodos(): List<Post>
 
     @GET("todos/{id}")
-    suspend fun getTodo(@Path("id") postId: String): Post
+    suspend fun getTodo(@Path("id") postId: String): UpdatePost
 
 
     @GET("todos/{keyword}")

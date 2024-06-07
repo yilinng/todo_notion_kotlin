@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "259476550810",
+    "project_id": "todonotionandroid",
+    "storage_bucket": "todonotionandroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259476550810:android:adcb4ebd876945a5c09b23",
+        "android_client_info": {
+          "package_name": "com.example.todonotion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDy010pivAB9zxOYuG0AuUQZqtOSNDc62U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

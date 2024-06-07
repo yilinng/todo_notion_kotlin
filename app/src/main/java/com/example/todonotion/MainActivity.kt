@@ -5,16 +5,13 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-
-
 import android.view.View.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-
 import androidx.drawerlayout.widget.DrawerLayout
-
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -22,22 +19,17 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.todonotion.data.Token.Token
-
 import com.example.todonotion.overview.auth.AuthNetworkViewModel
-
 import com.example.todonotion.overview.auth.TokenViewModel
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-
 import com.google.android.material.navigation.NavigationView
 import kotlinx.coroutines.DelicateCoroutinesApi
-
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 //ctrl + o -> override method
 //https://stackoverflow.com/questions/44777869/hide-show-bottomnavigationview-on-scroll
@@ -56,11 +48,22 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var lastAccessToken: String
 
+   // @Inject
+   // lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    // Stores an instance of RegistrationComponent so that its Fragments can access it
+    //lateinit var postLocalComponent: PostLocalComponent
+
     //https://stackoverflow.com/questions/68058302/difference-between-activityviewmodels-and-lazy-viewmodelprovider
+    /*
     private val tokenViewModel: TokenViewModel by viewModels {
-        AppViewModelProvider.Factory
+        viewModelFactory
     }
 
+    private val authNetworkViewModel: AuthNetworkViewModel by viewModels {
+        viewModelFactory
+    }
+    */
     /*
     private val userViewModel: AuthViewModel by viewModels {
         AuthViewModelFactory(
@@ -68,11 +71,13 @@ class MainActivity : AppCompatActivity() {
         )
     }
     */
-    private val authNetworkViewModel: AuthNetworkViewModel by viewModels {
-       AuthNetworkViewModel.Factory
-    }
+    // @Inject annotated fields will be provided by Dagger
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -154,9 +159,9 @@ class MainActivity : AppCompatActivity() {
         //https://stackoverflow.com/questions/49644542/how-to-remove-bottom-border-in-android-action-bar
         supportActionBar?.elevation = 0F
 
-        observeInvalidToken()
-        observeToken()
-        observeUser()
+       // observeInvalidToken()
+       // observeToken()
+       // observeUser()
 
         //click logout button in bottom Navigation
         /*
@@ -193,9 +198,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        //https://github.com/google-developer-training/basic-android-kotlin-compose-training-workmanager/blob/intermediate/app/src/main/java/com/example/bluromatic/workers/WorkerUtils.kt
+        //https://developer.android.com/develop/ui/views/notifications/build-notification
+        //https://stackoverflow.com/questions/58526610/what-channelid-should-i-pass-to-the-constructor-of-notificationcompat-builder
+        /*
+        makeStatusNotification(
+            applicationContext.resources.getString(R.string.app_name),
+            applicationContext
+        )
+         */
     }
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
+    /*
     @OptIn(DelicateCoroutinesApi::class)
     private fun observeToken() {
         tokenViewModel.tokens.observe(this) {
@@ -296,7 +311,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    */
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun showLogoutDialog() {
@@ -308,7 +323,7 @@ class MainActivity : AppCompatActivity() {
             }
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 GlobalScope.launch {
-                    waitLogout()
+                   // waitLogout()
                 }
 
             }
@@ -316,6 +331,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //https://developer.android.com/kotlin/coroutines/coroutines-adv
+    /*
     private suspend fun waitLogout() = coroutineScope {
         val deferredList = listOf(     // fetch three docs at the same time
             async { authNetworkViewModel.logoutAction() },  // async returns a result for the first doc
@@ -350,6 +366,8 @@ class MainActivity : AppCompatActivity() {
             tokenViewModel.deleteToken(item)
         }
     }
+
+ */
 
     /*
     private fun hideLoadingProgress() {
@@ -401,6 +419,8 @@ class MainActivity : AppCompatActivity() {
     }
      */
 }
+
+
 
 // Keys for navigation
 const val ADD_EDIT_RESULT_OK = Activity.RESULT_FIRST_USER + 1

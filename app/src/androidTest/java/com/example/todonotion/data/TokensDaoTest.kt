@@ -8,17 +8,14 @@ import androidx.test.filters.SmallTest
 import com.example.todonotion.data.Token.Token
 import junit.framework.TestCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
+
 import org.junit.runner.RunWith
 import kotlinx.coroutines.test.runTest
-
-import org.hamcrest.CoreMatchers.notNullValue
+import org.hamcrest.CoreMatchers.*
 
 //https://developer.android.com/codelabs/advanced-android-kotlin-training-testing-survey#6
-
+//https://developers.google.com/learn/pathways/firebase-android-jetpack
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @SmallTest
@@ -60,5 +57,22 @@ class TokensDaoTest {
         TestCase.assertEquals(token.userId, loaded.userId)
     }
 
+    /*
+    @Test
+    fun deleteTokenAndGetById() = runTest {
+        // GIVEN - Insert a task.
+        val token = Token(id= 5464646, accessToken = "testaccessToken", refreshToken = "testRefreshToken", userId = "wefffhhh")
+        database.tokenDao().insert(token = token)
+
+        // When the token is deleted
+        database.tokenDao().delete(token)
+        val loaded = database.tokenDao().getTokens()
+
+        // THEN - The loaded data contains the expected values.
+        TestCase.assertEquals(nullValue(), loaded as Token)
+       // TestCase.assertEquals(token.id, loaded.id)
+
+    }
+    */
 
 }

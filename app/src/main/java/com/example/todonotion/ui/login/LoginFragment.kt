@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.login
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -13,19 +14,18 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.todonotion.AppViewModelProvider
 import com.example.todonotion.BaseApplication
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentLoginBinding
 import com.example.todonotion.model.Login
 
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
-
 import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.overview.auth.UserApiStatus
+import javax.inject.Inject
 
 
 class LoginFragment : Fragment() {
@@ -40,6 +40,8 @@ class LoginFragment : Fragment() {
         )
     }
     */
+
+    /*
     private val tokenViewModel: TokenViewModel by activityViewModels {
         AppViewModelProvider.Factory
     }
@@ -48,8 +50,28 @@ class LoginFragment : Fragment() {
     private val networkViewModel: AuthNetworkViewModel by activityViewModels {
         AuthNetworkViewModel.Factory
     }
+     */
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val loginViewModel: LoginViewModel by viewModels {
+        viewModelFactory
+    }
+
+    private val tokenViewModel: TokenViewModel by viewModels {
+        viewModelFactory
+    }
+
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (requireActivity().application as BaseApplication).appComponent.loginComponent().create()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -121,7 +143,7 @@ class LoginFragment : Fragment() {
      * Returns true if the EditTexts are not empty
      */
     private fun isEntryValid(): Boolean {
-        return networkViewModel.isLoginEntryValid(
+        return loginViewModel.isLoginEntryValid(
             binding.emailInput.text.toString(),
             binding.passwordInput.text.toString(),
         )
@@ -129,7 +151,7 @@ class LoginFragment : Fragment() {
 
     private fun addNewUser() {
         if (isEntryValid()) {
-            networkViewModel.loginAction(convertToDataClass())
+            loginViewModel.loginAction(convertToDataClass())
             //login
             observeUserToken()
             observeError()
@@ -159,7 +181,7 @@ class LoginFragment : Fragment() {
 
 
     private fun observeUserToken() {
-        networkViewModel.token.observe(this.viewLifecycleOwner) {
+        loginViewModel.token.observe(this.viewLifecycleOwner) {
             if (it != null) {
                 tokenViewModel.addNewToken(it)
             }
@@ -167,7 +189,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun observeState() {
-        networkViewModel.status.observe(this.viewLifecycleOwner) {
+        loginViewModel.status.observe(this.viewLifecycleOwner) {
             if (it == UserApiStatus.DONE) {
                 binding.errorText.visibility = GONE
                 binding.errorText.text = ""
@@ -178,7 +200,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun observeError() {
-        networkViewModel.error.observe(this.viewLifecycleOwner) { items ->
+        loginViewModel.error.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 if (it != null) {
                     binding.errorText.visibility = VISIBLE

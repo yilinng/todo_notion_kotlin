@@ -1,31 +1,27 @@
-package com.example.todonotion.overview
+package com.example.todonotion.ui.todoSearchResult
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.LiveData
-
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.*
-
+import com.example.todonotion.ADD_EDIT_RESULT_OK
+import com.example.todonotion.DELETE_RESULT_OK
 import com.example.todonotion.Event
 import com.example.todonotion.R
 import com.example.todonotion.data.Keyword.Keyword
-import com.example.todonotion.data.Keyword.KeywordDao
 import com.example.todonotion.data.Keyword.KeywordsRepository
 import com.example.todonotion.ui.KeywordsFilterType
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.launch
 import java.util.ArrayList
 import java.util.Locale
+import javax.inject.Inject
 
 //https://stackoverflow.com/questions/60489319/notfoundexception-string-resource-id-0x0-when-binding-string-resource
 //https://github.com/google-developer-training/advanced-android-testing/blob/starter_code/app/src/main/java/com/example/android/architecture/blueprints/todoapp/data/source/DefaultTasksRepository.kt
-class KeyViewModel(private val keywordsRepository: KeywordsRepository) : ViewModel() {
+class KeywordViewModel @Inject constructor(private val keywordsRepository: KeywordsRepository) : ViewModel() {
 
     // Cache all items form the database using LiveData.
     val allKeys: LiveData<List<Keyword>> = keywordsRepository.getAllKeywordsStream().asLiveData()
@@ -83,7 +79,7 @@ class KeyViewModel(private val keywordsRepository: KeywordsRepository) : ViewMod
 
     private fun updateKeyword(keyword: Keyword) {
         val newKeyword = getUpdateKeyword(keywordId = keyword.id, keywordName = keyword.keyName, keywordComplete = !keyword.isCompleted)
-       // Log.d("keywordClick", newKeyword.keyName +" " + newKeyword.isCompleted)
+        // Log.d("keywordClick", newKeyword.keyName +" " + newKeyword.isCompleted)
         if (keyword.isCompleted) {
             //change state
             viewModelScope.launch {
@@ -255,7 +251,7 @@ class KeyViewModel(private val keywordsRepository: KeywordsRepository) : ViewMod
         }
         _filteredKeyWords.value = keywordsToShow
     }
-    
+
     private fun getUpdateKeyword(keywordId: Long, keywordName: String, keywordComplete: Boolean): Keyword {
         return Keyword(
             id = keywordId,
@@ -272,21 +268,3 @@ class KeyViewModel(private val keywordsRepository: KeywordsRepository) : ViewMod
     }
 
 }
-
-
-
-/**
- * Factory class to instantiate the [ViewModel] instance.
- */
-/*
-class KeyViewModelFactory(private val keywordDao: KeywordDao) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(KeyViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return KeyViewModel(keywordDao) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
-
- */

@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-05-10T02:11:20.828828100Z">
+        <DropdownSelection timestamp="2024-06-07T03:31:25.615794700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=D:\userPract\Android\avd\Pixel_2_API_28_1.avd" />
@@ -23,7 +23,7 @@
       </SelectionState>
       <SelectionState runConfigName="TokensDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2024-05-24T04:03:10.042012400Z">
+        <DropdownSelection timestamp="2024-05-27T06:58:16.239232700Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=D:\userPract\Android\avd\Pixel_2_API_28_1.avd" />

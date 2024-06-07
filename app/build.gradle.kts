@@ -46,12 +46,13 @@ android {
 
 dependencies {
     // Define versions in a single place
-    val coroutines_version = "1.8.0-RC2"
+    val coroutines_version = "1.7.1"
     val room_version = "2.5.0"
     val archTestingVersion = "2.1.0"
     val androidXTestExtKotlinRunnerVersion = "1.1.3"
-    val espressoVersion = "3.4.0"
     val androidXTestCoreVersion = "1.4.0"
+    val dagger_version = "2.44"
+
 
     // App dependencies
     implementation("androidx.core:core-ktx:1.9.0")
@@ -61,6 +62,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.test.espresso:espresso-contrib:3.4.0")
     implementation("androidx.test.ext:junit-ktx:1.1.5")
+
 
     // Dependencies for local unit tests
     testImplementation("junit:junit:4.13.2")
@@ -75,6 +77,8 @@ dependencies {
     androidTestImplementation("androidx.navigation:navigation-testing:2.5.2")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test:rules:1.4.0")
+    androidTestImplementation ("androidx.arch.core:core-testing:$archTestingVersion")
+
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version")
 
     // Testing code should not be included in the main code.
@@ -110,7 +114,6 @@ dependencies {
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
 
-
     //https://github.com/google/flexbox-layout
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
 
@@ -123,10 +126,24 @@ dependencies {
     //https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5%23codelab-https%3A%2F%2Fdeveloper.android.com%2Fcodelabs%2Fbasic-android-kotlin-training-adaptive-layouts#5
     implementation("androidx.slidingpanelayout:slidingpanelayout:1.2.0-beta01")
 
-    // AndroidX Test - Instrumented testing
-    androidTestImplementation ("androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:$espressoVersion")
-    androidTestImplementation ("androidx.test.espresso:espresso-contrib:$espressoVersion")
-    androidTestImplementation ("androidx.arch.core:core-testing:$archTestingVersion")
+    // AndroidX Test - JVM testing
+    testImplementation ("androidx.test:core-ktx:$androidXTestCoreVersion")
+    testImplementation ("androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion")
+
+    // WorkManager dependency
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
+
+
+    // Dagger
+    implementation("com.google.dagger:dagger:$dagger_version")
+    kapt("com.google.dagger:dagger-compiler:$dagger_version")
+
+    kapt("org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.4.2")
+
+    kaptAndroidTest("com.google.dagger:dagger-compiler:$dagger_version")
+
 
 }

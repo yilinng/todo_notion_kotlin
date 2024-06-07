@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.todoSearchResult
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,21 +9,23 @@ import android.view.ViewGroup
 
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
-import com.example.todonotion.AppViewModelProvider
+import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 
 import com.example.todonotion.databinding.FragmentSearchResultBinding
-import com.example.todonotion.overview.KeyViewModel
 
-import com.example.todonotion.overview.TodoViewModel
 import com.example.todonotion.ui.adapter.TodoListAdapter
 import com.example.todonotion.ui.adapter.TodoListener
 import com.example.todonotion.ui.callback.ListOnBackPressedCallback
+import com.example.todonotion.ui.todoSearch.TodoSearchViewModel
+import javax.inject.Inject
 
 
 //https://www.geeksforgeeks.org/searchview-in-android-with-recyclerview/
@@ -31,6 +34,7 @@ class TodoSearchResultFragment : Fragment() {
     // TODO: Refactor the creation of the view model to take an instance of
     //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
     //  from BaseApplication
+    /*
     private val keyViewModel: KeyViewModel by activityViewModels {
         AppViewModelProvider.Factory
     }
@@ -39,13 +43,29 @@ class TodoSearchResultFragment : Fragment() {
     private val todoViewModel: TodoViewModel by activityViewModels{
         TodoViewModel.Factory
     }
+    */
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val todoSearchResultViewModel: TodoSearchResultViewModel by viewModels {
+        viewModelFactory
+    }
+
+    private val keywordViewModel: KeywordViewModel by viewModels {
+        viewModelFactory
+    }
     private var _binding: FragmentSearchResultBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var callback: ListOnBackPressedCallback
 
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        (requireActivity().application as BaseApplication).appComponent.todoSearchResultComponent().create()
+            .inject(this)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -69,7 +89,7 @@ class TodoSearchResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
-        binding.viewModel = todoViewModel
+        binding.viewModel = todoSearchResultViewModel
 
         val slidingPaneLayout = binding.slidingPaneLayout
         //https://medium.com/@Wingnut/tabbed-slidingpanelayout-primary-detail-using-the-navigation-component-library-%EF%B8%8F-6517a2c1e554
@@ -80,7 +100,7 @@ class TodoSearchResultFragment : Fragment() {
 
 
         val todoAdapter = TodoListAdapter(TodoListener { todo ->
-            todoViewModel.onTodoClicked(todo)
+            todoSearchResultViewModel.onTodoClicked(todo)
             // Slide the detail pane into view. If both panes are visible,
             // this has no visible effect.
             binding.slidingPaneLayout.openPane()
@@ -98,7 +118,7 @@ class TodoSearchResultFragment : Fragment() {
 
         // Attach an observer on the filteredTodos list to update the UI automatically when the data
         // changes.
-        todoViewModel.filteredTodos.observe(this.viewLifecycleOwner) { items ->
+        todoSearchResultViewModel.filteredTodos.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 todoAdapter.submitList(it)
                 //todoAdapter.filterList()
@@ -112,7 +132,7 @@ class TodoSearchResultFragment : Fragment() {
         */
         binding.actionSearch.setIconifiedByDefault(true)
         binding.actionSearch.onActionViewExpanded()
-        binding.actionSearch.setQuery(keyViewModel.storeKeyword.value, false)
+        binding.actionSearch.setQuery(keywordViewModel.storeKeyword.value, false)
         binding.actionSearch.clearFocus()
 
 

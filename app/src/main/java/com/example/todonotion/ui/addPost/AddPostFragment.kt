@@ -1,5 +1,6 @@
-package com.example.todonotion.ui
+package com.example.todonotion.ui.addPost
 
+import android.content.Context
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.graphics.Color
 import android.os.Bundle
@@ -13,34 +14,62 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 
 import androidx.navigation.fragment.findNavController
 
-import com.example.todonotion.AppViewModelProvider
+import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 import com.example.todonotion.model.Post
 import com.example.todonotion.databinding.FragmentAddPostBinding
 
 import com.example.todonotion.model.dto.PostDto
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
 import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.overview.auth.UserApiStatus
+import com.example.todonotion.util.ADD_ACTION
+import com.example.todonotion.util.DELETE_ACTION
+import com.example.todonotion.util.EDIT_ACTION
+import com.example.todonotion.util.makeStatusNotification
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 class AddPostFragment : Fragment() {
+
+    /*
     private val tokenViewModel: TokenViewModel by activityViewModels {
         AppViewModelProvider.Factory
     }
     private val networkViewModel: AuthNetworkViewModel by activityViewModels {
         AuthNetworkViewModel.Factory
     }
+     */
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val addPostViewModel: AddPostViewModel by viewModels {
+        viewModelFactory
+    }
+
+    private val tokenViewModel: TokenViewModel by viewModels {
+        viewModelFactory
+    }
     private var _binding: FragmentAddPostBinding? = null
     private val binding get() = _binding!!
     private lateinit var post: Post
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        (requireActivity().application as BaseApplication).appComponent.addPostComponent().create()
+            .inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,19 +77,19 @@ class AddPostFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentAddPostBinding.inflate(inflater, container, false)
+        observePost()
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observerToken()
-        observePost()
         editWithDoneBtn()
         refreshPage()
     }
 
     private fun observePost() {
-        networkViewModel.post.observe(this.viewLifecycleOwner) {
+        addPostViewModel.post.observe(this.viewLifecycleOwner) {
             if (it != null) {
                 post = it
                 binding.addPostTitle.text = getString(R.string.update_post_title)
@@ -72,13 +101,14 @@ class AddPostFragment : Fragment() {
         tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
             it.let {
                 if (it.isNotEmpty()) {
-                    if (networkViewModel.post.value != null && networkViewModel.checkUserHavePost(
+                    if (addPostViewModel.post.value != null && addPostViewModel.checkUserHavePost(
                             post
                         )
                     ) {
                         binding.deleteBtn.visibility = View.VISIBLE
                         binding.deleteBtn.setOnClickListener {
-                            deletePost(post)
+                            context?.let { it1 -> showDeleteDialog(it1, post) }
+
                         }
                         //update post action
                         bindPost(post)
@@ -129,7 +159,7 @@ class AddPostFragment : Fragment() {
     }
 
     private fun observeError() {
-        networkViewModel.error.observe(this.viewLifecycleOwner) { items ->
+        addPostViewModel.error.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 if (it != null) {
                     binding.errorText.visibility = View.VISIBLE
@@ -150,9 +180,9 @@ class AddPostFragment : Fragment() {
 
     private fun addNewPost() {
         if (isEntryValid()) {
-            networkViewModel.addPostAction(convertToDataClass())
+            addPostViewModel.addPostAction(convertToDataClass())
             //add post
-            observeStatus()
+            observeStatus(ADD_ACTION)
             observeError()
         } else {
             actionIsEmpty()
@@ -161,9 +191,9 @@ class AddPostFragment : Fragment() {
 
     private fun updatePost(post: Post) {
         if (isEntryValid()) {
-            networkViewModel.editPostAction(post.id, convertToDataClass())
+            addPostViewModel.editPostAction(post.id, convertToDataClass())
             //add post
-            observeStatus()
+            observeStatus(EDIT_ACTION)
         } else {
             actionIsEmpty()
         }
@@ -188,9 +218,32 @@ class AddPostFragment : Fragment() {
     }
 
 
-    private fun observeStatus() {
-        networkViewModel.status.observe(this.viewLifecycleOwner) {
+    //https://github.com/google-developer-training/basic-android-kotlin-compose-training-workmanager/blob/intermediate/app/src/main/java/com/example/bluromatic/workers/WorkerUtils.kt
+    //https://developer.android.com/develop/ui/views/notifications/build-notification
+    //https://stackoverflow.com/questions/58526610/what-channelid-should-i-pass-to-the-constructor-of-notificationcompat-builder
+    private fun observeStatus(action: String) {
+        addPostViewModel.status.observe(this.viewLifecycleOwner) {
             if (it == UserApiStatus.DONE) {
+                when (action) {
+                    "ADD" -> {
+                        makeStatusNotification(
+                            requireContext().resources.getString(R.string.successfully_add_post),
+                            requireContext()
+                        )
+                    }
+                    "EDIT" -> {
+                        makeStatusNotification(
+                            requireContext().resources.getString(R.string.successfully_edit_post),
+                            requireContext()
+                        )
+                    }
+                    else -> {
+                        makeStatusNotification(
+                            requireContext().resources.getString(R.string.successfully_delete_post),
+                            requireContext()
+                        )
+                    }
+                }
                 navToLastPage()
             }
         }
@@ -205,7 +258,7 @@ class AddPostFragment : Fragment() {
      * Returns true if the EditTexts are not empty
      */
     private fun isEntryValid(): Boolean {
-        return networkViewModel.isPostEntryValid(
+        return addPostViewModel.isPostEntryValid(
             binding.titleInput.text.toString(),
             binding.contextInput.text.toString(),
             binding.usernameInput.text.toString()
@@ -248,11 +301,28 @@ class AddPostFragment : Fragment() {
 
 
     private fun deletePost(post: Post) {
-        networkViewModel.deletePostAction(post.id)
-        observeStatus()
+        addPostViewModel.deletePostAction(post.id)
+        observeStatus(DELETE_ACTION)
         observeError()
     }
 
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun showDeleteDialog(context: Context, post: Post) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle(getString(R.string.delete_post_title))
+            .setMessage(getString(R.string.delete_post_cont))
+            .setCancelable(false)
+            .setNegativeButton(getString(R.string.cancel)) { _, _ ->
+            }
+            .setPositiveButton(getString(R.string.ok)) { _, _ ->
+                GlobalScope.launch {
+                    deletePost(post)
+                }
+
+            }
+            .show()
+    }
 
     private fun bindPost(post: Post) {
         binding.apply {
