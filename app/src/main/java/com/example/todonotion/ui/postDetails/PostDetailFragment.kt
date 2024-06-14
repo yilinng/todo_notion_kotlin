@@ -7,38 +7,45 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+
 import com.example.todonotion.BaseApplication
 
-import com.example.todonotion.MainActivity
+import com.example.todonotion.ui.main.MainActivity
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentPostDetailBinding
-
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
 import com.example.todonotion.overview.auth.TokenViewModel
+import com.example.todonotion.overview.auth.UserApiStatus
+
 import com.example.todonotion.ui.adapter.ContextAdapter
-import com.example.todonotion.ui.todoDetails.TodoDetailFragment
+import com.example.todonotion.ui.addPost.AddPostFragment
+import com.example.todonotion.ui.postList.PostListFragmentDirections
+
 import javax.inject.Inject
 
 
 //https://stackoverflow.com/questions/17436298/how-to-pass-a-variable-from-activity-to-fragment-and-pass-it-back
 class PostDetailFragment : Fragment() {
 
-    // private val args: PostDetailFragmentArgs by navArgs()
-    /*
-    private val viewModel: AuthNetworkViewModel by activityViewModels {
-        AuthNetworkViewModel.Factory
-    }
-     */
-
-    private lateinit var args: String
+    private val fromArgs: PostDetailFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    /*
+    private val authNetworkViewModel: AuthNetworkViewModel by activityViewModels {
+        viewModelFactory
+    }
+    */
+    private val tokenViewModel: TokenViewModel by activityViewModels {
+        viewModelFactory
+    }
 
     private val postDetailsViewModel: PostDetailsViewModel by viewModels {
         viewModelFactory
@@ -54,7 +61,7 @@ class PostDetailFragment : Fragment() {
             .create()
             .inject(this)
 
-        args = arguments?.getString("postId").toString()
+        // args = arguments?.getString("postId").toString()
     }
 
     override fun onCreateView(
@@ -64,9 +71,9 @@ class PostDetailFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentPostDetailBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        postDetailsViewModel.getPostAction(fromArgs.postId)
 
-        postDetailsViewModel.getPostAction(args)
-
+        Log.d("post_details_args", fromArgs.postId)
         // Inflate the layout for this fragment
         return binding.root
     }
@@ -79,10 +86,12 @@ class PostDetailFragment : Fragment() {
         // the UI when the data actually changes.
         val context = postDetailsViewModel.post.value?.context ?: listOf()
         binding.recyclerView.adapter = ContextAdapter(context)
-        observeUser()
+        // observeUser()
         observePost()
+        observeStatus()
         refreshPage()
     }
+
 
     private fun refreshPage() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
@@ -91,32 +100,57 @@ class PostDetailFragment : Fragment() {
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()
+            val action =
+                PostListFragmentDirections.actionPostListFragmentToPostDetailFragment(fromArgs.postId)
             navController.run {
                 popBackStack()
-                navigate(R.id.postDetailFragment)
+                navigate(action)
             }
             binding.refreshLayout.isRefreshing = false
+        }
+    }
+
+    private fun observeStatus() {
+        postDetailsViewModel.status.observe(this.viewLifecycleOwner) {
+            if (it == UserApiStatus.LOADING || it == UserApiStatus.ERROR) {
+                binding.postTitle.isVisible = false
+                binding.recyclerView.isVisible = false
+                binding.postDate.isVisible = false
+                binding.editFab.isVisible = false
+            } else {
+                binding.postTitle.isVisible = true
+                binding.recyclerView.isVisible = true
+                binding.postDate.isVisible = true
+                binding.editFab.isVisible = true
+            }
         }
     }
 
     private fun observePost() {
         postDetailsViewModel.post.observe(this.viewLifecycleOwner) {
             if (it != null) {
-                binding.todoTitle.text = it.title
-                binding.todoUser.text = it.username
-                binding.todoDate.text = it.updateDate!!.substring(0, 10)
+                binding.postTitle.text = it.title
+                binding.postUser.text = it.username
+                binding.postDate.text = it.updateDate!!.substring(0, 10)
+
+                Log.d("postDetails_init", it.toString())
+                observeToken()
+
+                AddPostFragment.newIdInstance(fromArgs.postId)
+
+                val action =
+                    PostDetailFragmentDirections.actionPostDetailFragmentToAddPostFragment(fromArgs.postId)
 
                 binding.editFab.setOnClickListener {
-                    //val action = PostDetailFragmentDirections.actionPostDetailFragmentToAddPostFragment()
-                    findNavController().navigate(R.id.action_postDetailFragment_to_addPostFragment)
+                    findNavController().navigate(action)
                 }
             }
         }
     }
 
-    private fun observeUser() {
-        postDetailsViewModel.user.observe(this.viewLifecycleOwner) {
-            if (it!!.todos!!.isNotEmpty() && it.todos!!.contains(postDetailsViewModel.post.value!!.id)) {
+    private fun observeToken() {
+        tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
+            if (it.isNotEmpty() && it[0].userId == postDetailsViewModel.post.value!!.user) {
                 binding.editFab.visibility = View.VISIBLE
             } else {
                 binding.editFab.visibility = View.GONE
@@ -124,6 +158,7 @@ class PostDetailFragment : Fragment() {
         }
 
     }
+
 
     //https://stackoverflow.com/questions/15560904/setting-custom-actionbar-title-from-fragment
     override fun onResume() {

@@ -16,14 +16,14 @@
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
         <action
             android:id="@+id/action_todoListFragment_to_postListFragment"
             app:destination="@id/postListFragment" />
         <argument
             android:name="userMessage"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
 
     </fragment>
     <fragment
@@ -48,11 +48,11 @@
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
         <argument
             android:name="userMessage"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/todoSearchResultFragment"
@@ -65,7 +65,11 @@
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
+
+        <argument
+            android:name="keyword"
+            app:argType="string" />
 
     </fragment>
     <fragment
@@ -79,7 +83,7 @@
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
         <action
             android:id="@+id/action_loginFragment_to_todoListFragment"
             app:destination="@id/todoListFragment" />
@@ -96,7 +100,7 @@
             app:enterAnim="@anim/slide_left_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_left_out"/>
+            app:popExitAnim="@anim/slide_left_out" />
         <action
             android:id="@+id/action_signupFragment_to_todoListFragment"
             app:destination="@id/todoListFragment" />
@@ -113,18 +117,18 @@
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
         <action
             android:id="@+id/action_postListFragment_to_addPostFragment"
             app:destination="@id/addPostFragment"
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
         <argument
             android:name="userMessage"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
 
     </fragment>
     <fragment
@@ -138,7 +142,7 @@
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/slide_out"/>
+            app:popExitAnim="@anim/slide_out" />
         <argument
             android:name="postId"
             app:argType="string" />
@@ -147,14 +151,18 @@
         android:id="@+id/addPostFragment"
         android:name="com.example.todonotion.ui.addPost.AddPostFragment"
         android:label=""
-        tools:layout="@layout/fragment_add_post" >
+        tools:layout="@layout/fragment_add_post">
 
         <action
             android:id="@+id/action_addPostFragment_to_postListFragment"
             app:destination="@id/postListFragment"
             app:popUpTo="@id/postListFragment"
             app:popUpToInclusive="true" />
-
+        <argument
+            android:name="postId"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
     </fragment>
     <argument
         android:name="userMessage"

@@ -11,9 +11,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.todonotion.databinding.FragmentTodoDetailBinding
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+
 import com.example.todonotion.BaseApplication
-import com.example.todonotion.R
+
+import com.example.todonotion.ui.todoList.TodoListFragmentDirections
 import javax.inject.Inject
 
 //https://stackoverflow.com/questions/17436298/how-to-pass-a-variable-from-activity-to-fragment-and-pass-it-back
@@ -27,7 +28,7 @@ class TodoDetailFragment : Fragment() {
         viewModelFactory
     }
 
-   // private val args: TodoDetailFragmentArgs by navArgs()
+   // private val fromArgs: TodoDetailFragmentArgs by navArgs()
 
     private lateinit var args: String
     /*
@@ -44,9 +45,7 @@ class TodoDetailFragment : Fragment() {
 
         (requireActivity().application as BaseApplication).appComponent.todoDetailsComponent().create()
             .inject(this)
-
        args = arguments?.getString("todoId").toString()
-
     }
 
 
@@ -61,25 +60,25 @@ class TodoDetailFragment : Fragment() {
 
         todoDetailsViewModel.getTodoPhoto(args)
 
-      //  todoDetailsViewModel.getTodoPhoto(args.todoId)
-        // Inflate the layout for this fragment
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
         super.onViewCreated(view, savedInstanceState)
+        refreshPage()
+    }
 
+    private fun refreshPage() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
         //refresh page
         binding.refreshLayout.setOnRefreshListener {
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
-
+            val action = TodoListFragmentDirections.actionTodoListFragmentToTodoDetailFragment(args)
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()
             navController.run {
                 popBackStack()
-                navigate(R.id.todoDetailFragment)
+                navigate(action)
             }
             binding.refreshLayout.isRefreshing = false
         }

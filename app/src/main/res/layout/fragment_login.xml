@@ -16,14 +16,14 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:id="@+id/login_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
+                android:layout_marginStart="60dp"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@id/email_label"
                 app:layout_constraintStart_toStartOf="parent"
@@ -38,8 +38,7 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                     />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/login_title1"
@@ -52,7 +51,6 @@
                     app:layout_constraintBottom_toBottomOf="@id/login_title" />
 
             </LinearLayout>
-
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/email_label"
@@ -144,14 +142,26 @@
                 android:id="@+id/error_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/red_700"
                 android:layout_margin="8dp"
+                android:textColor="@color/red_700"
                 android:textSize="20sp"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/signup_label"
-                tools:text="@string/login_error"/>
+                tools:text="@string/login_error" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/circle_progress_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:indicatorColor="@color/purple_500"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/signup_label" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

@@ -4,6 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.todonotion.ui.postDetails.PostDetailsViewModel" />
+    </data>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refreshLayout"
         android:layout_width="wrap_content"
@@ -21,7 +28,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
-                    android:id="@+id/todo_title"
+                    android:id="@+id/post_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif"
@@ -46,12 +53,12 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/todo_title"
+                    app:layout_constraintTop_toBottomOf="@+id/post_title"
                     tools:listitem="@layout/list_post_context" />
 
 
                 <TextView
-                    android:id="@+id/todo_user"
+                    android:id="@+id/post_user"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -65,7 +72,7 @@
                     tools:text="post username...." />
 
                 <TextView
-                    android:id="@+id/todo_date"
+                    android:id="@+id/post_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
@@ -75,7 +82,7 @@
                     android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/todo_user"
+                    app:layout_constraintTop_toBottomOf="@+id/post_user"
                     tools:text="post date...." />
 
 
@@ -92,8 +99,19 @@
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/todo_date"
+                    app:layout_constraintTop_toBottomOf="@+id/post_date"
                     app:tint="@color/gray_100" />
+
+                <ImageView
+                    android:id="@+id/status_image"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:contentDescription="@string/status"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/post_title"
+                    app:userApiStatus="@{viewModel.status}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

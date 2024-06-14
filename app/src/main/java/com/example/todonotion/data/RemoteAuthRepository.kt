@@ -8,7 +8,7 @@ import retrofit2.http.*
 import javax.inject.Inject
 
 
-interface UsersRepository {
+interface RemoteAuthRepository {
 
     suspend fun loginUser(@Body login: Login): AuthResponse
 
@@ -48,9 +48,9 @@ interface UsersRepository {
     ): Response<Unit>
 }
 
-class NetworkUsersRepository @Inject constructor(
+class NetworkRemoteAuthRepository @Inject constructor(
     private val userApiService: UserApiService
-) : UsersRepository {
+) : RemoteAuthRepository {
     override suspend fun loginUser(login: Login): AuthResponse = userApiService.loginUser(login)
 
     override suspend fun signupUser(signup: Signup): SignupResponse =

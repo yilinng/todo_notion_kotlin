@@ -1,4 +1,4 @@
-package com.example.todonotion.data.User
+package com.example.todonotion.data.user
 import kotlinx.coroutines.flow.Flow
 import androidx.room.*
 

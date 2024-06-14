@@ -4,12 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.todonotion.data.Keyword.KeywordDao
-import com.example.todonotion.data.Keyword.Keyword
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.Token.TokenDao
-import com.example.todonotion.data.User.UserDao
-import com.example.todonotion.data.User.User
+import com.example.todonotion.data.keyword.KeywordDao
+import com.example.todonotion.data.keyword.Keyword
+import com.example.todonotion.data.token.Token
+import com.example.todonotion.data.token.TokenDao
+import com.example.todonotion.data.user.UserDao
+import com.example.todonotion.data.user.User
 
 /**
  * Room database to persist data for the Forage app.

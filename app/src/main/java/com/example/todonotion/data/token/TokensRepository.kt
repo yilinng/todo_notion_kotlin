@@ -1,30 +1,30 @@
-package com.example.todonotion.data.Keyword
+package com.example.todonotion.data.token
 
 import kotlinx.coroutines.flow.Flow
 
-interface KeywordsRepository {
+interface TokensRepository {
     /**
      * Retrieve all the items from the the given data source.
      */
-    fun getAllKeywordsStream(): Flow<List<Keyword>>
+    fun getAllTokensStream(): Flow<List<Token>>
 
     /**
      * Retrieve an item from the given data source that matches with the [id].
      */
-    fun getKeywordStream(id: Int): Flow<Keyword?>
+    fun getTokenStream(id: Int): Flow<Token?>
 
     /**
      * Insert item in the data source
      */
-    suspend fun insertKeyword(keyword: Keyword)
+    suspend fun insertToken(token: Token)
 
     /**
      * Delete item from the data source
      */
-    suspend fun deleteKeyword(keyword: Keyword)
+    suspend fun deleteToken(token: Token)
 
     /**
      * Update item in the data source
      */
-    suspend fun updateKeyword(keyword: Keyword)
+    suspend fun updateToken(token: Token)
 }

@@ -2,6 +2,7 @@ package com.example.todonotion.di
 
 import com.example.todonotion.ui.addPost.di.AddPostComponent
 import com.example.todonotion.ui.login.di.LoginComponent
+import com.example.todonotion.ui.main.di.MainComponent
 import com.example.todonotion.ui.postDetails.di.PostDetailsComponent
 import com.example.todonotion.ui.postList.di.PostListComponent
 import com.example.todonotion.ui.signup.di.SignupComponent
@@ -14,6 +15,7 @@ import dagger.Module
 // This module tells a Component which are its subcomponents
 @Module(
     subcomponents = [
+        MainComponent::class,
         TodoListComponent::class,
         TodoDetailsComponent::class,
         TodoSearchComponent::class,

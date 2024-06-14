@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.UsersRepository
+import com.example.todonotion.data.RemoteAuthRepository
+import com.example.todonotion.data.token.Token
 import com.example.todonotion.model.Signup
 import com.example.todonotion.model.SignupResponse
 import com.example.todonotion.model.User
@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class SignupViewModel @Inject constructor(val usersRepository: UsersRepository) : ViewModel() {
+class SignupViewModel @Inject constructor(private val remoteAuthRepository: RemoteAuthRepository) :
+    ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<UserApiStatus>()
@@ -38,7 +39,7 @@ class SignupViewModel @Inject constructor(val usersRepository: UsersRepository) 
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-                _signupResponse.value = usersRepository.signupUser(signup)
+                _signupResponse.value = remoteAuthRepository.signupUser(signup)
                 _token.value = Token(
                     accessToken = signupResponse.value!!.accessToken,
                     refreshToken = signupResponse.value!!.newToken.refreshToken,
@@ -64,6 +65,10 @@ class SignupViewModel @Inject constructor(val usersRepository: UsersRepository) 
 
     private fun initError() {
         _error.value = null
+    }
+
+    fun initToken() {
+        _token.value = null
     }
 
     fun isSignupEntryValid(name: String, email: String, password: String): Boolean {

@@ -10,10 +10,10 @@ import android.view.ViewGroup
 
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 
 import com.example.todonotion.BaseApplication
@@ -25,13 +25,9 @@ import com.example.todonotion.ui.adapter.PostListAdapter
 
 import com.example.todonotion.ui.adapter.PostListener
 import com.example.todonotion.ui.postDetails.PostDetailFragment
-import com.example.todonotion.ui.postDetails.PostDetailsViewModel
-import com.example.todonotion.ui.todoDetails.TodoDetailFragment
-import com.example.todonotion.ui.todoList.TodoListFragmentDirections
 
 import com.google.android.material.tabs.TabLayout
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
 import javax.inject.Inject
 
 /**
@@ -43,16 +39,6 @@ class PostListFragment : Fragment() {
     //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
     //  from BaseApplication
 
-    /*
-    private val networkViewModel: AuthNetworkViewModel by activityViewModels {
-        AuthNetworkViewModel.Factory
-    }
-
-    private val tokenViewModel: TokenViewModel by activityViewModels {
-        AppViewModelProvider.Factory
-    }
-    */
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -60,7 +46,7 @@ class PostListFragment : Fragment() {
         viewModelFactory
     }
 
-    private val tokenViewModel: TokenViewModel by viewModels {
+    private val tokenViewModel: TokenViewModel by activityViewModels {
         viewModelFactory
     }
 
@@ -79,8 +65,10 @@ class PostListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        //instance = this
         _binding = FragmentPostListBinding.inflate(inflater, container, false)
         // Inflate the layout for this fragment
+
         return binding.root
     }
 
@@ -91,8 +79,8 @@ class PostListFragment : Fragment() {
         binding.viewModel = postListViewModel
 
         observeStatus()
-        observeToken()
         observePosts()
+        observeToken()
         tabSelect()
         refreshPage()
         addEvent()
@@ -107,8 +95,8 @@ class PostListFragment : Fragment() {
 
     private fun setupNavigation() {
         postListViewModel.post.observe(this.viewLifecycleOwner) {
-            if(it != null) {
-                val postDetailFragment = PostDetailFragment.newInstance(it.id)
+            if (it != null) {
+                PostDetailFragment.newInstance(it.id)
                 openPostDetails(it.id)
             }
         }
@@ -181,32 +169,35 @@ class PostListFragment : Fragment() {
 
     private fun observeStatus() {
         postListViewModel.status.observe(this.viewLifecycleOwner) {
-            if(it != UserApiStatus.LOADING) {
+            if (it != UserApiStatus.LOADING) {
                 hideLoadingProgress()
             }
         }
     }
 
-
-
+    /*
+    private fun showLoadingProgress() {
+        binding.linearProgressIndicator.isVisible = true
+        binding.recyclerView.isVisible = false
+    }
+    */
     private fun hideLoadingProgress() {
-        // binding.loadingImg.isIndeterminate = true
         binding.linearProgressIndicator.isVisible = false
         binding.recyclerView.isVisible = true
     }
 
     private fun observePosts() {
-
         postListViewModel.posts.observe(this.viewLifecycleOwner) {
-
             if (postListViewModel.status.value == UserApiStatus.DONE) {
-                //binding
                 if (it.isNotEmpty()) {
                     Log.d("getPosts", it.toString())
-                    postListViewModel.filteredPost()
                     binding.postsErrorText.visibility = GONE
                     binding.postEmptyImage.visibility = GONE
 
+                    if(tokenViewModel.tokens.value!!.isNotEmpty()) {
+                        tokenViewModel.tokens.value?.get(0)
+                            ?.let { it1 -> postListViewModel.filteredPost(userId = it1.userId) }
+                    }
                 } else {
                     binding.postsErrorText.visibility = View.VISIBLE
                     binding.postEmptyImage.visibility = View.VISIBLE

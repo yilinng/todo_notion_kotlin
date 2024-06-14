@@ -3,14 +3,18 @@ package com.example.todonotion.di
 import android.content.Context
 import androidx.room.Room
 import com.example.todonotion.data.KeyDatabase
-import com.example.todonotion.data.Keyword.KeywordsRepository
-import com.example.todonotion.data.Keyword.OfflineKeywordsRepository
+import com.example.todonotion.data.keyword.KeywordsRepository
+import com.example.todonotion.data.keyword.OfflineKeywordsRepository
 import com.example.todonotion.data.NetworkTodosRepository
-import com.example.todonotion.data.NetworkUsersRepository
+import com.example.todonotion.data.NetworkRemoteAuthRepository
+
+import com.example.todonotion.data.RemoteAuthRepository
 import com.example.todonotion.data.TodosRepository
-import com.example.todonotion.data.Token.TokensRepository
-import com.example.todonotion.data.Token.OfflineTokensRepository
-import com.example.todonotion.data.UsersRepository
+import com.example.todonotion.data.token.TokensRepository
+import com.example.todonotion.data.token.OfflineTokensRepository
+import com.example.todonotion.data.user.OfflineUsersRepository
+import com.example.todonotion.data.user.UsersRepository
+
 import com.example.todonotion.network.TodoApiService
 import com.example.todonotion.network.UserApiService
 import com.squareup.moshi.Moshi
@@ -37,7 +41,7 @@ object AppModule {
 
     @Qualifier
     @Retention(AnnotationRetention.RUNTIME)
-    annotation class NetworkUsersRepository
+    annotation class NetworkRemoteAuthRepository
 
 
     @JvmStatic
@@ -74,10 +78,10 @@ object AppModule {
 
     @JvmStatic
     @Provides
-    @NetworkUsersRepository
+    @NetworkRemoteAuthRepository
     @Singleton
-    fun provideUserRepository(userApiService: UserApiService): UsersRepository {
-        return NetworkUsersRepository(userApiService)
+    fun provideRemoteAuthRepository(userApiService: UserApiService): RemoteAuthRepository {
+        return NetworkRemoteAuthRepository(userApiService)
     }
 
 
@@ -100,6 +104,18 @@ object AppModule {
     ): KeywordsRepository {
         return OfflineKeywordsRepository(
             database.keyDao()
+        )
+    }
+
+
+    @JvmStatic
+    @Singleton
+    @Provides
+    fun provideLocalUser(
+        database: KeyDatabase
+    ): UsersRepository {
+        return OfflineUsersRepository(
+            database.userDao()
         )
     }
 

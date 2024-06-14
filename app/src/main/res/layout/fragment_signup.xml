@@ -162,6 +162,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/login_label"
                 tools:text="@string/password_length_error" />
 
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/circle_progress_indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                app:indicatorColor="@color/green_600"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/login_label" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

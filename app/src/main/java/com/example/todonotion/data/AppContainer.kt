@@ -1,21 +1,20 @@
 package com.example.todonotion.data
 
 import android.content.Context
-import com.example.todonotion.data.Keyword.KeywordsRepository
-import com.example.todonotion.data.Keyword.OfflineKeywordsRepository
-import com.example.todonotion.data.Token.TokensRepository
-import com.example.todonotion.data.Token.OfflineTokensRepository
+import com.example.todonotion.data.keyword.KeywordsRepository
+import com.example.todonotion.data.keyword.OfflineKeywordsRepository
+import com.example.todonotion.data.token.TokensRepository
+import com.example.todonotion.data.token.OfflineTokensRepository
 import com.example.todonotion.network.TodoApiService
 import com.example.todonotion.network.UserApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import javax.inject.Inject
 
 interface AppContainer {
     val todosRepository: TodosRepository
-    val usersRepository: UsersRepository
+    val usersRepository: RemoteAuthRepository
     val tokensRepository: TokensRepository
     val keywordsRepository: KeywordsRepository
 }
@@ -66,8 +65,8 @@ class DefaultAppContainer (private val context: Context) : AppContainer {
         NetworkTodosRepository(retrofitService)
     }
 
-    override val usersRepository: UsersRepository by lazy {
-        NetworkUsersRepository(localRetrofitService)
+    override val usersRepository: RemoteAuthRepository by lazy {
+       NetworkRemoteAuthRepository(localRetrofitService)
     }
 
     override val tokensRepository: TokensRepository by lazy {

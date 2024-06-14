@@ -1,9 +1,11 @@
 package com.example.todonotion.di
 
+import com.example.todonotion.data.NetworkRemoteAuthRepository
 import com.example.todonotion.data.NetworkTodosRepository
-import com.example.todonotion.data.NetworkUsersRepository
+
+import com.example.todonotion.data.RemoteAuthRepository
 import com.example.todonotion.data.TodosRepository
-import com.example.todonotion.data.UsersRepository
+
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton
@@ -16,5 +18,5 @@ abstract class AppModuleBinds {
 
     @Singleton
     @Binds
-    abstract fun bindUserRepository(repo: NetworkUsersRepository): UsersRepository
+    abstract fun bindUserRepository(repo: NetworkRemoteAuthRepository): RemoteAuthRepository
 }

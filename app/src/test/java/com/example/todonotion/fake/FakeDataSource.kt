@@ -1,8 +1,7 @@
 package com.example.todonotion.fake
 
-import com.example.todonotion.data.Token.Token
+import com.example.todonotion.data.token.Token
 import com.example.todonotion.model.*
-import retrofit2.Response
 
 object FakeDataSource {
     const val idOne = "id1"
@@ -46,7 +45,6 @@ object FakeDataSource {
         refreshToken = "testreFreshtoken"
     )
     val post1 = Post(
-        id = idOne,
         title = titleOne,
         context = contextOne,
         updateDate = updateDateOne,
@@ -55,7 +53,6 @@ object FakeDataSource {
     )
 
     val post2 = Post(
-        id = idTwo,
         title = titleTwo,
         context = contextTwo,
         updateDate = updateDateTwo,
@@ -68,7 +65,6 @@ object FakeDataSource {
     )
 
     val addPost = Post(
-        id = idThree,
         title = titleThree,
         context = contextThree,
         updateDate = updateDateThree,
@@ -77,7 +73,6 @@ object FakeDataSource {
     )
 
     val editPost = Post(
-        id = idThree,
         title = titleThree,
         context = contentThreeUpdate,
         updateDate = updateDateThree,

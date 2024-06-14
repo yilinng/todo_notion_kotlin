@@ -4,27 +4,22 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.data.UsersRepository
-import com.example.todonotion.model.Post
+import com.example.todonotion.data.RemoteAuthRepository
 import com.example.todonotion.model.UpdateNestedPost
-import com.example.todonotion.model.UpdatePost
-import com.example.todonotion.model.User
+
 import com.example.todonotion.overview.auth.UserApiStatus
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import javax.inject.Inject
 
 
-class PostDetailsViewModel @Inject constructor(val usersRepository: UsersRepository) : ViewModel() {
+class PostDetailsViewModel @Inject constructor(private val remoteAuthRepository: RemoteAuthRepository) : ViewModel() {
 
     private val _status = MutableLiveData<UserApiStatus>()
     val status: LiveData<UserApiStatus> = _status
 
     private val _post = MutableLiveData<UpdateNestedPost?>()
     val post: LiveData<UpdateNestedPost?> = _post
-
-    private val _user = MutableLiveData<User?>()
-    val user: LiveData<User?> = _user
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
@@ -33,7 +28,7 @@ class PostDetailsViewModel @Inject constructor(val usersRepository: UsersReposit
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-                _post.value = usersRepository.getTodo(postId).todo
+                _post.value = remoteAuthRepository.getTodo(postId).todo
                 _status.value = UserApiStatus.DONE
                 // Log.i("getTodo200", post.toString())
                 initError()

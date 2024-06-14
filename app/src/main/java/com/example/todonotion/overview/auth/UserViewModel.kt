@@ -7,13 +7,13 @@ import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.launch
 
-import com.example.todonotion.data.User.User
-import com.example.todonotion.data.User.UserDao
+import com.example.todonotion.data.user.User
+import com.example.todonotion.data.user.UsersRepository
 
 //store user in database
-class AuthViewModel(val userDao: UserDao): ViewModel() {
+class UserViewModel(private val usersRepository: UsersRepository): ViewModel() {
 
-    private val users: LiveData<List<User>> = userDao.getUsers().asLiveData()
+    private val users: LiveData<List<User>> = usersRepository.getAllUsersStream().asLiveData()
 
     /**
      * Inserts the new User into database.
@@ -29,7 +29,7 @@ class AuthViewModel(val userDao: UserDao): ViewModel() {
      */
     private fun insertUser(user: User) {
         viewModelScope.launch {
-            userDao.insert(user)
+            usersRepository.insertUser(user)
         }
     }
 
@@ -39,7 +39,7 @@ class AuthViewModel(val userDao: UserDao): ViewModel() {
      */
     fun deleteUser(user: User) {
         viewModelScope.launch {
-            userDao.delete(user)
+            usersRepository.deleteUser(user)
         }
     }
 
@@ -58,7 +58,7 @@ class AuthViewModel(val userDao: UserDao): ViewModel() {
 
 
 /**
- * Factory class to instantiate the [AuthViewModel] instance.
+ * Factory class to instantiate the [UserViewModel] instance.
 
 class AuthViewModelFactory(private val userDao: UserDao) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

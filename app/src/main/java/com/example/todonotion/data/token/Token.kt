@@ -1,4 +1,4 @@
-package com.example.todonotion.data.Token
+package com.example.todonotion.data.token
 
 import androidx.annotation.NonNull
 import androidx.room.ColumnInfo

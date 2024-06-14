@@ -13,11 +13,14 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 
 import com.example.todonotion.BaseApplication
 
@@ -29,6 +32,8 @@ import com.example.todonotion.model.dto.PostDto
 import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.overview.auth.UserApiStatus
+import com.example.todonotion.ui.postDetails.PostDetailFragment
+
 import com.example.todonotion.util.ADD_ACTION
 import com.example.todonotion.util.DELETE_ACTION
 import com.example.todonotion.util.EDIT_ACTION
@@ -36,6 +41,7 @@ import com.example.todonotion.util.makeStatusNotification
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -50,6 +56,9 @@ class AddPostFragment : Fragment() {
         AuthNetworkViewModel.Factory
     }
      */
+
+    private val fromArgs: AddPostFragmentArgs by navArgs()
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -57,18 +66,27 @@ class AddPostFragment : Fragment() {
         viewModelFactory
     }
 
-    private val tokenViewModel: TokenViewModel by viewModels {
+    private val tokenViewModel: TokenViewModel by activityViewModels {
         viewModelFactory
     }
+
+    private lateinit var lastAccessToken: String
+
     private var _binding: FragmentAddPostBinding? = null
     private val binding get() = _binding!!
     private lateinit var post: Post
+
+    private lateinit var args: String
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         (requireActivity().application as BaseApplication).appComponent.addPostComponent().create()
             .inject(this)
+
+        args = arguments?.getString("postId").toString()
+
+        Log.d("addPost_init", args + " " + fromArgs.postId)
     }
 
     override fun onCreateView(
@@ -77,13 +95,22 @@ class AddPostFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentAddPostBinding.inflate(inflater, container, false)
-        observePost()
+        // addPostViewModel.getPostAction(args)
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.lifecycleOwner = this
+        binding.viewModel = addPostViewModel
+
+        lastAccessToken = ""
+        observeTokenUser()
+        observePost()
         observerToken()
+        observeAccessToken()
+        observeStatus()
         editWithDoneBtn()
         refreshPage()
     }
@@ -93,6 +120,18 @@ class AddPostFragment : Fragment() {
             if (it != null) {
                 post = it
                 binding.addPostTitle.text = getString(R.string.update_post_title)
+                Log.d("addPost_havePost", addPostViewModel.checkUserHavePost(post).toString())
+                if (addPostViewModel.checkUserHavePost(post)) {
+                    binding.deleteBtn.visibility = View.VISIBLE
+
+                    binding.deleteBtn.setOnClickListener {
+                        showLoadingProgress()
+                        context?.let { it1 -> showDeleteDialog(it1, post) }
+
+                    }
+                    //update post action
+                    bindPost(post)
+                }
             }
         }
     }
@@ -101,22 +140,16 @@ class AddPostFragment : Fragment() {
         tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
             it.let {
                 if (it.isNotEmpty()) {
-                    if (addPostViewModel.post.value != null && addPostViewModel.checkUserHavePost(
-                            post
-                        )
-                    ) {
-                        binding.deleteBtn.visibility = View.VISIBLE
-                        binding.deleteBtn.setOnClickListener {
-                            context?.let { it1 -> showDeleteDialog(it1, post) }
 
-                        }
-                        //update post action
-                        bindPost(post)
-                    } else {
+                    addPostViewModel.setToken(it[0])
+                    lastAccessToken = it[0].accessToken
+
+                    if (addPostViewModel.post.value == null) {
                         binding.saveBtn.setOnClickListener {
                             Toast.makeText(
                                 this.context, "click save button", Toast.LENGTH_SHORT
                             ).show()
+                            showLoadingProgress()
                             addNewPost()
                         }
                     }
@@ -147,7 +180,6 @@ class AddPostFragment : Fragment() {
         //refresh page
         binding.refreshLayout.setOnRefreshListener {
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
-
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()
             navController.run {
@@ -158,10 +190,42 @@ class AddPostFragment : Fragment() {
         }
     }
 
+    private fun observeStatus() {
+        addPostViewModel.status.observe(this.viewLifecycleOwner) {
+            if(it == UserApiStatus.LOADING) {
+                binding.addPostLabel.isVisible = false
+                binding.usernameLabel.isVisible = false
+                binding.titleLabel.isVisible = false
+                binding.contextLabel.isVisible = false
+                binding.bottomList.isVisible = false
+            }
+            if(it == UserApiStatus.DONE) {
+                binding.addPostLabel.isVisible = true
+                binding.usernameLabel.isVisible = true
+                binding.titleLabel.isVisible = true
+                binding.contextLabel.isVisible = true
+                binding.bottomList.isVisible = true
+                hideLoadingProgress()
+            }
+
+            if(it == UserApiStatus.ERROR) {
+                binding.addPostLabel.isVisible = false
+                binding.usernameLabel.isVisible = false
+                binding.titleLabel.isVisible = false
+                binding.contextLabel.isVisible = false
+                binding.bottomList.isVisible = false
+                hideLoadingProgress()
+            }
+        }
+    }
+
     private fun observeError() {
         addPostViewModel.error.observe(this.viewLifecycleOwner) { items ->
             items.let {
                 if (it != null) {
+                    if ("Invalid Token" in it.toString()) {
+                        addPostViewModel.updateToken()
+                    }
                     binding.errorText.visibility = View.VISIBLE
                     binding.errorText.setTextColor(Color.RED)
                     Log.i("addPost400", it)
@@ -169,6 +233,39 @@ class AddPostFragment : Fragment() {
                     // binding.errorText.text = it.toString()
 
                 }
+            }
+        }
+    }
+
+    private fun observeTokenUser() {
+        Log.d("addPost_observeTokenUser_init", tokenViewModel.user.value.toString())
+        tokenViewModel.user.observe(this.viewLifecycleOwner) {
+            Log.d("addPost_observeTokenUser", it.toString())
+            if (it != null) {
+                addPostViewModel.setUser(it)
+                observeUser()
+            } else {
+                addPostViewModel.initUser()
+            }
+
+        }
+
+    }
+
+    private fun observeUser() {
+        addPostViewModel.user.observe(this.viewLifecycleOwner) {
+            if (it != null) {
+                Log.d("addPost_observeUser", it.toString())
+
+                addPostViewModel.getPostAction(args)
+            }
+        }
+    }
+
+    private fun observeAccessToken() {
+        addPostViewModel.token.observe(this.viewLifecycleOwner) {
+            if (lastAccessToken != "" && it != null && it.accessToken != lastAccessToken) {
+                tokenViewModel.updateToken(it)
             }
         }
     }
@@ -231,12 +328,14 @@ class AddPostFragment : Fragment() {
                             requireContext()
                         )
                     }
+
                     "EDIT" -> {
                         makeStatusNotification(
                             requireContext().resources.getString(R.string.successfully_edit_post),
                             requireContext()
                         )
                     }
+
                     else -> {
                         makeStatusNotification(
                             requireContext().resources.getString(R.string.successfully_delete_post),
@@ -334,10 +433,20 @@ class AddPostFragment : Fragment() {
             )
 
             saveBtn.setOnClickListener {
+                showLoadingProgress()
                 updatePost(post)
             }
 
         }
+
+    }
+
+    private fun hideLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = false
+    }
+
+    private fun showLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = true
 
     }
 
@@ -352,6 +461,15 @@ class AddPostFragment : Fragment() {
                 InputMethodManager
         inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
         _binding = null
+    }
+
+    companion object {
+        @JvmStatic
+        fun newIdInstance(id: String) = PostDetailFragment().apply {
+            arguments = Bundle().apply {
+                putString("postId", id)
+            }
+        }
     }
 
 }

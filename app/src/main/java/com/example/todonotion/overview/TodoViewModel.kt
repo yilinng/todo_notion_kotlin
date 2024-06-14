@@ -4,16 +4,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.todonotion.BaseApplication
 import com.example.todonotion.data.TodosRepository
-import com.example.todonotion.data.User.UserDao
 import com.example.todonotion.model.Todo
-import com.example.todonotion.overview.auth.AuthViewModel
 
 import java.util.*
 

@@ -1,4 +1,4 @@
-package com.example.todonotion.data.Token
+package com.example.todonotion.data.token
 
 import kotlinx.coroutines.flow.Flow
 

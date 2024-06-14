@@ -10,10 +10,12 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 
 import androidx.core.widget.addTextChangedListener
 
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -29,37 +31,15 @@ import javax.inject.Inject
 
 
 class LoginFragment : Fragment() {
-
-    // TODO: Refactor the creation of the view model to take an instance of
-    //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
-    //  from BaseApplication
-    /*
-    private val userViewModel: AuthViewModel by activityViewModels {
-        AuthViewModelFactory(
-            (activity?.application as BaseApplication).database.userDao()
-        )
-    }
-    */
-
-    /*
-    private val tokenViewModel: TokenViewModel by activityViewModels {
-        AppViewModelProvider.Factory
-    }
-
-    //data from network
-    private val networkViewModel: AuthNetworkViewModel by activityViewModels {
-        AuthNetworkViewModel.Factory
-    }
-     */
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+    //https://stackoverflow.com/questions/68058302/difference-between-activityviewmodels-and-lazy-viewmodelprovider
     private val loginViewModel: LoginViewModel by viewModels {
         viewModelFactory
     }
 
-    private val tokenViewModel: TokenViewModel by viewModels {
+    private val tokenViewModel: TokenViewModel by activityViewModels {
         viewModelFactory
     }
 
@@ -94,6 +74,8 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         refreshPage()
+        observeUser()
+        observeToken()
 
         //redirect to signup page
         binding.signupBtn.setOnClickListener {
@@ -103,6 +85,7 @@ class LoginFragment : Fragment() {
 
         //when click login button
         binding.loginBtn.setOnClickListener {
+            showLoadingProgress()
             addNewUser()
         }
 
@@ -188,6 +171,14 @@ class LoginFragment : Fragment() {
         }
     }
 
+    private fun observeToken() {
+        tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
+            if (it.isEmpty()) {
+                loginViewModel.initToken()
+            }
+        }
+    }
+
     private fun observeState() {
         loginViewModel.status.observe(this.viewLifecycleOwner) {
             if (it == UserApiStatus.DONE) {
@@ -195,6 +186,18 @@ class LoginFragment : Fragment() {
                 binding.errorText.text = ""
                 val action = LoginFragmentDirections.actionLoginFragmentToTodoListFragment()
                 findNavController().navigate(action)
+            }
+
+            if(it != UserApiStatus.LOADING) {
+                hideLoadingProgress()
+            }
+        }
+    }
+
+    private fun observeUser() {
+        loginViewModel.user.observe(this.viewLifecycleOwner) {
+            if (it != null) {
+                tokenViewModel.setUser(it)
             }
         }
     }
@@ -213,6 +216,15 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun hideLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = false
+    }
+
+    private fun showLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = true
+
     }
 
     private fun convertToDataClass(): Login {

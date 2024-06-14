@@ -19,28 +19,23 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-          >
+            android:layout_height="wrap_content">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="550dp"
-            android:layout_height="match_parent">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="550dp"
+                android:layout_height="match_parent">
 
-            <!-- TODO: set the apiStatus binding to the status from the view model -->
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/actionSearch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_marginTop="268dp"
-                android:background="@android:drawable/editbox_background"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/actionSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    android:layout_marginTop="268dp"
+                    android:background="@android:drawable/editbox_background"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_view"
@@ -51,13 +46,11 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/actionSearch"
-                    app:listData="@{viewModel.filteredTodos}"
+                    app:listData="@{viewModel.todos}"
                     tools:listitem="@layout/list_item_todo" />
 
 
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -67,6 +60,7 @@
             android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_weight="1" />
+
 
     </androidx.slidingpanelayout.widget.SlidingPaneLayout>
 </layout>

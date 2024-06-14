@@ -9,24 +9,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.View.*
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.example.todonotion.AppViewModelProvider
+
 import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentSignupBinding
 import com.example.todonotion.model.Signup
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
+
 import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.overview.auth.UserApiStatus
-import com.example.todonotion.ui.todoSearch.KeywordViewModel
-import com.example.todonotion.ui.todoSearch.TodoSearchViewModel
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import javax.inject.Inject
 
@@ -53,7 +53,7 @@ class SignupFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val tokenViewModel: TokenViewModel by viewModels {
+    private val tokenViewModel: TokenViewModel by activityViewModels {
         viewModelFactory
     }
 
@@ -90,6 +90,8 @@ class SignupFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         refreshPage()
+        observeUser()
+        observeToken()
 
         //redirect to login page
         binding.loginBtn.setOnClickListener {
@@ -99,6 +101,7 @@ class SignupFragment : Fragment() {
 
         //when click signup button
         binding.signupBtn.setOnClickListener {
+            showLoadingProgress()
             addNewUser()
         }
 
@@ -194,6 +197,10 @@ class SignupFragment : Fragment() {
                 binding.errorText.visibility = GONE
                 showSignUpDialog()
             }
+
+            if(it != UserApiStatus.LOADING) {
+                hideLoadingProgress()
+            }
         }
     }
 
@@ -217,10 +224,27 @@ class SignupFragment : Fragment() {
             }
         }
     }
+
+    private fun observeToken() {
+        tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
+            if(it.isEmpty()) {
+                signupViewModel.initToken()
+            }
+        }
+    }
+
     private fun observeUserToken() {
         signupViewModel.token.observe(this.viewLifecycleOwner) {
             if (it != null) {
                 tokenViewModel.addNewToken(it)
+            }
+        }
+    }
+
+    private fun observeUser() {
+        signupViewModel.user.observe(this.viewLifecycleOwner) {
+            if (it != null) {
+                tokenViewModel.setUser(it)
             }
         }
     }
@@ -231,6 +255,15 @@ class SignupFragment : Fragment() {
             email = binding.emailInput.text.toString(),
             password = binding.passwordInput.text.toString()
         )
+    }
+
+    private fun hideLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = false
+    }
+
+    private fun showLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = true
+
     }
 
     private fun showSignUpDialog() {

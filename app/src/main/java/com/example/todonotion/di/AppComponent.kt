@@ -1,9 +1,10 @@
 package com.example.todonotion.di
 
 import android.content.Context
-import com.example.todonotion.MainActivity
 import com.example.todonotion.ui.addPost.di.AddPostComponent
 import com.example.todonotion.ui.login.di.LoginComponent
+import com.example.todonotion.ui.main.UserManager
+import com.example.todonotion.ui.main.di.MainComponent
 import com.example.todonotion.ui.postDetails.di.PostDetailsComponent
 import com.example.todonotion.ui.postList.di.PostListComponent
 import com.example.todonotion.ui.signup.di.SignupComponent
@@ -51,4 +52,6 @@ interface AppComponent {
     fun postDetailsComponent(): PostDetailsComponent.Factory
 
     fun addPostComponent(): AddPostComponent.Factory
+
+    fun userManager(): UserManager
 }

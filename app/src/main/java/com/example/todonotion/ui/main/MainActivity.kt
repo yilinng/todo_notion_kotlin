@@ -1,16 +1,20 @@
-package com.example.todonotion
+package com.example.todonotion.ui.main
 
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
-import android.view.View.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentContainerView
+
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -18,44 +22,51 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.overview.auth.AuthNetworkViewModel
+import com.example.todonotion.BaseApplication
+import com.example.todonotion.R
+import com.example.todonotion.data.token.Token
 import com.example.todonotion.overview.auth.TokenViewModel
+import com.example.todonotion.overview.auth.AuthNetworkViewModel
+
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 //ctrl + o -> override method
 //https://stackoverflow.com/questions/44777869/hide-show-bottomnavigationview-on-scroll
+//https://stackoverflow.com/questions/10903077/calling-a-fragment-method-from-a-parent-activity
 class MainActivity : AppCompatActivity() {
 
-    /*
-    * The keyword is something new.
-    * It's a promise that your code will initialize the variable before using it. If you don't, your app will crash
-    */
     private lateinit var navController: NavController
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
-    //private lateinit var listener: NavController.OnDestinationChangedListener
-    // private lateinit var bottomNavigationView: BottomNavigationView
+
     private lateinit var navigationView: NavigationView
 
     private lateinit var lastAccessToken: String
 
-   // @Inject
-   // lateinit var viewModelFactory: ViewModelProvider.Factory
+    private lateinit var circleProgressIndicator: CircularProgressIndicator
+
+    private lateinit var fragmentContainerView: FragmentContainerView
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     // Stores an instance of RegistrationComponent so that its Fragments can access it
-    //lateinit var postLocalComponent: PostLocalComponent
 
     //https://stackoverflow.com/questions/68058302/difference-between-activityviewmodels-and-lazy-viewmodelprovider
-    /*
+
+
     private val tokenViewModel: TokenViewModel by viewModels {
         viewModelFactory
     }
@@ -63,24 +74,13 @@ class MainActivity : AppCompatActivity() {
     private val authNetworkViewModel: AuthNetworkViewModel by viewModels {
         viewModelFactory
     }
-    */
-    /*
-    private val userViewModel: AuthViewModel by viewModels {
-        AuthViewModelFactory(
-            (application as BaseApplication).database.userDao()
-        )
-    }
-    */
-    // @Inject annotated fields will be provided by Dagger
-
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
+        (application as BaseApplication).appComponent.userManager().mainComponent!!.inject(this)
+
+        setContentView(R.layout.activity_main)
         //https://stackoverflow.com/questions/71917856/sethasoptionsmenuboolean-unit-is-deprecated-deprecated-in-java
         // Add menu items without overriding methods in the Activity
         /*
@@ -96,7 +96,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-
         */
         //navigation drawer with navigation Component
         //https://stackoverflow.com/questions/43805524/how-to-properly-combine-navigationview-and-bottomnavigationview
@@ -104,6 +103,9 @@ class MainActivity : AppCompatActivity() {
         //https://www.youtube.com/watch?v=Chso6xrJ6aU&ab_channel=Stevdza-San
         //bottomNavigationView = findViewById(R.id.bottom_navigation)
         navigationView = findViewById(R.id.nav_view)
+        //main_content.xml
+        circleProgressIndicator = findViewById(R.id.circle_progress_indicator)
+        fragmentContainerView = findViewById(R.id.nav_host_fragment)
 
         lastAccessToken = ""
         // Get the navigation host fragment from this Activity
@@ -141,8 +143,8 @@ class MainActivity : AppCompatActivity() {
             if (targetId == R.id.todoListFragment) {
                 // hideLoadingProgress()
             }
-            //  observeToken()
-            //  observeUser()
+              observeToken()
+              observeUser()
             /*
             Toast.makeText(
                 this,
@@ -159,9 +161,9 @@ class MainActivity : AppCompatActivity() {
         //https://stackoverflow.com/questions/49644542/how-to-remove-bottom-border-in-android-action-bar
         supportActionBar?.elevation = 0F
 
-       // observeInvalidToken()
-       // observeToken()
-       // observeUser()
+        observeInvalidToken()
+        observeToken()
+        observeUser()
 
         //click logout button in bottom Navigation
         /*
@@ -191,6 +193,7 @@ class MainActivity : AppCompatActivity() {
         //default is true
         navigationView.menu.findItem(R.id.logout).setOnMenuItemClickListener {
             if (it.isVisible) {
+
                 showLogoutDialog()
                 false
             } else {
@@ -210,7 +213,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
-    /*
+
+
     @OptIn(DelicateCoroutinesApi::class)
     private fun observeToken() {
         tokenViewModel.tokens.observe(this) {
@@ -252,6 +256,8 @@ class MainActivity : AppCompatActivity() {
                 //drawer navigation have to show sign in
                 navigationView.menu.findItem(R.id.loginFragment).isVisible = true
                 navigationView.menu.findItem(R.id.logout).isVisible = false
+                authNetworkViewModel.setToken(null)
+                tokenViewModel.initUser()
             }
         }
     }
@@ -290,11 +296,10 @@ class MainActivity : AppCompatActivity() {
 
     //https://developer.android.com/guide/topics/resources/string-resource
     private fun observeUser() {
-
         authNetworkViewModel.user.observe(this) {
             if (it != null) {
-                //add new user to room
-                //userViewModel.addNewUser(email = it.email, name = it.name)
+                //add new user to tokenViewModel
+                tokenViewModel.setUser(it)
                 Toast.makeText(this, "$it have user!!!", Toast.LENGTH_SHORT).show()
                 val text = String.format(getString(R.string.nav_title1), it.name)
                 navigationView.findViewById<TextView>(R.id.drawer_title1).visibility = VISIBLE
@@ -307,11 +312,9 @@ class MainActivity : AppCompatActivity() {
                     VISIBLE
                 //hide title1
                 navigationView.findViewById<TextView>(R.id.drawer_title1).visibility = GONE
-
             }
         }
     }
-    */
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun showLogoutDialog() {
@@ -323,7 +326,11 @@ class MainActivity : AppCompatActivity() {
             }
             .setPositiveButton(getString(R.string.ok)) { _, _ ->
                 GlobalScope.launch {
-                   // waitLogout()
+                    withContext(Dispatchers.Main) {
+                        showLoadingProgress()
+                        delay(3000)
+                        waitLogout()
+                    }
                 }
 
             }
@@ -331,12 +338,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     //https://developer.android.com/kotlin/coroutines/coroutines-adv
-    /*
+
     private suspend fun waitLogout() = coroutineScope {
         val deferredList = listOf(     // fetch three docs at the same time
             async { authNetworkViewModel.logoutAction() },  // async returns a result for the first doc
             async { deleteToken() },
-            async { authNetworkViewModel.setToken(null) }// async returns a result for the second doc
+            async { authNetworkViewModel.setToken(null) },
+            async { hideLoadingProgress() }
         )
         deferredList.awaitAll()
     }
@@ -367,29 +375,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
- */
 
-    /*
     private fun hideLoadingProgress() {
-        bottomNavigationView.isVisible = false
+        circleProgressIndicator.isVisible = false
+        fragmentContainerView.isVisible = true
+        navigationView.isVisible = true
+
     }
 
     private fun showLoadingProgress() {
-        bottomNavigationView.isVisible = true
-
+        circleProgressIndicator.isVisible = true
+        fragmentContainerView.isVisible = false
+        navigationView.isVisible = false
     }
+    /*
 
+     override fun onResume() {
+         super.onResume()
+         //   navController.addOnDestinationChangedListener(listener)
+     }
 
-    override fun onResume() {
-        super.onResume()
-        //   navController.addOnDestinationChangedListener(listener)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        //  navController.removeOnDestinationChangedListener(listener)
-    }
-    */
+     override fun onPause() {
+         super.onPause()
+         //  navController.removeOnDestinationChangedListener(listener)
+     }
+     */
 
     /**
      * Enables back button support. Simply navigates one element up on the stack.
@@ -419,7 +429,6 @@ class MainActivity : AppCompatActivity() {
     }
      */
 }
-
 
 
 // Keys for navigation

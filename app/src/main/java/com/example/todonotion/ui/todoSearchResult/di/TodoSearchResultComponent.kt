@@ -1,8 +1,6 @@
 package com.example.todonotion.ui.todoSearchResult.di
 
-import com.example.todonotion.ui.todoSearch.KeywordViewModel
 import com.example.todonotion.ui.todoSearchResult.TodoSearchResultFragment
-import com.example.todonotion.ui.todoSearchResult.TodoSearchResultViewModel
 import dagger.Subcomponent
 
 @Subcomponent(modules = [TodoSearchResultModule::class])

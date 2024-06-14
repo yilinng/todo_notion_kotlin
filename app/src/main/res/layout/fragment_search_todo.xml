@@ -13,104 +13,113 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/actionSearch"
+                android:layout_width="399dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@android:drawable/editbox_background"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <RelativeLayout
-                android:id="@+id/keywords_container_layout"
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/recent_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:alignContent="center"
+                app:alignItems="center"
+                app:justifyContent="space_between"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/actionSearch"
+                >
 
-
-                <LinearLayout
-                    android:id="@+id/tasks_linear_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <androidx.appcompat.widget.SearchView
-                        android:id="@+id/actionSearch"
-                        android:layout_width="399dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:background="@android:drawable/editbox_background" />
-
-                    <com.google.android.flexbox.FlexboxLayout
-                        android:id="@+id/recent_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        app:alignContent="center"
-                        app:alignItems="center"
-                        app:justifyContent="space_between"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/actionSearch"
-                        app:layout_constraintVertical_bias="0.0">
-
-                        <TextView
-                            android:id="@+id/recent_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/recent"
-                            android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                        <ImageButton
-                            android:id="@+id/close_btn"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:layout_gravity="center"
-                            android:backgroundTint="@android:color/white"
-                            android:contentDescription="@string/delete"
-                            android:src="@drawable/ic_close_24" />
-
-                    </com.google.android.flexbox.FlexboxLayout>
-
-                    <TextView
-                        android:id="@+id/filtering_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/todo_item_padding"
-                        android:layout_marginTop="@dimen/todo_item_padding"
-                        android:layout_marginRight="@dimen/todo_item_padding"
-                        android:layout_marginBottom="@dimen/todo_item_padding"
-                        android:gravity="center_vertical"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
-
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_keyView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_margin="@dimen/todo_item_padding"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/list_key_item" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/no_keywords_layout"
+                <TextView
+                    android:id="@+id/recent_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:orientation="vertical">
+                    android:layout_marginStart="@dimen/margin_between_elements"
+                    android:text="@string/recent"
+                    android:textAppearance="?attr/textAppearanceHeadline6" />
 
-                    <ImageView
-                        android:id="@+id/no_keywords_icon"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp"
-                        android:layout_gravity="center"
-                        android:contentDescription="@string/no_keywords_image_content_description"
-                        android:visibility="gone"
-                        android:src="@drawable/ic_cruelty_free_24" />
+                <ImageButton
+                    android:id="@+id/close_btn"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:backgroundTint="@android:color/white"
+                    android:contentDescription="@string/delete"
+                    android:src="@drawable/ic_close_24" />
 
-                    <TextView
-                        android:id="@+id/no__keywords_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="@dimen/todo_item_padding" />
-                </LinearLayout>
-            </RelativeLayout>
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <TextView
+                android:id="@+id/filtering_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_between_elements"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@id/recent_list"/>
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/circle_progress_indicator"
+                android:layout_width="160dp"
+                android:layout_height="160dp"
+                android:indeterminate="true"
+                app:indicatorColor="@color/purple_500"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recent_list" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/keyList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:alignContent="center"
+                app:alignItems="center"
+                app:flexWrap="wrap"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/recent_list"
+                >
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_keyView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/todo_item_padding"
+                    android:padding="8dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/list_key_item" />
+            </com.google.android.flexbox.FlexboxLayout>
+
+            <ImageView
+                android:id="@+id/no_keywords_icon"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/no_keywords_image_content_description"
+                android:src="@drawable/ic_cruelty_free_24"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/actionSearch"/>
+
+            <TextView
+                android:id="@+id/no__keywords_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/todo_item_padding"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/actionSearch"/>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

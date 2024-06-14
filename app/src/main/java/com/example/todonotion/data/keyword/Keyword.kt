@@ -1,4 +1,4 @@
-package com.example.todonotion.data.Keyword
+package com.example.todonotion.data.keyword
 
 import androidx.annotation.NonNull
 import androidx.room.*

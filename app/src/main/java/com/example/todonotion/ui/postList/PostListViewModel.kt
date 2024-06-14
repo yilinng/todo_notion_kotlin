@@ -5,9 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.data.UsersRepository
+import com.example.todonotion.data.RemoteAuthRepository
 import com.example.todonotion.model.Post
-import com.example.todonotion.model.User
 import com.example.todonotion.overview.auth.UserApiStatus
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch
@@ -15,8 +14,10 @@ import retrofit2.HttpException
 import javax.inject.Inject
 
 
-class PostListViewModel@Inject constructor(val usersRepository: UsersRepository) : ViewModel() {
+class PostListViewModel @Inject constructor(private val remoteAuthRepository: RemoteAuthRepository) :
+    ViewModel() {
     private val _status = MutableLiveData<UserApiStatus>()
+
     // The external immutable LiveData for the request status
     val status: LiveData<UserApiStatus> = _status
 
@@ -29,12 +30,8 @@ class PostListViewModel@Inject constructor(val usersRepository: UsersRepository)
     private val _filteredPosts = MutableLiveData<List<Post>>()
     private val filteredPosts: LiveData<List<Post>> = _filteredPosts
 
-    private val _user = MutableLiveData<User?>()
-    val user: LiveData<User?> = _user
-
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
-
 
 
     init {
@@ -45,7 +42,7 @@ class PostListViewModel@Inject constructor(val usersRepository: UsersRepository)
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-                _posts.value = usersRepository.getTodos()
+                _posts.value = remoteAuthRepository.getTodos()
                 _status.value = UserApiStatus.DONE
 
                 _posts.value = posts.value!!.sortedByDescending {
@@ -83,10 +80,10 @@ class PostListViewModel@Inject constructor(val usersRepository: UsersRepository)
         }
     }
 
-    fun filteredPost() {
-        if (posts.value!!.isNotEmpty() && user.value != null) {
+    fun filteredPost(userId: String) {
+        if (posts.value!!.isNotEmpty()) {
             _filteredPosts.value = posts.value!!.filter {
-                user.value!!.todos!!.contains(it.id)
+                userId == it.user.id
             }
         } else {
             _filteredPosts.value = posts.value
@@ -96,6 +93,7 @@ class PostListViewModel@Inject constructor(val usersRepository: UsersRepository)
     private fun initError() {
         _error.value = null
     }
+
 
     fun cleanPost() {
         _post.value = null

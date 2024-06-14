@@ -8,38 +8,37 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
-
 import androidx.fragment.app.activityViewModels
+
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.SavedStateViewModelFactory
+
 import androidx.lifecycle.ViewModelProvider
-
 import androidx.lifecycle.lifecycleScope
-
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
+
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
-import com.example.todonotion.AppViewModelProvider
+
 import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentTodoListBinding
-import com.example.todonotion.overview.TodoViewModel
+
 import com.example.todonotion.ui.adapter.TodoListAdapter
 
 import com.example.todonotion.ui.adapter.TodoListener
 
-import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.ui.callback.ListOnBackPressedCallback
 
 import com.google.android.material.tabs.TabLayout
+
+import javax.inject.Inject
+
+import com.example.todonotion.overview.TodoApiStatus
+import com.example.todonotion.overview.auth.TokenViewModel
+import com.example.todonotion.ui.todoDetails.TodoDetailFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import androidx.navigation.fragment.navArgs
-import com.example.todonotion.overview.TodoApiStatus
-import com.example.todonotion.ui.todoDetails.TodoDetailFragment
 
 /**
  * This fragment shows the the status of the Mars photos web services transaction.
@@ -57,7 +56,11 @@ class TodoListFragment : Fragment() {
         viewModelFactory
     }
 
-    private val args: TodoListFragmentArgs by navArgs()
+    private val tokenViewModel: TokenViewModel by activityViewModels {
+        viewModelFactory
+    }
+
+    //private val args: TodoListFragmentArgs by navArgs()
     /*
     private val todoViewModel: TodoViewModel by activityViewModels {
         TodoViewModel.Factory
@@ -79,13 +82,13 @@ class TodoListFragment : Fragment() {
         (requireActivity().application as BaseApplication).appComponent.todoListComponent().create()
             .inject(this)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTodoListBinding.inflate(inflater, container, false)
-
         // Inflate the layout for this fragment
         return binding.root
     }
@@ -103,11 +106,11 @@ class TodoListFragment : Fragment() {
         // Connect the SlidingPaneLayout to the system back button.
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        //observeToken()
         tabSelect()
         refreshPage()
         setupNavigation()
-        observeState()
+        observeStatus()
+        //observeToken()
 
         binding.recyclerView.adapter = TodoListAdapter(TodoListener { todo ->
             todoListViewModel.onTodoClicked(todo)
@@ -122,38 +125,38 @@ class TodoListFragment : Fragment() {
         })
     }
 
+    private fun setupNavigation() {
+        todoListViewModel.todo.observe(this.viewLifecycleOwner) {
+            if (it != null) {
+                TodoDetailFragment.newInstance(it.id)
+                openTodoDetails(it.id)
+            }
+        }
 
-    //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
-    /*
-    private fun observeToken() {
-        tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
-            lifecycleScope.launch {
-                showLoadingProgress()
-                delay(3000)
+    }
+
+    private fun observeStatus() {
+        todoListViewModel.status.observe(this.viewLifecycleOwner) {
+            if (it != TodoApiStatus.LOADING) {
                 hideLoadingProgress()
             }
+        }
+    }
+
+    //when logout action
+    /*
+    private fun observeToken(){
+        tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
+           if(it.isEmpty()) {
+               lifecycleScope.launch {
+                   showLoadingProgress()
+                   delay(3000)
+                   hideLoadingProgress()
+               }
+           }
         }
     }
     */
-
-    private fun setupNavigation() {
-        todoListViewModel.todo.observe(this.viewLifecycleOwner) {
-           if(it != null) {
-              val todoDetailFragment = TodoDetailFragment.newInstance(it.id)
-               openTodoDetails(it.id)
-           }
-        }
-
-    }
-
-    private fun observeState() {
-        todoListViewModel.status.observe(this.viewLifecycleOwner) {
-            if(it != TodoApiStatus.LOADING) {
-                hideLoadingProgress()
-            }
-        }
-    }
-
 
     private fun openTodoDetails(todoId: String) {
         val action = TodoListFragmentDirections.actionTodoListFragmentToTodoDetailFragment(todoId)
@@ -161,13 +164,18 @@ class TodoListFragment : Fragment() {
         todoListViewModel.initTodo()
     }
 
-    private fun hideLoadingProgress(){
+    private fun showLoadingProgress() {
+        binding.linearProgressIndicator.isVisible = true
+        binding.recyclerView.isVisible = false
+    }
+
+    private fun hideLoadingProgress() {
         // binding.loadingImg.isIndeterminate = true
         binding.linearProgressIndicator.isVisible = false
         binding.recyclerView.isVisible = true
     }
 
-    private fun tabSelect(){
+    private fun tabSelect() {
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
@@ -188,7 +196,7 @@ class TodoListFragment : Fragment() {
     private fun refreshPage() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
         //refresh page
-        binding.refreshLayout.setOnRefreshListener{
+        binding.refreshLayout.setOnRefreshListener {
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()

@@ -2,7 +2,6 @@ package com.example.todonotion.ui.todoSearch.di
 
 import androidx.lifecycle.ViewModel
 import com.example.todonotion.di.ViewModelKey
-import com.example.todonotion.ui.todoSearch.KeywordViewModel
 import com.example.todonotion.ui.todoSearch.TodoSearchViewModel
 import dagger.Binds
 import dagger.Module
@@ -15,8 +14,4 @@ abstract class TodoSearchModule {
     @ViewModelKey(TodoSearchViewModel::class)
     abstract fun bindViewModel(viewmodel: TodoSearchViewModel): ViewModel
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(KeywordViewModel::class)
-    abstract fun bindKeywordViewModel(viewmodel: KeywordViewModel): ViewModel
 }

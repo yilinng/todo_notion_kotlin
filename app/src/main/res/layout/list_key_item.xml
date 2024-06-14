@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="?android:attr/listPreferredItemHeight"
-    android:orientation="horizontal"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/todo_item_vertical_padding"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingBottom="@dimen/todo_item_vertical_padding">
-
+    android:id="@+id/recent_list"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp"
+    android:layout_marginTop="@dimen/margin_between_elements"
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin"
+    android:paddingEnd="@dimen/margin_between_elements"
+    android:paddingStart="@dimen/margin_between_elements"
+    android:layout_marginBottom="@dimen/margin_between_elements"
+    android:background="@drawable/bkg"
+    app:alignContent="center"
+    app:alignItems="center"
+    app:justifyContent="space_between"
+>
+    <!--
     <CheckBox
         android:id="@+id/complete_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" />
-
+     -->
 
     <TextView
         android:id="@+id/keyword_name"
@@ -23,9 +30,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="@dimen/activity_horizontal_margin"
         android:fontFamily="sans-serif"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"
         tools:text="Cogs and Widgets" />
 
-</LinearLayout>
+    <ImageButton
+        android:id="@+id/close_keyword_btn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@android:color/white"
+        android:contentDescription="@string/delete"
+        android:src="@drawable/ic_close_24" />
+
+</com.google.android.flexbox.FlexboxLayout>

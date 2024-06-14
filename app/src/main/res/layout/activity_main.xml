@@ -7,9 +7,7 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-
     <include layout="@layout/main_content" />
-
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -21,7 +19,7 @@
         app:itemIconTint="@color/draw_nav_item_color"
         app:itemShapeFillColor="@color/draw_nav_item_background_color"
         app:itemTextColor="@color/draw_nav_item_color"
-        app:menu="@menu/navigation_drawer" />
+        app:menu="@menu/navigation_drawer"/>
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

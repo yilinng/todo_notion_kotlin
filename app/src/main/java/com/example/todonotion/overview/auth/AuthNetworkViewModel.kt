@@ -5,15 +5,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.todonotion.BaseApplication
+import com.example.todonotion.data.RemoteAuthRepository
 
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.UsersRepository
-
+import com.example.todonotion.data.token.Token
 import com.example.todonotion.model.AuthResponse
 import com.example.todonotion.model.Login
 import com.example.todonotion.model.NestedPost
@@ -41,7 +36,7 @@ import retrofit2.HttpException
  */
 enum class UserApiStatus { LOADING, ERROR, DONE }
 
-class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersRepository) : ViewModel() {
+class AuthNetworkViewModel @Inject constructor(private val remoteAuthRepository: RemoteAuthRepository) : ViewModel() {
 
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<UserApiStatus>()
@@ -93,7 +88,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
             _status.value = UserApiStatus.LOADING
             try {
                 //   UserApi.retrofitService.loginUser(login)
-                _authResponse.value = usersRepository.loginUser(login)
+                _authResponse.value = remoteAuthRepository.loginUser(login)
                 //store token
                 _token.value = Token(
                     accessToken = authResponse.value!!.accessToken,
@@ -128,7 +123,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-                _signupResponse.value = usersRepository.signupUser(signup)
+                _signupResponse.value = remoteAuthRepository.signupUser(signup)
                 _token.value = Token(
                     accessToken = signupResponse.value!!.accessToken,
                     refreshToken = signupResponse.value!!.newToken.refreshToken,
@@ -158,7 +153,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
             val accessToken = getToken()
             //Log.d("logout accessToken", "Bearer $accessToken")
             try {
-                usersRepository.logoutUser(
+                remoteAuthRepository.logoutUser(
                     authorization = "Bearer $accessToken"
                 )
                 _status.value = UserApiStatus.DONE
@@ -182,7 +177,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
             //Log.d("getUser", "Bearer $token")
             //Log.d("getUser accessToken", "Bearer $token")
             try {
-                _user.value = usersRepository.getUser(authorization = "Bearer $token").user
+                _user.value = remoteAuthRepository.getUser(authorization = "Bearer $token").user
                 _status.value = UserApiStatus.DONE
                 //Log.d("getUser200", user.value.toString())
 
@@ -206,7 +201,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
             //Log.d("getUser accessToken", "Bearer $token")
             try {
                 val fromToken =
-                    usersRepository.updateToken(UpdateToken(token = token.value!!.refreshToken))
+                    remoteAuthRepository.updateToken(UpdateToken(token = token.value!!.refreshToken))
                 _token.value = Token(
                     id = token.value!!.id,
                     accessToken = fromToken.accessToken,
@@ -232,7 +227,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-                _posts.value = usersRepository.getTodos()
+                _posts.value = remoteAuthRepository.getTodos()
                 _status.value = UserApiStatus.DONE
 
                 _posts.value = posts.value!!.sortedByDescending {
@@ -256,7 +251,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
         viewModelScope.launch {
             _status.value = UserApiStatus.LOADING
             try {
-                _filteredPosts.value = usersRepository.searchTodo(title)
+                _filteredPosts.value = remoteAuthRepository.searchTodo(title)
                 _status.value = UserApiStatus.DONE
              //   Log.i("getSearchTodo200", posts.toString())
                 initError()
@@ -277,7 +272,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
            // Log.d("addPostAction", "Bearer $accessToken")
             try {
                 _addPost.value =
-                    usersRepository.addTodo(authorization = "Bearer $accessToken", postDto)
+                    remoteAuthRepository.addTodo(authorization = "Bearer $accessToken", postDto)
 
                 _user.value = addPost.value!!.user
 
@@ -314,7 +309,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
             val accessToken = getToken()
            // Log.d("editPostAction accessToken", "Bearer $accessToken")
             try {
-                _editPost.value = usersRepository.editTodo(
+                _editPost.value = remoteAuthRepository.editTodo(
                     postId = postId,
                     authorization = "Bearer $accessToken",
                     postDto
@@ -349,7 +344,7 @@ class AuthNetworkViewModel @Inject constructor(val usersRepository: UsersReposit
             val accessToken = getToken()
             //Log.d("deletePostAction accessToken", "Bearer $accessToken")
             try {
-                usersRepository.deleteTodo(
+                remoteAuthRepository.deleteTodo(
                     postId = postId,
                     authorization = "Bearer $accessToken"
                 )

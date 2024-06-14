@@ -8,11 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
 import com.example.todonotion.BaseApplication
@@ -20,10 +23,16 @@ import com.example.todonotion.BaseApplication
 import com.example.todonotion.R
 
 import com.example.todonotion.databinding.FragmentSearchResultBinding
+import com.example.todonotion.overview.TodoApiStatus
 
 import com.example.todonotion.ui.adapter.TodoListAdapter
 import com.example.todonotion.ui.adapter.TodoListener
 import com.example.todonotion.ui.callback.ListOnBackPressedCallback
+import com.example.todonotion.ui.postDetails.PostDetailFragment
+import com.example.todonotion.ui.postDetails.PostDetailFragmentArgs
+import com.example.todonotion.ui.todoDetails.TodoDetailFragment
+import com.example.todonotion.ui.todoList.TodoListFragmentDirections
+import com.example.todonotion.ui.todoSearch.TodoSearchFragmentDirections
 import com.example.todonotion.ui.todoSearch.TodoSearchViewModel
 import javax.inject.Inject
 
@@ -31,19 +40,8 @@ import javax.inject.Inject
 //https://www.geeksforgeeks.org/searchview-in-android-with-recyclerview/
 //https://www.reddit.com/r/androiddev/comments/rrspel/rule_of_thumb_for_when_to_use_oncreateview/?rdt=39101
 class TodoSearchResultFragment : Fragment() {
-    // TODO: Refactor the creation of the view model to take an instance of
-    //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
-    //  from BaseApplication
-    /*
-    private val keyViewModel: KeyViewModel by activityViewModels {
-        AppViewModelProvider.Factory
-    }
 
-    //data from network
-    private val todoViewModel: TodoViewModel by activityViewModels{
-        TodoViewModel.Factory
-    }
-    */
+    private val fromArgs: TodoSearchResultFragmentArgs by navArgs()
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -52,11 +50,13 @@ class TodoSearchResultFragment : Fragment() {
         viewModelFactory
     }
 
-    private val keywordViewModel: KeywordViewModel by viewModels {
+    private val keywordViewModel: KeywordViewModel by activityViewModels {
         viewModelFactory
     }
     private var _binding: FragmentSearchResultBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var args: String
 
     private lateinit var callback: ListOnBackPressedCallback
 
@@ -65,6 +65,8 @@ class TodoSearchResultFragment : Fragment() {
         super.onAttach(context)
         (requireActivity().application as BaseApplication).appComponent.todoSearchResultComponent().create()
             .inject(this)
+
+        args = arguments?.getString("keyword").toString()
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,6 +76,9 @@ class TodoSearchResultFragment : Fragment() {
         _binding = FragmentSearchResultBinding.inflate(inflater)
         // TODO: call the view model method that calls the todo api
         // Inflate the layout for this fragment
+        Log.d("todoSearchResult_arg", fromArgs.keyword + " " + args)
+        todoSearchResultViewModel.getTodoPhotosByKeyWord(fromArgs.keyword)
+        todoSearchResultViewModel.setKeyword(fromArgs.keyword)
         return binding.root
     }
 
@@ -104,26 +109,18 @@ class TodoSearchResultFragment : Fragment() {
             // Slide the detail pane into view. If both panes are visible,
             // this has no visible effect.
             binding.slidingPaneLayout.openPane()
-            //https://developer.android.com/codelabs/basic-android-kotlin-training-adaptive-layouts?continue=https%3A%2F%2Fdeveloper.android.com%2Fcourses%2Fpathways%2Fandroid-basics-kotlin-unit-3-pathway-5#8
-            /*
-            findNavController()
-                .navigate(R.id.action_todoSearchResultFragment_to_todoDetailFragment)
-             */
         })
 
         //relate todolist
         binding.recyclerView.layoutManager = LinearLayoutManager(this.context)
         binding.recyclerView.adapter = todoAdapter
 
-
-        // Attach an observer on the filteredTodos list to update the UI automatically when the data
-        // changes.
-        todoSearchResultViewModel.filteredTodos.observe(this.viewLifecycleOwner) { items ->
-            items.let {
-                todoAdapter.submitList(it)
-                //todoAdapter.filterList()
-            }
-        }
+        //observeStatus()
+        //when searchbar input value change.
+        searchAction()
+        refreshPage()
+        setupNavigationToDetails()
+        observeStatus()
 
         /*
         search view set query ->keyword
@@ -135,8 +132,24 @@ class TodoSearchResultFragment : Fragment() {
         binding.actionSearch.setQuery(keywordViewModel.storeKeyword.value, false)
         binding.actionSearch.clearFocus()
 
+    }
 
-        //when searchbar input value change.
+    private fun setupNavigationToDetails() {
+        todoSearchResultViewModel.todo.observe(this.viewLifecycleOwner) {
+            if (it != null) {
+                TodoDetailFragment.newInstance(it.id)
+                openTodoDetails(it.id)
+            }
+        }
+    }
+
+    private fun openTodoDetails(todoId: String) {
+        val action = TodoSearchResultFragmentDirections.actionTodoSearchResultFragmentToTodoDetailFragment(todoId)
+        findNavController().navigate(action)
+        todoSearchResultViewModel.initTodo()
+    }
+
+    private fun searchAction() {
         binding.actionSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
@@ -145,25 +158,40 @@ class TodoSearchResultFragment : Fragment() {
             override fun onQueryTextChange(newText: String): Boolean {
                 //Log.d("searchKey1", binding.actionSearch.query.toString())
                 //redirect to last page
-                redirectPage()
+               // redirectPage()
                 return false
             }
         })
+    }
 
+    private fun refreshPage() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
-        //refresh page
         binding.refreshLayout.setOnRefreshListener{
             Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
 
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()
+            val action = TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment(fromArgs.keyword)
             navController.run {
                 popBackStack()
-                navigate(R.id.todoSearchResultFragment)
+                navigate(action)
             }
             binding.refreshLayout.isRefreshing = false
         }
+    }
 
+    private fun observeStatus() {
+        todoSearchResultViewModel.status.observe(this.viewLifecycleOwner) {
+            if(it == TodoApiStatus.LOADING || it == TodoApiStatus.ERROR) {
+                binding.actionSearch.isVisible = false
+                binding.recyclerView.isVisible = false
+                binding.detailContainer.isVisible = false
+            }else{
+                binding.actionSearch.isVisible = true
+                binding.recyclerView.isVisible = true
+                binding.detailContainer.isVisible = true
+            }
+        }
     }
 
     override fun onResume() {
@@ -174,6 +202,15 @@ class TodoSearchResultFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         callback.onTabPaused()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance(keyword: String) = TodoSearchResultFragment().apply {
+            arguments = Bundle().apply {
+                putString("keyword", keyword)
+            }
+        }
     }
 
 

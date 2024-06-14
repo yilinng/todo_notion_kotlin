@@ -4,8 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.UsersRepository
+import com.example.todonotion.data.RemoteAuthRepository
+import com.example.todonotion.data.token.Token
+
 import com.example.todonotion.model.AuthResponse
 import com.example.todonotion.model.Login
 import com.example.todonotion.model.User
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 
 class LoginViewModel @Inject constructor(
-   val usersRepository: UsersRepository
+    private val remoteAuthRepository: RemoteAuthRepository
 ) : ViewModel() {
 
     private val _status = MutableLiveData<UserApiStatus>()
@@ -39,7 +40,7 @@ class LoginViewModel @Inject constructor(
             _status.value = UserApiStatus.LOADING
             try {
                 //   UserApi.retrofitService.loginUser(login)
-                _authResponse.value = usersRepository.loginUser(login)
+                _authResponse.value = remoteAuthRepository.loginUser(login)
                 //store token
                 _token.value = Token(
                     accessToken = authResponse.value!!.accessToken,
@@ -68,5 +69,9 @@ class LoginViewModel @Inject constructor(
 
     private fun initError() {
         _error.value = null
+    }
+
+   fun initToken() {
+        _token.value = null
     }
 }

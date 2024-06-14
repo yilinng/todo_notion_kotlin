@@ -1,4 +1,4 @@
-package com.example.todonotion.data.Keyword
+package com.example.todonotion.data.keyword
 import androidx.room.Dao
 import kotlinx.coroutines.flow.Flow
 import androidx.room.*

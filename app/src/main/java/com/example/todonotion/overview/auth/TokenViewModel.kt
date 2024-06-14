@@ -1,22 +1,24 @@
 package com.example.todonotion.overview.auth
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.data.TodosRepository
 
 import kotlinx.coroutines.launch
-import com.example.todonotion.data.Token.Token
-import com.example.todonotion.data.Token.TokenDao
-import com.example.todonotion.data.Token.TokensRepository
+import com.example.todonotion.data.token.Token
+import com.example.todonotion.data.token.TokensRepository
+import com.example.todonotion.model.User
 import javax.inject.Inject
 
 //store user in database
 class TokenViewModel @Inject constructor(private val tokensRepository: TokensRepository): ViewModel() {
 
     val tokens: LiveData<List<Token>> = tokensRepository.getAllTokensStream().asLiveData()
+
+    private val _user = MutableLiveData<User?>()
+    val user: LiveData<User?> = _user
 
     /**
      * Inserts the new Token into database.
@@ -66,11 +68,19 @@ class TokenViewModel @Inject constructor(private val tokensRepository: TokensRep
             userId = userId,
         )
     }
+
+    fun setUser(user: User) {
+        _user.value = user
+    }
+
+    fun initUser() {
+        _user.value = null
+    }
 }
 
 
 /**
- * Factory class to instantiate the [ViewModel] instance.
+ * Factory class to instantiate the [TokenViewModel] instance.
 
 class TokenViewModelFactory(private val tokensRepository: TokensRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

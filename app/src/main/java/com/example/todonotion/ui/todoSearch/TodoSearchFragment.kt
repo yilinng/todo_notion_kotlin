@@ -22,50 +22,44 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.example.todonotion.R
-import com.example.todonotion.data.Keyword.Keyword
+import com.example.todonotion.data.keyword.Keyword
 import com.example.todonotion.databinding.FragmentSearchTodoBinding
 
 import com.example.todonotion.ui.adapter.KeyTodoAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 
 import androidx.navigation.fragment.navArgs
-import com.example.todonotion.AppViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.todonotion.BaseApplication
 import com.example.todonotion.ui.KeywordsFilterType
+import com.example.todonotion.ui.todoSearchResult.TodoSearchResultFragment
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexWrap
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
 //https://www.geeksforgeeks.org/searchview-in-android-with-recyclerview/
 //https://www.reddit.com/r/androiddev/comments/rrspel/rule_of_thumb_for_when_to_use_oncreateview/?rdt=39101
 class TodoSearchFragment : Fragment() {
-    // TODO: Refactor the creation of the view model to take an instance of
-    //  TodoViewModelFactory. The factory should take an instance of the Database retrieved
-    //  from BaseApplication
-
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val todoDetailsViewModel: TodoSearchViewModel by viewModels {
+    private val todoSearchViewModel: TodoSearchViewModel by activityViewModels {
         viewModelFactory
     }
 
-    private val keywordViewModel: KeywordViewModel by viewModels {
-        viewModelFactory
-    }
-
-    /*
-      private val keyViewModel: KeyViewModel by activityViewModels {
-          AppViewModelProvider.Factory
-      }
-
-     //data from network
-     private val overViewModel: TodoViewModel by activityViewModels()
-     */
     private var _binding: FragmentSearchTodoBinding? = null
     private val binding get() = _binding!!
 
@@ -74,7 +68,8 @@ class TodoSearchFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        (requireActivity().application as BaseApplication).appComponent.todoSearchComponent().create()
+        (requireActivity().application as BaseApplication).appComponent.todoSearchComponent()
+            .create()
             .inject(this)
     }
 
@@ -93,55 +88,58 @@ class TodoSearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         //when click on an item in keyword list, have to run filter function
-        val adapter = KeyTodoAdapter{ keyword ->
-            filteredList(keyword.keyName)
-            keywordViewModel.onKeyWordClicked(keyword)
-            keywordViewModel.storeWordAction(keyword.keyName)
+        val adapter = KeyTodoAdapter({ keyword, string ->
+            //when click close button
+            if (string == "close") {
+                //todoSearchViewModel.storeWordAction(keyword)
+                todoSearchViewModel.deleteKey(keyword)
+            } else {
+                // todoSearchViewModel.onKeyWordClicked(keyword)
+                filteredList(keyword.keyName)
+            }
+        }) {
 
-            val action =
-                TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment()
-           // this.findNavController().navigate(action)
         }
-
-        binding.recyclerKeyView.layoutManager = LinearLayoutManager(this.context)
+        binding.recyclerKeyView.layoutManager =
+            FlexboxLayoutManager(this.context)//LinearLayoutManager(this.context)
         binding.recyclerKeyView.adapter = adapter
 
-        setupSnack()
-
-        // Attach an observer on the allKeys list to update the UI automatically when the data changes.
-        keywordViewModel.allKeys.observe(this.viewLifecycleOwner) { items ->
-            items.let {
-                adapter.submitList(it)
-                changeVisibility(it)
-            }
-        }
         /*
-        * Attach an observer on the filteredKeyWords list to update the UI automatically when the data changes.
-        * https://stackoverflow.com/questions/58971518/how-to-use-recyclerview-itemanimator-with-recyclerview
-        * https://stackoverflow.com/questions/55106938/change-style-of-recyclerview-item-onclick
-        */
-        keywordViewModel.filteredKeywords.observe(this.viewLifecycleOwner) { items ->
-            items.let {
-                adapter.submitList(it)
-                changeVisibility(it)
+         * Attach an observer on the filteredKeyWords list to update the UI automatically when the data changes.
+         * https://stackoverflow.com/questions/58971518/how-to-use-recyclerview-itemanimator-with-recyclerview
+         * https://stackoverflow.com/questions/55106938/change-style-of-recyclerview-item-onclick
+         */
+        // Attach an observer on the allKeys list to update the UI automatically when the data changes.
+        todoSearchViewModel.allKeys.observe(this.viewLifecycleOwner) {
+            lifecycleScope.launch {
+                withContext(Dispatchers.Main) {
+                    showLoadingProgress()
+                    delay(1000)
+                    hideLoadingProgress()
+                    binding.recentList.isVisible = it.isNotEmpty()
+                    adapter.submitList(it)
+                }
             }
         }
 
-        keywordViewModel.snackbarText.observe(this.viewLifecycleOwner) {
-            setupSnack()
-        }
-
-        searchEvent()
         //https://stackoverflow.com/questions/24794377/how-do-i-capture-searchviews-clear-button-click
         binding.actionSearch.setOnCloseListener { // Do your stuff
             Log.d("searchClose", "work...")
             false
         }
+        setupSnack()
+        observeSnackBarText()
+        searchEvent()
         //click delete btn
         clickDeleteKeyWord()
-        menuEvent()
+        // menuEvent()
         refreshPage()
     }
+
+    private fun observeSnackBarText() {
+        setupSnack()
+    }
+
 
     private fun searchEvent() {
         binding.actionSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -157,7 +155,7 @@ class TodoSearchFragment : Fragment() {
                 // inside on query text change method we are
                 // calling a method to filter our recycler view.
                 //filter keyword list by nextText
-                keywordViewModel.filterByKeyWords(newText)
+                todoSearchViewModel.filterByKeyWords(newText)
                 return false
             }
         })
@@ -184,7 +182,7 @@ class TodoSearchFragment : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.menu_filter -> {
                         Toast.makeText(activity, "menu filter Clicked", Toast.LENGTH_SHORT).show()
-                        keywordViewModel.noKeywordIconRes.value?.let {
+                        todoSearchViewModel.noKeywordIconRes.value?.let {
                             binding.noKeywordsIcon.setImageResource(
                                 it
                             )
@@ -192,14 +190,17 @@ class TodoSearchFragment : Fragment() {
                         showFilteringPopUpMenu()
                         true
                     }
+
                     R.id.refresh -> {
                         Toast.makeText(activity, "menu refresh Clicked", Toast.LENGTH_SHORT).show()
                         true
                     }
+
                     R.id.menu_clear -> {
                         Toast.makeText(activity, "menu clear Clicked", Toast.LENGTH_SHORT).show()
                         true
                     }
+
                     else -> false
                 }
             }
@@ -225,11 +226,12 @@ class TodoSearchFragment : Fragment() {
     private fun setupSnack() {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
 
-        val item = Snackbar.make(view, keywordViewModel.snackbarText.toString(), Snackbar.LENGTH_SHORT)
+        val item =
+            Snackbar.make(view, todoSearchViewModel.snackbarText.toString(), Snackbar.LENGTH_SHORT)
         arguments.let {
-            keywordViewModel.showEditResultMessage(args.userMessage)
+            todoSearchViewModel.showEditResultMessage(args.userMessage)
         }
-       // keyViewModel.showEditResultMessage(arguments.getInt())
+        // keyViewModel.showEditResultMessage(arguments.getInt())
 
         item.show()
     }
@@ -240,7 +242,7 @@ class TodoSearchFragment : Fragment() {
             menuInflater.inflate(R.menu.filter_keywords, menu)
 
             setOnMenuItemClickListener {
-                keywordViewModel.setFiltering(
+                todoSearchViewModel.setFiltering(
                     when (it.itemId) {
                         R.id.active -> KeywordsFilterType.ACTIVE_KEYWORDS
                         R.id.completed -> KeywordsFilterType.COMPLETED_KEYWORDS
@@ -256,8 +258,12 @@ class TodoSearchFragment : Fragment() {
     private fun filteredList(text: String) {
         val textUpdate = text.replace(" ", "+")
         Log.i("filteredList", textUpdate)
-        //  val text = keyViewModel.word.value
-        todoDetailsViewModel.getTodoPhotosByKeyWord(textUpdate)
+        TodoSearchResultFragment.newInstance(textUpdate)
+        val action =
+            TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment(
+                textUpdate
+            )
+        findNavController().navigate(action)
     }
 
     /**
@@ -268,17 +274,13 @@ class TodoSearchFragment : Fragment() {
      */
     private fun addNewKeyWord(text: String) {
         //check if value exists in database
-        Log.d("keyCount", keywordViewModel.filteredKeyCount().toString())
-        if (keywordViewModel.filteredKeyCount() == 0) {
-            Log.d("keyCount0", keywordViewModel.filteredKeyCount().toString())
-            keywordViewModel.addNewKey(text.lowercase())
+        Log.d("keyCount", todoSearchViewModel.filteredKeyCount().toString())
+        if (todoSearchViewModel.filteredKeyCount() == 0) {
+            Log.d("keyCount0", todoSearchViewModel.filteredKeyCount().toString())
+            todoSearchViewModel.addNewKey(text.lowercase())
         }
         //update search input value
-        keywordViewModel.storeWordAction(text)
-
-        val action =
-            TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment()
-        findNavController().navigate(action)
+        //todoSearchViewModel.storeWordAction(text)
 
     }
 
@@ -302,9 +304,9 @@ class TodoSearchFragment : Fragment() {
     delete all keyword
    */
     private fun deleteAll() {
-        for (item in keywordViewModel.allKeys.value!!) {
+        for (item in todoSearchViewModel.allKeys.value!!) {
             // checking if the entered string matched with any item of our recycler view.
-            keywordViewModel.deleteKey(item)
+            todoSearchViewModel.deleteKey(item)
         }
     }
 
@@ -320,33 +322,20 @@ class TodoSearchFragment : Fragment() {
     }
 
     //https://stackoverflow.com/questions/56463883/toggling-visibility-in-kotlin-isvisible-unresolved-reference
-    private fun changeVisibility(keywords: List<Keyword>){
-        //change keyword list to INVISIBLE when keyword list is empty
-        if (keywords.isEmpty()) {
-            //change keyword list hide
-            binding.recyclerKeyView.visibility = View.INVISIBLE
-            //change recent list hide
-            binding.recentList.visibility = View.INVISIBLE
-        } else {
-            //change keyword list show
-            binding.recyclerKeyView.visibility = View.VISIBLE
-            //change recent list show
-            binding.recentList.visibility = View.VISIBLE
-            // binding.recyclerKeyView.setBackgroundResource(com.google.android.material.R.drawable.abc_list_divider_material)
-        }
+
+    private fun showLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = true
+        binding.actionSearch.isVisible = false
+        binding.recyclerKeyView.isVisible = false
+        binding.recentList.isVisible = false
     }
 
-    /*
-    private fun setLoadingProgress(){
-        binding.loadingImg.isIndeterminate = false
-        binding.loadingImg.isVisible = true
+    private fun hideLoadingProgress() {
+        binding.circleProgressIndicator.isVisible = false
+        binding.actionSearch.isVisible = true
+        binding.recentList.isVisible = true
+        binding.recyclerKeyView.isVisible = true
     }
-
-    private fun defaultLoadingProgress(){
-        binding.loadingImg.isIndeterminate = true
-        binding.loadingImg.isVisible = false
-    }
-    */
 
 
 }

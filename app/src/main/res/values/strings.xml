@@ -79,7 +79,7 @@
     <string name="signup_success_msg1">Congratulations, your account has been successfully created.</string>
     <string name="signup_success_msg2">Welcome to use.</string>
     <string name="add_post_title">Create new post</string>
-    <string name="update_post_title">Post Details</string>
+    <string name="update_post_title">Update Post Details</string>
     <string name="signup_success_dialogs_btn">Continue</string>
 
     <string name="login_usernameOrEmail">UserName or email cannot be empty</string>

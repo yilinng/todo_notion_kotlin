@@ -7,12 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.todonotion.ADD_EDIT_RESULT_OK
-import com.example.todonotion.DELETE_RESULT_OK
+import com.example.todonotion.ui.main.ADD_EDIT_RESULT_OK
+import com.example.todonotion.ui.main.DELETE_RESULT_OK
 import com.example.todonotion.Event
 import com.example.todonotion.R
-import com.example.todonotion.data.Keyword.Keyword
-import com.example.todonotion.data.Keyword.KeywordsRepository
+import com.example.todonotion.data.keyword.Keyword
+import com.example.todonotion.data.keyword.KeywordsRepository
 import com.example.todonotion.ui.KeywordsFilterType
 import kotlinx.coroutines.launch
 import java.util.ArrayList
