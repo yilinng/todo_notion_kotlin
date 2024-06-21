@@ -9,11 +9,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.Event
 import com.example.todonotion.R
-import com.example.todonotion.data.TodosRepository
+
 import com.example.todonotion.data.keyword.Keyword
 import com.example.todonotion.data.keyword.KeywordsRepository
-import com.example.todonotion.model.Todo
-import com.example.todonotion.overview.TodoApiStatus
 import com.example.todonotion.ui.KeywordsFilterType
 import com.example.todonotion.ui.main.ADD_EDIT_RESULT_OK
 import com.example.todonotion.ui.main.DELETE_RESULT_OK
@@ -164,7 +162,7 @@ class TodoSearchViewModel @Inject constructor(private val keywordsRepository: Ke
     //store keyword
 
     /**
-     * Returns an instance of the [Item] entity class with the item info entered by the user.
+     * Returns an instance of the [Keyword] entity class with the item info entered by the user.
      * This will be used to add a new entry to the Inventory database.
      */
     private fun getNewKeyEntry(keyName: String): Keyword {

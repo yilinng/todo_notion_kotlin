@@ -67,6 +67,14 @@
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out" />
 
+        <action
+            android:id="@+id/action_todoSearchResultFragment_to_todoSearchResultFragment"
+            app:destination="@id/todoSearchResultFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out" />
+
         <argument
             android:name="keyword"
             app:argType="string" />

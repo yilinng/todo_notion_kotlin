@@ -9,11 +9,14 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentContainerView
+import androidx.lifecycle.ReportFragment.Companion.reportFragment
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -81,6 +84,12 @@ class MainActivity : AppCompatActivity() {
         (application as BaseApplication).appComponent.userManager().mainComponent!!.inject(this)
 
         setContentView(R.layout.activity_main)
+        // The Toolbar defined in the layout has the id "my_toolbar".
+        setSupportActionBar(findViewById(R.id.my_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //https://stackoverflow.com/questions/74545340/android-kotlin-click-event-for-back-button-in-action-bar
+
+
         //https://stackoverflow.com/questions/71917856/sethasoptionsmenuboolean-unit-is-deprecated-deprecated-in-java
         // Add menu items without overriding methods in the Activity
         /*
@@ -154,13 +163,16 @@ class MainActivity : AppCompatActivity() {
              */
         }
         */
+
+
+        /*
         supportActionBar?.setBackgroundDrawable(
             ColorDrawable(Color.parseColor("#FF018786"))
         )
 
         //https://stackoverflow.com/questions/49644542/how-to-remove-bottom-border-in-android-action-bar
         supportActionBar?.elevation = 0F
-
+        */
         observeInvalidToken()
         observeToken()
         observeUser()
@@ -210,6 +222,8 @@ class MainActivity : AppCompatActivity() {
             applicationContext
         )
          */
+
+
     }
 
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
@@ -428,7 +442,11 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
      */
+
+
 }
+
+
 
 
 // Keys for navigation

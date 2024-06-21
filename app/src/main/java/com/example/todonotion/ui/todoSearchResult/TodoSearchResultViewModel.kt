@@ -31,6 +31,7 @@ class TodoSearchResultViewModel@Inject constructor(private val todosRepository: 
     private val _keyword = MutableLiveData<String?>()
     val keyword: LiveData<String?> = _keyword
 
+
     fun getTodoPhotosByKeyWord(string: String) {
         viewModelScope.launch {
             _status.value = TodoApiStatus.LOADING

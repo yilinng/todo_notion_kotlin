@@ -61,8 +61,6 @@ class KeywordViewModel @Inject constructor(private val keywordsRepository: Keywo
     }
 
 
-
-
     //https://stackoverflow.com/questions/70745324/how-to-print-size-of-flow-in-kotlin
     private suspend fun checkIsEmpty() : Boolean {
         return allKeys.value!!.isEmpty()

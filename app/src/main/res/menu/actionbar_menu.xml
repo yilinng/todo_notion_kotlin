@@ -8,7 +8,7 @@
 
     <!-- action button for refresh -->
     <item android:title="@string/refresh"
-        android:id="@+id/refresh"
+        android:id="@+id/menu_refresh"
         app:showAsAction="never"
         android:icon="@drawable/ic_autorenew_24"/>
 

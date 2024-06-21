@@ -1,127 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/coordinator_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+        <include
+            android:id="@+id/layout_search"
+            layout="@layout/search_todo" />
 
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/actionSearch"
-                android:layout_width="399dp"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:background="@android:drawable/editbox_background"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/recent_list"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:alignContent="center"
-                app:alignItems="center"
-                app:justifyContent="space_between"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/actionSearch"
-                >
-
-                <TextView
-                    android:id="@+id/recent_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_between_elements"
-                    android:text="@string/recent"
-                    android:textAppearance="?attr/textAppearanceHeadline6" />
-
-                <ImageButton
-                    android:id="@+id/close_btn"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:backgroundTint="@android:color/white"
-                    android:contentDescription="@string/delete"
-                    android:src="@drawable/ic_close_24" />
-
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <TextView
-                android:id="@+id/filtering_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/margin_between_elements"
-                android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/recent_list"/>
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/circle_progress_indicator"
-                android:layout_width="160dp"
-                android:layout_height="160dp"
-                android:indeterminate="true"
-                app:indicatorColor="@color/purple_500"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recent_list" />
-
-            <com.google.android.flexbox.FlexboxLayout
-                android:id="@+id/keyList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:alignContent="center"
-                app:alignItems="center"
-                app:flexWrap="wrap"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recent_list"
-                >
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_keyView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/todo_item_padding"
-                    android:padding="8dp"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:listitem="@layout/list_key_item" />
-            </com.google.android.flexbox.FlexboxLayout>
-
-            <ImageView
-                android:id="@+id/no_keywords_icon"
-                android:layout_width="96dp"
-                android:layout_height="96dp"
-                android:layout_gravity="center"
-                android:contentDescription="@string/no_keywords_image_content_description"
-                android:src="@drawable/ic_cruelty_free_24"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/actionSearch"/>
-
-            <TextView
-                android:id="@+id/no__keywords_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/todo_item_padding"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/actionSearch"/>
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </layout>
