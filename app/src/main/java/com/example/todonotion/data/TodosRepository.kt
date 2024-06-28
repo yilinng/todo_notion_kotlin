@@ -1,7 +1,7 @@
 package com.example.todonotion.data
 
-import com.example.todonotion.model.Flower
-import com.example.todonotion.network.TodoApiService
+import com.example.todonotion.data.model.Flower
+import com.example.todonotion.data.network.TodoApiService
 import retrofit2.http.Query
 import javax.inject.Inject
 

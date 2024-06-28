@@ -7,9 +7,9 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.launch
-import com.example.todonotion.data.token.Token
-import com.example.todonotion.data.token.TokensRepository
-import com.example.todonotion.model.User
+import com.example.todonotion.data.local.token.Token
+import com.example.todonotion.data.local.token.TokensRepository
+import com.example.todonotion.data.model.User
 import javax.inject.Inject
 
 //store user in database

@@ -6,7 +6,7 @@
     <data>
         <variable
             name="todo"
-            type="com.example.todonotion.model.Todo" />
+            type="com.example.todonotion.data.model.Todo" />
 
         <variable
             name="clickListener"
@@ -49,7 +49,7 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     android:padding="8dp"
-                    android:textAppearance="?attr/textAppearanceHeadline6"
+                    android:textSize="20sp"
                     android:ellipsize="end"
                     android:singleLine="true"
                     app:layout_constraintEnd_toEndOf="parent"

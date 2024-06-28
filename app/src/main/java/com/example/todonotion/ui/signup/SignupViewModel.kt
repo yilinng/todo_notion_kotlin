@@ -5,10 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.data.RemoteAuthRepository
-import com.example.todonotion.data.token.Token
-import com.example.todonotion.model.Signup
-import com.example.todonotion.model.SignupResponse
-import com.example.todonotion.model.User
+import com.example.todonotion.data.local.token.Token
+import com.example.todonotion.data.model.Signup
+import com.example.todonotion.data.model.SignupResponse
+import com.example.todonotion.data.model.User
 import com.example.todonotion.overview.auth.UserApiStatus
 import kotlinx.coroutines.launch
 import retrofit2.HttpException

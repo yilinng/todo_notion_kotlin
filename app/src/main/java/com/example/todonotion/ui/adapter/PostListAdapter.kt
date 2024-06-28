@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todonotion.databinding.ListItemPostBinding
-import com.example.todonotion.model.Post
+import com.example.todonotion.data.model.Post
 
 import java.time.Duration
 import java.time.LocalDateTime

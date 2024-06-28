@@ -45,7 +45,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
                         android:text="@string/add_post_title"
-                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline4"
+                        android:textSize="40sp"
                         android:textColor="@color/black"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />

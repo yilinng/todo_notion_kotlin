@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.data.RemoteAuthRepository
-import com.example.todonotion.model.Post
+import com.example.todonotion.data.model.Post
 import com.example.todonotion.overview.auth.UserApiStatus
 import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.launch

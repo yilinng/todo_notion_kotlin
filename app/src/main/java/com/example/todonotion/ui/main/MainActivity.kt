@@ -1,22 +1,22 @@
 package com.example.todonotion.ui.main
 
 import android.app.Activity
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+
 import android.os.Bundle
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
+
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
-import androidx.lifecycle.ReportFragment.Companion.reportFragment
+import androidx.fragment.app.findFragment
+
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -27,13 +27,16 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.todonotion.BaseApplication
 import com.example.todonotion.R
-import com.example.todonotion.data.token.Token
+import com.example.todonotion.data.local.token.Token
 import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.overview.auth.AuthNetworkViewModel
+import com.example.todonotion.ui.todoList.TodoListFragment
+import com.example.todonotion.ui.todoSearch.TodoSearchFragment
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -143,28 +146,6 @@ class MainActivity : AppCompatActivity() {
         // Make sure actions in the ActionBar get propagated to the NavController
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-        //bottom navigation event
-        /*
-        listener = NavController.OnDestinationChangedListener { _, destination, _ ->
-            val targetId = destination.id
-            //bottom navigation is different from destination id
-
-            if (targetId == R.id.todoListFragment) {
-                // hideLoadingProgress()
-            }
-              observeToken()
-              observeUser()
-            /*
-            Toast.makeText(
-                this,
-                destination.id.toString() + " is selected " + destination.label,
-                Toast.LENGTH_SHORT
-            ).show()
-             */
-        }
-        */
-
-
         /*
         supportActionBar?.setBackgroundDrawable(
             ColorDrawable(Color.parseColor("#FF018786"))
@@ -176,6 +157,7 @@ class MainActivity : AppCompatActivity() {
         observeInvalidToken()
         observeToken()
         observeUser()
+      //  observeFilteredKeyword()
 
         //click logout button in bottom Navigation
         /*
@@ -184,28 +166,21 @@ class MainActivity : AppCompatActivity() {
                 showLogoutDialog()
             }
         */
-        //https://stackoverflow.com/questions/9294603/how-do-i-get-the-currently-displayed-fragment
-        if ("TodoListFragment" in supportFragmentManager.fragments.last()
-                ?.getChildFragmentManager()?.fragments?.get(0).toString()
-        ) {
-            Log.d(
-                "currentFragment ",
-                supportFragmentManager.fragments.last()
-                    ?.getChildFragmentManager()?.fragments?.get(0).toString()
-            )
-            navigationView.setCheckedItem(R.id.todoListFragment)
-        }
 
+        //https://stackoverflow.com/questions/9294603/how-do-i-get-the-currently-displayed-fragment
         Log.d(
-            "currentFragment_after ",
-            supportFragmentManager.fragments.last()?.getChildFragmentManager()?.fragments.toString()
+            "currentFragment ",
+            supportFragmentManager.fragments.last()
+                ?.getChildFragmentManager()?.fragments?.get(0).toString()
         )
+
+
+
         //click logout button in draw Navigation
         //https://stackoverflow.com/questions/31954993/hide-a-navigation-drawer-menu-item-android
         //default is true
         navigationView.menu.findItem(R.id.logout).setOnMenuItemClickListener {
             if (it.isVisible) {
-
                 showLogoutDialog()
                 false
             } else {
@@ -226,9 +201,33 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun callSetFilteredKeyword(text: String) {
+        authNetworkViewModel.setFilteredKeyword(text)
+    }
+
+
+    //https://www.geeksforgeeks.org/how-to-send-data-from-activity-to-fragment-in-android/
+    //https://stackoverflow.com/questions/10903077/calling-a-fragment-method-from-a-parent-activity
+    private fun observeFilteredKeyword() {
+        authNetworkViewModel.filteredKeyword.observe(this) {
+            if (it != null) {
+                Log.d("todoList_main", it)
+                // Declaring fragment manager from making data
+                // transactions using the custom fragment
+                val mFragmentManager = supportFragmentManager
+                val mFragmentTransaction = mFragmentManager.beginTransaction()
+                val todoListFragment = TodoListFragment()
+                val mBundle = Bundle()
+
+                mBundle.putString("mText", it)
+                todoListFragment.arguments = mBundle
+              //  mFragmentTransaction.add(R.id.todoListFragment, todoListFragment).commit()
+
+            }
+        }
+    }
+
     //https://stackoverflow.com/questions/61023968/what-do-i-use-now-that-handler-is-deprecated
-
-
     @OptIn(DelicateCoroutinesApi::class)
     private fun observeToken() {
         tokenViewModel.tokens.observe(this) {
@@ -245,19 +244,19 @@ class MainActivity : AppCompatActivity() {
                 navigationView.menu.findItem(R.id.loginFragment).isVisible = false
                 navigationView.menu.findItem(R.id.logout).isVisible = true
 
+                navigationView.setCheckedItem(R.id.todoListFragment)
+
                 //store token in authNetworkViewModel when valid token
                 if (authNetworkViewModel.user.value == null && authNetworkViewModel.token.value == null) {
                     Log.d("authNetworkViewModel", "user and token is null")
                     Log.d("authNetworkViewModel", it.toString())
 
                     lastAccessToken = it[it.size - 1].accessToken
-
                     GlobalScope.launch {
                         waitLogin(it)
                     }
 
                 }
-
             } else {
                 // Toast.makeText(this, "no exist token!!!", Toast.LENGTH_SHORT).show()
                 //when app is reset have to logout if user is login
@@ -314,7 +313,7 @@ class MainActivity : AppCompatActivity() {
             if (it != null) {
                 //add new user to tokenViewModel
                 tokenViewModel.setUser(it)
-                Toast.makeText(this, "$it have user!!!", Toast.LENGTH_SHORT).show()
+                //  Toast.makeText(this, "$it have user!!!", Toast.LENGTH_SHORT).show()
                 val text = String.format(getString(R.string.nav_title1), it.name)
                 navigationView.findViewById<TextView>(R.id.drawer_title1).visibility = VISIBLE
                 navigationView.findViewById<TextView>(R.id.drawer_title1).text = text
@@ -358,7 +357,9 @@ class MainActivity : AppCompatActivity() {
             async { authNetworkViewModel.logoutAction() },  // async returns a result for the first doc
             async { deleteToken() },
             async { authNetworkViewModel.setToken(null) },
-            async { hideLoadingProgress() }
+            async { hideLoadingProgress() },
+            async { navigationView.setCheckedItem(R.id.todoListFragment) },
+            async { drawerLayout.closeDrawers() }
         )
         deferredList.awaitAll()
     }
@@ -402,18 +403,6 @@ class MainActivity : AppCompatActivity() {
         fragmentContainerView.isVisible = false
         navigationView.isVisible = false
     }
-    /*
-
-     override fun onResume() {
-         super.onResume()
-         //   navController.addOnDestinationChangedListener(listener)
-     }
-
-     override fun onPause() {
-         super.onPause()
-         //  navController.removeOnDestinationChangedListener(listener)
-     }
-     */
 
     /**
      * Enables back button support. Simply navigates one element up on the stack.
@@ -443,10 +432,30 @@ class MainActivity : AppCompatActivity() {
     }
      */
 
+    //https://stackoverflow.com/questions/56284403/how-to-listen-to-fragment-change-in-navigation-component
+    private val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+        // react on change
+        // you can check destination.id or destination.label and act based on that
+        val destinationId = destination.id
+        if (destinationId != R.id.todoSearchFragment || destinationId != R.id.todoSearchResultFragment) {
+            Log.d("todoList_main", destinationId.toString())
+            val searchLayout = findViewById<TextInputLayout>(R.id.search_label)
+            searchLayout.visibility = GONE
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        navController.addOnDestinationChangedListener(listener)
+    }
+
+    override fun onPause() {
+        navController.removeOnDestinationChangedListener(listener)
+        super.onPause()
+    }
+
 
 }
-
-
 
 
 // Keys for navigation

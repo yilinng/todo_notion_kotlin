@@ -1,12 +1,12 @@
 package com.example.todonotion.data
 
 import android.content.Context
-import com.example.todonotion.data.keyword.KeywordsRepository
-import com.example.todonotion.data.keyword.OfflineKeywordsRepository
-import com.example.todonotion.data.token.TokensRepository
-import com.example.todonotion.data.token.OfflineTokensRepository
-import com.example.todonotion.network.TodoApiService
-import com.example.todonotion.network.UserApiService
+import com.example.todonotion.data.local.keyword.KeywordsRepository
+import com.example.todonotion.data.local.keyword.OfflineKeywordsRepository
+import com.example.todonotion.data.local.token.TokensRepository
+import com.example.todonotion.data.local.token.OfflineTokensRepository
+import com.example.todonotion.data.network.TodoApiService
+import com.example.todonotion.data.network.UserApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit

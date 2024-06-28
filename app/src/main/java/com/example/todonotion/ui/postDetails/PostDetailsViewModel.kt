@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.data.RemoteAuthRepository
-import com.example.todonotion.model.UpdateNestedPost
+import com.example.todonotion.data.model.UpdateNestedPost
 
 import com.example.todonotion.overview.auth.UserApiStatus
 import kotlinx.coroutines.launch

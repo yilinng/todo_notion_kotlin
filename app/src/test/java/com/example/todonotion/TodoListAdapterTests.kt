@@ -1,12 +1,7 @@
 package com.example.todonotion
 
 import android.content.Context
-import com.example.todonotion.model.Todo
-import com.example.todonotion.ui.adapter.TodoListAdapter
-import com.example.todonotion.ui.adapter.TodoListener
-import junit.framework.Assert.assertEquals
 
-import org.junit.Test
 import org.mockito.Mockito.mock
 
 class TodoListAdapterTests {

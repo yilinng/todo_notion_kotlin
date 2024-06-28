@@ -25,9 +25,8 @@ import com.example.todonotion.databinding.FragmentSearchTodoBinding
 import com.example.todonotion.ui.adapter.KeyTodoAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.widget.PopupMenu
-import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
+import androidx.databinding.adapters.ToolbarBindingAdapter
+
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -35,7 +34,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 
 import com.example.todonotion.BaseApplication
+import com.example.todonotion.overview.auth.AuthNetworkViewModel
 import com.example.todonotion.ui.KeywordsFilterType
+import com.example.todonotion.ui.main.MainActivity
+import com.example.todonotion.ui.todoList.TodoListFragment
 import com.example.todonotion.ui.todoSearchResult.TodoSearchResultFragment
 
 import com.google.android.flexbox.FlexboxLayoutManager
@@ -43,7 +45,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -60,6 +66,10 @@ class TodoSearchFragment : Fragment() {
         viewModelFactory
     }
 
+    private val authNetworkViewModel: AuthNetworkViewModel by activityViewModels {
+        viewModelFactory
+    }
+
     private var _binding: FragmentSearchTodoBinding? = null
     private val binding get() = _binding!!
 
@@ -73,8 +83,6 @@ class TodoSearchFragment : Fragment() {
 
     private var searchMenu: MenuItem? = null
 
-    private lateinit var toolbar: Toolbar
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -84,6 +92,7 @@ class TodoSearchFragment : Fragment() {
             .inject(this)
     }
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -91,37 +100,33 @@ class TodoSearchFragment : Fragment() {
     ): View {
         _binding = FragmentSearchTodoBinding.inflate(inflater, container, false)
         // TODO: call the view model method that calls the todo api
+
         // Inflate the layout for this fragment
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         searchLayout = requireActivity().findViewById(R.id.search_label)
         searchInput = requireActivity().findViewById(R.id.search_input)
-        toolbar = requireActivity().findViewById(R.id.my_toolbar)
 
-
-
+        Log.d("todoSearch_layout", searchLayout.id.toString())
         //when click on an item in keyword list, have to run filter function
         val adapter = KeyTodoAdapter({ keyword, string ->
             //when click close button
             if (string == "close") {
-                //todoSearchViewModel.storeWordAction(keyword)
                 todoSearchViewModel.deleteKey(keyword)
             } else {
-                // todoSearchViewModel.onKeyWordClicked(keyword)
                 filteredList(keyword.keyName)
             }
         }) {
 
         }
 
-
-
-        binding.layoutSearch.recyclerKeyView.layoutManager =
-            FlexboxLayoutManager(this.context)//LinearLayoutManager(this.context)
+        binding.layoutSearch.recyclerKeyView.layoutManager = FlexboxLayoutManager(this.context)
         binding.layoutSearch.recyclerKeyView.adapter = adapter
+
 
         /*
          * Attach an observer on the filteredKeyWords list to update the UI automatically when the data changes.
@@ -144,6 +149,7 @@ class TodoSearchFragment : Fragment() {
             }
         }
 
+
         //https://stackoverflow.com/questions/24794377/how-do-i-capture-searchviews-clear-button-click
 
         setupSnack()
@@ -154,13 +160,13 @@ class TodoSearchFragment : Fragment() {
         menuEvent()
         defaultSearchView()
         clickDefault()
-
-
     }
 
-    private fun observeSnackBarText() {
+   private fun observeSnackBarText() {
         setupSnack()
     }
+
+
 
 
     private fun menuEvent() {
@@ -182,12 +188,12 @@ class TodoSearchFragment : Fragment() {
                 val expandListener = object : MenuItem.OnActionExpandListener {
                     override fun onMenuItemActionCollapse(item: MenuItem): Boolean {
                         // Do something when the action item collapses.
-                        Log.d("searchResult_collapse", "work")
+                        Log.d("todoSearch_collapse", "work")
                         return true // Return true to collapse the action view.
                     }
 
                     override fun onMenuItemActionExpand(item: MenuItem): Boolean {
-                        Log.d("searchResult_Expand", "work")
+                        Log.d("todoSearch_Expand", "work")
                         // Do something when it expands.
                         return true // Return true to expand the action view.
                     }
@@ -210,13 +216,18 @@ class TodoSearchFragment : Fragment() {
                 findSearchView!!.onActionViewExpanded()
 
                 searchMenu?.setVisible(false)
-                searchEvent(findSearchView!!)
+
+                searchEvent()
 
                 //https://stackoverflow.com/questions/27978283/search-view-close-icon-not-visible-when-expanded
                 //https://stackoverflow.com/questions/45771393/how-to-hide-navigation-drawer-toggle-button-when-search-view-expands
-                findSearchView!!.setOnQueryTextFocusChangeListener { v, hasFocus ->
+
+                findSearchView!!.setOnQueryTextFocusChangeListener { _, hasFocus ->
                     if (hasFocus) {
                         searchLayout.visibility = View.GONE
+                    } else {
+                        searchLayout.visibility = View.VISIBLE
+                        searchMenu?.setVisible(false)
                     }
                 }
 
@@ -228,32 +239,31 @@ class TodoSearchFragment : Fragment() {
                 return when (menuItem.itemId) {
                     R.id.item_search -> true
 
+                    /*
                     android.R.id.home -> {
                         Log.d("todoSearch_up_button", "work")
                         findSearchView?.clearFocus()
                         findSearchView?.setIconifiedByDefault(false)
-                        if(searchLayout.visibility == View.VISIBLE) {
+                        if (searchLayout.visibility == View.VISIBLE) {
                             //https://stackoverflow.com/questions/10863572/programmatically-go-back-to-the-previous-fragment-in-the-backstack
                             findNavController().popBackStack()
                         }
-                        defaultSearchView()
+
+                        searchLayout.visibility = View.GONE
                         true
                     }
+                    */
                     else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    private fun searchEvent(findSearchView: SearchView) {
-        findSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+    private fun searchEvent() {
+        findSearchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-
-                //add keyword to database
                 addNewKeyWord(query)
-                //filter list by keyword
                 filteredList(query)
-
                 return false
             }
 
@@ -271,10 +281,12 @@ class TodoSearchFragment : Fragment() {
     private fun defaultSearchView() {
         searchLayout.visibility = View.VISIBLE
         searchMenu?.setVisible(false)
+        searchInput.setText("")
     }
 
+    //https://stackoverflow.com/questions/24759502/how-to-handle-back-button-of-search-view-in-android
     private fun clickDefault() {
-        searchInput.setOnFocusChangeListener { v, hasFocus ->
+        searchInput.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 Log.d(
                     "todoSearch_Input",
@@ -282,11 +294,11 @@ class TodoSearchFragment : Fragment() {
                 )
                 searchMenu?.setVisible(true)
                 searchLayout.visibility = View.GONE
+                searchMenu?.expandActionView()
             }
         }
 
     }
-
 
     private fun refreshPage() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
@@ -339,13 +351,19 @@ class TodoSearchFragment : Fragment() {
     private fun filteredList(text: String) {
         findSearchView?.clearFocus()
         val textUpdate = text.replace(" ", "+")
-        Log.i("filteredList", textUpdate)
+        Log.i("todoSearch_filteredList", textUpdate)
         TodoSearchResultFragment.newInstance(textUpdate)
+        //https://stackoverflow.com/questions/12659747/call-an-activity-method-from-a-fragment
+
+        authNetworkViewModel.setFilteredKeyword(textUpdate)
+       // (activity as MainActivity).callSetFilteredKeyword(textUpdate)
         val action =
             TodoSearchFragmentDirections.actionTodoSearchFragmentToTodoSearchResultFragment(
                 textUpdate
             )
+
         findNavController().navigate(action)
+
     }
 
     /**
@@ -356,14 +374,11 @@ class TodoSearchFragment : Fragment() {
      */
     private fun addNewKeyWord(text: String) {
         //check if value exists in database
-        Log.d("keyCount", todoSearchViewModel.filteredKeyCount().toString())
-        if (todoSearchViewModel.filteredKeyCount() == 0) {
-            Log.d("keyCount0", todoSearchViewModel.filteredKeyCount().toString())
-            todoSearchViewModel.addNewKey(text.lowercase())
+        todoSearchViewModel.filteredKeywords.observe(this.viewLifecycleOwner) {
+            if (it.isEmpty()) {
+                todoSearchViewModel.addNewKey(text.lowercase())
+            }
         }
-        //update search input value
-        //todoSearchViewModel.storeWordAction(text)
-
     }
 
     /*
@@ -397,7 +412,7 @@ class TodoSearchFragment : Fragment() {
     //delete keyword when click close icon
     private fun clickDeleteKeyWord() {
         binding.layoutSearch.closeBtn.setOnClickListener {
-            Log.d("clickDelete", "work")
+            Log.d("todoSearch_clickDelete", "work")
             showClearDialog()
             // Do something in response to button click
         }

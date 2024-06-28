@@ -1,4 +1,4 @@
-package com.example.todonotion.data.keyword
+package com.example.todonotion.data.local.keyword
 
 import kotlinx.coroutines.flow.Flow
 

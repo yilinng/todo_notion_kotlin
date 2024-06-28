@@ -1,7 +1,18 @@
 package com.example.todonotion.fake
 
-import com.example.todonotion.data.token.Token
-import com.example.todonotion.model.*
+import com.example.todonotion.data.local.token.Token
+import com.example.todonotion.data.model.AccessToken
+import com.example.todonotion.data.model.AuthResponse
+import com.example.todonotion.data.model.Login
+import com.example.todonotion.data.model.NestedPost
+import com.example.todonotion.data.model.NestedUser
+import com.example.todonotion.data.model.Post
+import com.example.todonotion.data.model.RefreshToken
+import com.example.todonotion.data.model.Signup
+import com.example.todonotion.data.model.SignupResponse
+import com.example.todonotion.data.model.UpdateNestedPost
+import com.example.todonotion.data.model.UpdatePost
+import com.example.todonotion.data.model.User
 
 object FakeDataSource {
     const val idOne = "id1"

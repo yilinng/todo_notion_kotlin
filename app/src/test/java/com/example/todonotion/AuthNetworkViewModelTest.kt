@@ -1,10 +1,11 @@
 package com.example.todonotion
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.example.todonotion.data.model.Login
+import com.example.todonotion.data.model.Signup
 import com.example.todonotion.fake.FakeDataSource
 import com.example.todonotion.fake.FakeNetworkUserRepository
-import com.example.todonotion.model.dto.PostDto
-import com.example.todonotion.model.*
+import com.example.todonotion.data.model.dto.PostDto
 import com.example.todonotion.overview.auth.AuthNetworkViewModel
 
 import com.example.todonotion.rules.MainCoroutineRule

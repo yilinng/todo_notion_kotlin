@@ -7,7 +7,7 @@
 
         <variable
             name="post"
-            type="com.example.todonotion.model.Post" />
+            type="com.example.todonotion.data.model.Post" />
 
         <variable
             name="clickListener"
@@ -33,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="24sp"
                 tools:text="post title" />
 
             <TextView
@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textSize="20sp"
                 tools:text="post dateTime" />
 
 
@@ -50,8 +50,8 @@
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:dividerInsetEnd="16dp"
-            app:dividerInsetStart="16dp" />
+            app:dividerInsetEnd="@dimen/margin_between_elements"
+            app:dividerInsetStart="@dimen/margin_between_elements" />
 
     </com.google.android.material.card.MaterialCardView>
 </layout>

@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.View.*
-import android.widget.Toast
+
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -21,7 +21,7 @@ import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentSignupBinding
-import com.example.todonotion.model.Signup
+import com.example.todonotion.data.model.Signup
 
 import com.example.todonotion.overview.auth.TokenViewModel
 
@@ -107,23 +107,29 @@ class SignupFragment : Fragment() {
 
 
         binding.nameInput.addTextChangedListener {
+            /*
             Toast.makeText(
                 this.context, "name input change", Toast.LENGTH_SHORT
             ).show()
+             */
             cleanIsEmpty()
         }
 
         binding.emailInput.addTextChangedListener {
+            /*
             Toast.makeText(
                 this.context, "email input change", Toast.LENGTH_SHORT
             ).show()
+             */
             cleanIsEmpty()
         }
 
         binding.passwordInput.addTextChangedListener {
+            /*
             Toast.makeText(
                 this.context, "password input change", Toast.LENGTH_SHORT
             ).show()
+             */
             cleanIsEmpty()
         }
     }

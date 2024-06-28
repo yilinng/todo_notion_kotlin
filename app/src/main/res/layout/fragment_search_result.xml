@@ -11,14 +11,13 @@
 
     </data>
 
-    <androidx.slidingpanelayout.widget.SlidingPaneLayout
-        android:id="@+id/sliding_pane_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:layout_width="550dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
@@ -34,17 +33,18 @@
                 app:listData="@{viewModel.todos}"
                 tools:listitem="@layout/list_item_todo" />
 
+            <ImageView
+                android:id="@+id/status_image"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@string/status"
+                app:apiStatus="@{viewModel.status}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="parent" />
+
 
         </RelativeLayout>
-
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/detail_container"
-            android:name="com.example.todonotion.ui.todoDetails.TodoDetailFragment"
-            android:layout_width="300dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" />
-
-
-    </androidx.slidingpanelayout.widget.SlidingPaneLayout>
+    </LinearLayout>
 </layout>

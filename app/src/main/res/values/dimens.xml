@@ -11,4 +11,6 @@
     <dimen name="header_image_width">100dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="toolbar_textInputLayout_height">60dp</dimen>
+    <dimen name="toolbar_textInputEdit_width">380dp</dimen>
 </resources>

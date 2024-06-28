@@ -9,7 +9,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.Toast
+
 import androidx.core.view.isVisible
 
 import androidx.core.widget.addTextChangedListener
@@ -22,7 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.todonotion.BaseApplication
 import com.example.todonotion.R
 import com.example.todonotion.databinding.FragmentLoginBinding
-import com.example.todonotion.model.Login
+import com.example.todonotion.data.model.Login
 
 import com.example.todonotion.overview.auth.TokenViewModel
 
@@ -90,17 +90,21 @@ class LoginFragment : Fragment() {
         }
 
         binding.emailInput.addTextChangedListener {
+            /*
             Toast.makeText(
                 this.context, "username or email input change", Toast.LENGTH_SHORT
             ).show()
+             */
             cleanIsEmpty()
         }
 
 
         binding.passwordInput.addTextChangedListener {
+            /*
             Toast.makeText(
                 this.context, "password input change", Toast.LENGTH_SHORT
             ).show()
+             */
             cleanIsEmpty()
         }
 

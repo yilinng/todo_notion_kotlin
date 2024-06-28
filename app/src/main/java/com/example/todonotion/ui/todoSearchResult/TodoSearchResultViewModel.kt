@@ -6,8 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.data.TodosRepository
-import com.example.todonotion.data.keyword.Keyword
-import com.example.todonotion.model.Todo
+import com.example.todonotion.data.model.Todo
 import com.example.todonotion.overview.TodoApiStatus
 import kotlinx.coroutines.launch
 import javax.inject.Inject

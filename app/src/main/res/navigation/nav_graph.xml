@@ -24,6 +24,10 @@
             android:name="userMessage"
             android:defaultValue="0"
             app:argType="integer" />
+        <argument
+            android:name="keyword"
+            android:defaultValue=""
+            app:argType="string" />
 
     </fragment>
     <fragment

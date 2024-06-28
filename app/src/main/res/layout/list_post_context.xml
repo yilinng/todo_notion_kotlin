@@ -18,7 +18,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginStart="@dimen/todo_item_vertical_padding"
         android:fontFamily="sans-serif"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textSize="20sp"
         tools:text="Cogs and Widgets" />
 
 </LinearLayout>

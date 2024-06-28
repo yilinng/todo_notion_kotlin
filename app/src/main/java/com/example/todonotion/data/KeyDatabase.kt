@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.todonotion.data.keyword.KeywordDao
-import com.example.todonotion.data.keyword.Keyword
-import com.example.todonotion.data.token.Token
-import com.example.todonotion.data.token.TokenDao
+import com.example.todonotion.data.local.keyword.KeywordDao
+import com.example.todonotion.data.local.keyword.Keyword
+import com.example.todonotion.data.local.token.Token
+import com.example.todonotion.data.local.token.TokenDao
 import com.example.todonotion.data.user.UserDao
 import com.example.todonotion.data.user.User
 

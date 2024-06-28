@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminate="true"
+            android:layout_gravity="center"
             android:visibility="gone"
             app:indicatorColor="@color/green_600" />
 

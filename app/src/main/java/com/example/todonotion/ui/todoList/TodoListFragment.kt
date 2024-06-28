@@ -6,15 +6,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
+
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 
+
 import androidx.fragment.app.viewModels
 
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
+
 import androidx.navigation.fragment.findNavController
 
 import androidx.slidingpanelayout.widget.SlidingPaneLayout
@@ -36,10 +37,10 @@ import com.google.android.material.tabs.TabLayout
 import javax.inject.Inject
 
 import com.example.todonotion.overview.TodoApiStatus
-import com.example.todonotion.overview.auth.TokenViewModel
+import com.example.todonotion.overview.auth.AuthNetworkViewModel
+
 import com.example.todonotion.ui.todoDetails.TodoDetailFragment
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
 
 /**
  * This fragment shows the the status of the Mars photos web services transaction.
@@ -57,31 +58,24 @@ class TodoListFragment : Fragment() {
         viewModelFactory
     }
 
-    private val tokenViewModel: TokenViewModel by activityViewModels {
+    private val authNetworkViewModel: AuthNetworkViewModel by activityViewModels {
         viewModelFactory
     }
 
-    //private val args: TodoListFragmentArgs by navArgs()
-    /*
-    private val todoViewModel: TodoViewModel by activityViewModels {
-        TodoViewModel.Factory
-    }
-
-    private val tokenViewModel: TokenViewModel by activityViewModels {
-        AppViewModelProvider.Factory
-    }
-    */
     private var _binding: FragmentTodoListBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var callback: ListOnBackPressedCallback
 
 
+    //https://stackoverflow.com/questions/17436298/how-to-pass-a-variable-from-activity-to-fragment-and-pass-it-back
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         (requireActivity().application as BaseApplication).appComponent.todoListComponent().create()
             .inject(this)
+
+
     }
 
     override fun onCreateView(
@@ -100,6 +94,17 @@ class TodoListFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = todoListViewModel
 
+        /*
+        Log.d("todoList_arg", arguments.toString())
+
+        val message = requireArguments().getString("mText")
+
+        if (message != null) {
+            if(message.isNotEmpty()) {
+                todoListViewModel.getTodoPhotosByKeyWord(message)
+            }
+        }
+        */
         val slidingPaneLayout = binding.slidingPaneLayout
         //https://medium.com/@Wingnut/tabbed-slidingpanelayout-primary-detail-using-the-navigation-component-library-%EF%B8%8F-6517a2c1e554
         slidingPaneLayout.lockMode = SlidingPaneLayout.LOCK_MODE_LOCKED
@@ -111,7 +116,7 @@ class TodoListFragment : Fragment() {
         refreshPage()
         setupNavigation()
         observeStatus()
-        //observeToken()
+        observeFilteredKeyword()
 
         binding.recyclerView.adapter = TodoListAdapter(TodoListener { todo ->
             todoListViewModel.onTodoClicked(todo)
@@ -125,6 +130,15 @@ class TodoListFragment : Fragment() {
              */
         })
     }
+
+    private fun observeFilteredKeyword() {
+        authNetworkViewModel.filteredKeyword.observe(this.viewLifecycleOwner) {
+            if(it != null) {
+                todoListViewModel.getTodoPhotosByKeyWord(it)
+            }
+        }
+    }
+
 
     private fun setupNavigation() {
         todoListViewModel.todo.observe(this.viewLifecycleOwner) {
@@ -144,20 +158,6 @@ class TodoListFragment : Fragment() {
         }
     }
 
-    //when logout action
-    /*
-    private fun observeToken(){
-        tokenViewModel.tokens.observe(this.viewLifecycleOwner) {
-           if(it.isEmpty()) {
-               lifecycleScope.launch {
-                   showLoadingProgress()
-                   delay(3000)
-                   hideLoadingProgress()
-               }
-           }
-        }
-    }
-    */
 
     private fun openTodoDetails(todoId: String) {
         val action = TodoListFragmentDirections.actionTodoListFragmentToTodoDetailFragment(todoId)
@@ -225,6 +225,8 @@ class TodoListFragment : Fragment() {
         super.onPause()
         callback.onTabPaused()
     }
+
+
 }
 
 /**

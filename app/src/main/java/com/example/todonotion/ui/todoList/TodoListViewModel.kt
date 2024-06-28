@@ -1,12 +1,13 @@
 package com.example.todonotion.ui.todoList
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.data.TodosRepository
 
-import com.example.todonotion.model.Todo
+import com.example.todonotion.data.model.Todo
 import com.example.todonotion.overview.TodoApiStatus
 
 import com.google.android.material.tabs.TabLayout
@@ -61,6 +62,28 @@ class TodoListViewModel @Inject constructor(private val todosRepository: TodosRe
         }
     }
 
+    fun getTodoPhotosByKeyWord(string: String) {
+        viewModelScope.launch {
+            _status.value = TodoApiStatus.LOADING
+            try {
+                _filteredTodos.value = todosRepository.getPhotosWithKey(string).hits
+                _status.value = TodoApiStatus.DONE
+                Log.i("todoList_getTodoPhotosByKeyWord200", todos.value.toString())
+
+            } catch (e: Exception) {
+                _status.value = TodoApiStatus.ERROR
+                _filteredTodos.value = listOf()
+                Log.e("todoList_getTodoPhotosByKeyWord404", e.toString())
+            } finally {
+                if (filteredTodos.value!!.isEmpty()) {
+                    // if no item is added in filtered list we are
+                    // displaying a toast message as no data found.
+                    _foundData.value = false
+                }
+            }
+        }
+    }
+
     fun selectedTab(tab: TabLayout.Tab?) {
         if (tab != null) {
             //Log.d("selectedTab", tab.text.toString())
@@ -81,6 +104,8 @@ class TodoListViewModel @Inject constructor(private val todosRepository: TodosRe
             ""
         }
     }
+
+
 
     fun onTodoClicked(todo: Todo) {
         // TODO: Set the todo object

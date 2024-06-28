@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import com.example.todonotion.data.TodosRepository
-import com.example.todonotion.model.Todo
+import com.example.todonotion.data.model.Todo
 
 import java.util.*
 

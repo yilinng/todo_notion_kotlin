@@ -1,7 +1,7 @@
 package com.example.todonotion.ui.adapter
 
 import android.util.Log
-import com.example.todonotion.data.keyword.Keyword
+import com.example.todonotion.data.local.keyword.Keyword
 import com.example.todonotion.databinding.ListKeyItemBinding
 import android.view.LayoutInflater
 import android.view.ViewGroup

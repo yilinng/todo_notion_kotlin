@@ -116,12 +116,10 @@ class PostDetailFragment : Fragment() {
                 binding.postTitle.isVisible = false
                 binding.recyclerView.isVisible = false
                 binding.postDate.isVisible = false
-                binding.editFab.isVisible = false
             } else {
                 binding.postTitle.isVisible = true
                 binding.recyclerView.isVisible = true
                 binding.postDate.isVisible = true
-                binding.editFab.isVisible = true
             }
         }
     }

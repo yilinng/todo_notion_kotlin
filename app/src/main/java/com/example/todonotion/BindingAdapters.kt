@@ -6,9 +6,9 @@ import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.todonotion.data.keyword.Keyword
-import com.example.todonotion.model.Post
-import com.example.todonotion.model.Todo
+import com.example.todonotion.data.local.keyword.Keyword
+import com.example.todonotion.data.model.Post
+import com.example.todonotion.data.model.Todo
 import com.example.todonotion.overview.TodoApiStatus
 import com.example.todonotion.overview.auth.UserApiStatus
 import com.example.todonotion.ui.adapter.KeyTodoAdapter

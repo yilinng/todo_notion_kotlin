@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
-import android.widget.Toast
+
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
@@ -25,10 +25,10 @@ import androidx.navigation.fragment.navArgs
 import com.example.todonotion.BaseApplication
 
 import com.example.todonotion.R
-import com.example.todonotion.model.Post
+import com.example.todonotion.data.model.Post
 import com.example.todonotion.databinding.FragmentAddPostBinding
 
-import com.example.todonotion.model.dto.PostDto
+import com.example.todonotion.data.model.dto.PostDto
 import com.example.todonotion.overview.auth.TokenViewModel
 
 import com.example.todonotion.overview.auth.UserApiStatus
@@ -92,7 +92,7 @@ class AddPostFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentAddPostBinding.inflate(inflater, container, false)
         // addPostViewModel.getPostAction(args)
@@ -146,26 +146,32 @@ class AddPostFragment : Fragment() {
 
                     if (addPostViewModel.post.value == null) {
                         binding.saveBtn.setOnClickListener {
+                            /*
                             Toast.makeText(
                                 this.context, "click save button", Toast.LENGTH_SHORT
                             ).show()
+                             */
                             showLoadingProgress()
                             addNewPost()
                         }
                     }
 
                     binding.titleInput.addTextChangedListener {
+                        /*
                         Toast.makeText(
                             this.context, "title input change", Toast.LENGTH_SHORT
                         ).show()
+                         */
                         cleanIsEmpty()
                         actionIsEmpty()
                     }
 
                     binding.contextInput.addTextChangedListener {
+                        /*
                         Toast.makeText(
                             this.context, "context input change", Toast.LENGTH_SHORT
                         ).show()
+                         */
                         cleanIsEmpty()
                         actionIsEmpty()
                     }

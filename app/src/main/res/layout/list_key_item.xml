@@ -31,7 +31,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:fontFamily="sans-serif"
-        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textSize="24sp"
         tools:text="Cogs and Widgets" />
 
     <ImageButton

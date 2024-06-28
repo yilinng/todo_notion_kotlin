@@ -3,20 +3,20 @@ package com.example.todonotion.di
 import android.content.Context
 import androidx.room.Room
 import com.example.todonotion.data.KeyDatabase
-import com.example.todonotion.data.keyword.KeywordsRepository
-import com.example.todonotion.data.keyword.OfflineKeywordsRepository
+import com.example.todonotion.data.local.keyword.KeywordsRepository
+import com.example.todonotion.data.local.keyword.OfflineKeywordsRepository
 import com.example.todonotion.data.NetworkTodosRepository
 import com.example.todonotion.data.NetworkRemoteAuthRepository
 
 import com.example.todonotion.data.RemoteAuthRepository
 import com.example.todonotion.data.TodosRepository
-import com.example.todonotion.data.token.TokensRepository
-import com.example.todonotion.data.token.OfflineTokensRepository
+import com.example.todonotion.data.local.token.TokensRepository
+import com.example.todonotion.data.local.token.OfflineTokensRepository
 import com.example.todonotion.data.user.OfflineUsersRepository
 import com.example.todonotion.data.user.UsersRepository
 
-import com.example.todonotion.network.TodoApiService
-import com.example.todonotion.network.UserApiService
+import com.example.todonotion.data.network.TodoApiService
+import com.example.todonotion.data.network.UserApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module

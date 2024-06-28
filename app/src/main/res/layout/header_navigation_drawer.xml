@@ -11,7 +11,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textSize="24sp"
         android:text="@string/nav_title" />
 
     <TextView
@@ -21,7 +21,7 @@
         android:layout_marginBottom="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:textAppearance="?attr/textAppearanceBody2"
+        android:textSize="16sp"
         android:textColor="@color/material_on_surface_emphasis_medium"
         android:text="@string/nav_title_default" />
 
@@ -32,7 +32,7 @@
         android:layout_marginBottom="24dp"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:textAppearance="?attr/textAppearanceBody2"
+        android:textSize="16sp"
         android:textColor="@color/material_on_surface_emphasis_medium"
         android:text="@string/nav_title1"
         android:visibility="gone"/>

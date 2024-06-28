@@ -2,6 +2,7 @@ package com.example.todonotion.ui.todoList.di
 
 import androidx.lifecycle.ViewModel
 import com.example.todonotion.di.ViewModelKey
+import com.example.todonotion.overview.auth.AuthNetworkViewModel
 import com.example.todonotion.overview.auth.TokenViewModel
 import com.example.todonotion.ui.todoList.TodoListViewModel
 import dagger.Binds
@@ -16,6 +17,6 @@ abstract class TodoListModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(TokenViewModel::class)
-    abstract fun bindTokenViewModel(viewmodel: TokenViewModel): ViewModel
+    @ViewModelKey(AuthNetworkViewModel::class)
+    abstract fun bindAuthViewModel(viewmodel: AuthNetworkViewModel): ViewModel
 }

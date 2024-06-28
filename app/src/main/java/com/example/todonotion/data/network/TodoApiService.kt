@@ -1,11 +1,7 @@
-package com.example.todonotion.network
+package com.example.todonotion.data.network
 
-import com.example.todonotion.model.Flower
-import com.example.todonotion.model.Todo
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import com.example.todonotion.data.model.Flower
+import com.example.todonotion.data.model.Todo
 import retrofit2.http.*
 
 /**

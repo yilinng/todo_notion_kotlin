@@ -11,8 +11,8 @@ import com.example.todonotion.ui.main.ADD_EDIT_RESULT_OK
 import com.example.todonotion.ui.main.DELETE_RESULT_OK
 import com.example.todonotion.Event
 import com.example.todonotion.R
-import com.example.todonotion.data.keyword.Keyword
-import com.example.todonotion.data.keyword.KeywordsRepository
+import com.example.todonotion.data.local.keyword.Keyword
+import com.example.todonotion.data.local.keyword.KeywordsRepository
 import com.example.todonotion.ui.KeywordsFilterType
 import kotlinx.coroutines.launch
 import java.util.ArrayList
@@ -141,11 +141,6 @@ class KeywordViewModel @Inject constructor(private val keywordsRepository: Keywo
 
         _filteredKeyWords.value = filteredList
     }
-
-    fun filteredKeyCount(): Int {
-        return filteredKeywords.value!!.size
-    }
-
 
     //https://stackoverflow.com/questions/46662513/convert-array-to-list-in-kotlin
     fun onKeyWordClicked(keyword: Keyword) {

@@ -1,4 +1,4 @@
-package com.example.todonotion.data.token
+package com.example.todonotion.data.local.token
 
 import androidx.room.Dao
 import androidx.room.Delete
