@@ -65,6 +65,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var fragmentContainerView: FragmentContainerView
 
+    private lateinit var searchLayout: TextInputLayout
+
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
@@ -91,8 +93,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.my_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         //https://stackoverflow.com/questions/74545340/android-kotlin-click-event-for-back-button-in-action-bar
-
-
+        searchLayout = findViewById(R.id.search_label)
         //https://stackoverflow.com/questions/71917856/sethasoptionsmenuboolean-unit-is-deprecated-deprecated-in-java
         // Add menu items without overriding methods in the Activity
         /*
@@ -438,8 +439,7 @@ class MainActivity : AppCompatActivity() {
         // you can check destination.id or destination.label and act based on that
         val destinationId = destination.id
         if (destinationId != R.id.todoSearchFragment || destinationId != R.id.todoSearchResultFragment) {
-            Log.d("todoList_main", destinationId.toString())
-            val searchLayout = findViewById<TextInputLayout>(R.id.search_label)
+            //Log.d("todoList_main", destinationId.toString())
             searchLayout.visibility = GONE
         }
     }

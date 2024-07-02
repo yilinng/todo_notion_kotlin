@@ -1,6 +1,6 @@
 package com.example.todonotion.fake
 
-import com.example.todonotion.data.NetworkUsersRepository
+import com.example.todonotion.data.NetworkRemoteAuthRepository
 import com.example.todonotion.fake.FakeDataSource.fakeLogin
 import com.example.todonotion.fake.FakeDataSource.fakeSignup
 import kotlinx.coroutines.test.runTest
@@ -12,7 +12,7 @@ class NetworkUsersRepositoryTest {
     @Test
     fun networkUsersRepository_getPosts_verifyPostList() =
         runTest {
-            val repository = NetworkUsersRepository(
+            val repository = NetworkRemoteAuthRepository(
                 userApiService = FakeUserApiService()
             )
             assertEquals(FakeDataSource.postsList, repository.getTodos())
@@ -31,7 +31,7 @@ class NetworkUsersRepositoryTest {
     @Test
     fun networkUsersRepository_login_verifyToken() =
         runTest {
-            val repository = NetworkUsersRepository(
+            val repository = NetworkRemoteAuthRepository(
                 userApiService = FakeUserApiService()
             )
             assertEquals(FakeDataSource.loginResponse, repository.loginUser(fakeLogin))
@@ -40,7 +40,7 @@ class NetworkUsersRepositoryTest {
     @Test
     fun networkUsersRepository_signup_verifyToken() =
         runTest {
-            val repository = NetworkUsersRepository(
+            val repository = NetworkRemoteAuthRepository(
                 userApiService = FakeUserApiService()
             )
             assertEquals(FakeDataSource.signupResponse, repository.signupUser(fakeSignup))

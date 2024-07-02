@@ -3,7 +3,6 @@ package com.example.todonotion.ui.login
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -114,7 +113,7 @@ class LoginFragment : Fragment() {
         //https://developer.android.com/develop/ui/views/touch-and-input/swipe/respond-refresh-request
         //refresh page
         binding.refreshLayout.setOnRefreshListener {
-            Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
+           // Log.d("onRefresh", "onRefresh called from SwipeRefreshLayout")
 
             //https://stackoverflow.com/questions/20702333/refresh-fragment-at-reload
             val navController = findNavController()

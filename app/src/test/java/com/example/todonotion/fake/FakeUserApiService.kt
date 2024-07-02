@@ -39,8 +39,8 @@ class FakeUserApiService: UserApiService {
         return FakeDataSource.postsList
     }
 
-    override suspend fun getTodo(postId: String): Post {
-        return FakeDataSource.postsList[0]
+    override suspend fun getTodo(postId: String): UpdatePost {
+        return FakeDataSource.getTodo
     }
 
     override suspend fun searchTodo(title: String): List<Post> {

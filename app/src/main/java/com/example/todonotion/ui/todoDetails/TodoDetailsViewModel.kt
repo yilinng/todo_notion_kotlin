@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class TodoDetailsViewModel @Inject constructor(val todosRepository: TodosRepository): ViewModel(){
+class TodoDetailsViewModel @Inject constructor(private val todosRepository: TodosRepository): ViewModel(){
     // The internal MutableLiveData that stores the status of the most recent request
     private val _status = MutableLiveData<TodoApiStatus>()
 

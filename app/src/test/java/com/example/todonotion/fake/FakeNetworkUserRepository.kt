@@ -1,6 +1,7 @@
 package com.example.todonotion.fake
 
-import com.example.todonotion.data.UsersRepository
+import com.example.todonotion.data.NetworkRemoteAuthRepository
+import com.example.todonotion.data.RemoteAuthRepository
 import com.example.todonotion.data.model.AccessToken
 import com.example.todonotion.data.model.AuthResponse
 import com.example.todonotion.data.model.Login
@@ -14,7 +15,7 @@ import com.example.todonotion.data.model.UpdateToken
 import com.example.todonotion.data.model.dto.PostDto
 import retrofit2.Response
 
-class FakeNetworkUserRepository: UsersRepository {
+class FakeNetworkUserRepository: RemoteAuthRepository {
     private var shouldReturnError = false
 
     fun setReturnError(value: Boolean) {
@@ -44,8 +45,8 @@ class FakeNetworkUserRepository: UsersRepository {
         return FakeDataSource.postsList
     }
 
-    override suspend fun getTodo(postId: String): Post {
-        return FakeDataSource.postsList[0]
+    override suspend fun getTodo(postId: String): UpdatePost {
+        return FakeDataSource.getTodo
     }
 
     override suspend fun searchTodo(title: String): List<Post> {

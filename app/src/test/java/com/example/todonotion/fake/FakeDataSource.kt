@@ -56,6 +56,7 @@ object FakeDataSource {
         refreshToken = "testreFreshtoken"
     )
     val post1 = Post(
+        id = "post1",
         title = titleOne,
         context = contextOne,
         updateDate = updateDateOne,
@@ -64,6 +65,7 @@ object FakeDataSource {
     )
 
     val post2 = Post(
+        id = "post2",
         title = titleTwo,
         context = contextTwo,
         updateDate = updateDateTwo,
@@ -76,6 +78,7 @@ object FakeDataSource {
     )
 
     val addPost = Post(
+        id = "post3",
         title = titleThree,
         context = contextThree,
         updateDate = updateDateThree,
@@ -84,11 +87,23 @@ object FakeDataSource {
     )
 
     val editPost = Post(
+        id = "post3",
         title = titleThree,
         context = contentThreeUpdate,
         updateDate = updateDateThree,
         user = user1,
         username = testUserName1
+    )
+
+    val getTodo = UpdatePost(
+        todo = UpdateNestedPost(
+            id = post1.id,
+            title = post1.title,
+            context = post1.context,
+            user = post1.user.id,
+            username = post1.username
+        )
+
     )
 
     const val idToken = 1233467788222222
